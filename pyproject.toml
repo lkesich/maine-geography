@@ -14,7 +14,8 @@ readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.8"
 dependencies = [
-    "utils @ git+https://github.com/lkesich/utilities.git"
+    "utils @ git+https://github.com/lkesich/utilities.git",
+    "pandas >= 2.0"
 ]
 
 classifiers = [
