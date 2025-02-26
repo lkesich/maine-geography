@@ -8,16 +8,14 @@ version = "0.0.1"
 authors = [
   { name="Lydia-Rose Kesich", email="lkesich@mainevotes.net" }
 ]
-
 description = "Package for parsing and standardizing Maine place names in public data"
 readme = "README.md"
 license = {file = "LICENSE"}
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
     "utils @ git+https://github.com/lkesich/utilities.git",
     "pandas >= 2.0"
 ]
-
 classifiers = [
   "Programming Language :: Python :: 3",
   "Typing :: Typed"
@@ -30,6 +28,12 @@ Issues = "https://github.com/lkesich/maine-geography/issues"
 
 [tool.hatch.metadata]
 allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["mainegeo"]
+
+[tool.hatch.build.targets.wheel.sources]
+"mainegeo/data" = "mainegeo/data"
 
 [tool.mypy]
 warn_return_any = true
