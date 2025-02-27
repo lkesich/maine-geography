@@ -178,10 +178,6 @@ def normalize_suffix(town: str) -> str:
         'Portland'
         >>> normalize_suffix('MATINICUS ISLE PLANTATION')
         'MATINICUS ISLE PLT'
-        >>> normalize_suffix('T8 R11 TWP')
-        'T8 R11'
-        >>> normalize_suffix('Township 6 North of Weld')
-        'Township 6 North of Weld'
     """
     gnis_format = GNIS_PATTERN.match(town.upper())
     
@@ -196,6 +192,15 @@ def normalize_suffix(town: str) -> str:
     return match_case(normalized, town)
 
 def format_town(town: str) -> str:
+    """
+    Example:
+        >>> format_town('City of Portland')
+        'Portland'
+        >>> format_town('T8/R11 TWP')
+        'T8 R11'
+        >>> format_town('CROSS LAKE TOWNSHIP (T17 R5)')
+        'CROSS LAKE TWP T17 R5'
+    """
     order = [
         normalize_suffix,
         format_township,
@@ -204,9 +209,13 @@ def format_town(town: str) -> str:
     
 class Township:
     def __init__(self, township):
+        self.name = format_town(township)
         self.is_unnamed = is_unnamed_township(township)
-        self.has_alias = has_alias(township)
-        self.code = clean_township_code(township)
-        self.alias = extract_alias(township)
-        self.fullname = ' '.join(filter(None, [self.alias, self.code]))
 
+        if self.is_unnamed:
+            self._assign_unnamed_township_attributes()
+
+    def _assign_unnamed_township_attributes(self) -> str:
+        self.has_alias = has_alias(self.name)
+        self.code = clean_township_code(self.name)
+        self.alias = extract_alias(self.name)

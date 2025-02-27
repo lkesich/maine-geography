@@ -30,10 +30,10 @@ Issues = "https://github.com/lkesich/maine-geography/issues"
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["mainegeo"]
+packages = ["src/mainegeo"]
 
 [tool.hatch.build.targets.wheel.sources]
-"mainegeo/data" = "mainegeo/data"
+"src/mainegeo/data" = "mainegeo/data"
 
 [tool.mypy]
 warn_return_any = true

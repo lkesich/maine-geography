@@ -38,10 +38,10 @@ from typing import List
 from itertools import filterfalse
 from utils.strings import replace_all, squish, normalize_whitespace
 from utils.core import chain_operations
-from townships import (
+from mainegeo.townships import (
     clean_township_code,
     is_unnamed_township,
-    normalize_suffix
+    format_town
 )
 from mainegeo.patterns import (
     KNOWN_TYPOS,
@@ -59,7 +59,7 @@ from mainegeo.patterns import (
     SINGULAR,
     PLURAL_PATTERN,
     SINGULAR_PATTERN,
-    REMOVE_FLAG_PATTERN
+    FORMATTED_GROUP_PATTERN
 )
 
 def fix_known_typos(result_str: str) -> str:
@@ -174,7 +174,7 @@ def prepare_towns(result_str: str) -> str:
     ]
     return chain_operations(result_str, initial_cleanup)
 
-def _strip_town(town: str) -> str:
+def clean_town(town: str) -> str:
     """
     Strip punctuation and unnecessary whitespace from a town name substring. 
 
@@ -187,7 +187,7 @@ def _strip_town(town: str) -> str:
     post_split_operations = [
         drop_meaningful_chars
         , squish
-        , normalize_suffix
+        , format_town
     ]
     return chain_operations(town, post_split_operations)
 
@@ -255,7 +255,7 @@ def extract_registration_towns(result_str: str) -> List[str]:
         return []
     else:
         reg_towns = reg_town_substr.split(STANDARD_DELIMITER)
-        return list(map(_strip_town, reg_towns))
+        return list(map(clean_town, reg_towns))
     
 def extract_reporting_towns(result_str: str) -> List[str]:
     """
@@ -271,8 +271,8 @@ def extract_reporting_towns(result_str: str) -> List[str]:
         List: Reporting towns with formatting identifiers stripped
 
     Example:
-        >>> extract_reporting_towns('MOUNT CHASE -- T5 R7 TWP')
-        ['T5 R7 TWP']
+        >>> extract_reporting_towns('MOUNT CHASE--T5 R7 TWP')
+        ['T5 R7']
         >>> extract_reporting_towns('HERSEYTOWN, SOLDIERTOWN TWPS (MEDWAY)')
         ['HERSEYTOWN', 'SOLDIERTOWN TWPS']
         >>> extract_reporting_towns('ARGYLE TWP (ALTON, EDINBURG)')
@@ -284,10 +284,10 @@ def extract_reporting_towns(result_str: str) -> List[str]:
     if reg_town_substr is None:
         reporting_substr = result_str
     else:
-        reporting_substr = re.sub(f'(?<![A-Z])({reg_town_substr})(?![A-Z])', '', result_str)
+        reporting_substr = re.sub(reg_town_substr, '', result_str)
 
     reporting = reporting_substr.split(STANDARD_DELIMITER)
-    return list(map(_strip_town, reporting))
+    return list(map(clean_town, reporting))
 
 def has_unspecified_group(reporting_towns: List[str], registration_towns: List[str]) -> bool:
     """
@@ -332,9 +332,12 @@ def has_unspecified_group(reporting_towns: List[str], registration_towns: List[s
     else:
         return False
 
-def _format_plural(town:str, has_unspecified_group:bool) -> str:
+def _format_plural(town: str, has_unspecified_group: bool) -> str:
     """
     Correct errors of pluralization in town or group names.
+
+    After this function is used, the presence or absence of a plural in a town name
+    reliably indicates whether it is an unspecified group.
     """  
     if has_unspecified_group:
         return SINGULAR_PATTERN.sub(PLURAL, town)
@@ -343,9 +346,19 @@ def _format_plural(town:str, has_unspecified_group:bool) -> str:
     
 def _format_unspecified_group(group_name: str) -> str:
     """
-    Apply format to unspecified groups that include a county.
+    Apply special format to unspecified groups that include a county.
     """  
     return MULTI_COUNTY_PATTERN.sub(MULTI_COUNTY_FORMAT, group_name)
+
+def _name_unspecified_group(
+        reporting_towns: List[str], 
+        registration_towns: List[str]) -> List[str]:
+    """
+    Label unspecified groups with their reporting town and a standard 'unspecified' flag.
+    """
+    name_elements = [STANDARD_FLAG, *registration_towns, *reporting_towns]
+    group_name = _format_unspecified_group(' '.join(filter(None, name_elements)))    
+    return [group_name if UNSPECIFIED_FLAG in town else town for town in reporting_towns]
     
 def format_reporting_towns(
         reporting_towns: List[str], 
@@ -364,8 +377,8 @@ def format_reporting_towns(
     Examples:
         >>> format_reporting_towns(['LEXINGTON', 'SPRING LAKE TWPS'], [], False)
         ['LEXINGTON', 'SPRING LAKE TWP']
-        >>> format_reporting_towns(['TWPS'], ['JACKMAN'], True)
-        ['UNSPECIFIED JACKMAN TWPS']
+        >>> format_reporting_towns(['FRANKLIN', 'TWPS'], [], True)
+        ['FRANKLIN', 'UNSPECIFIED FRANKLIN TWPS']
         >>> format_reporting_towns(['PENOBSCOT TWP'], ['MILLINOCKET'], True)
         ['UNSPECIFIED MILLINOCKET TWPS [PEN]']
     """
@@ -374,8 +387,7 @@ def format_reporting_towns(
     if has_unspecified_group is False:
         return reporting
     else:
-        group_name = ' '.join(filter(None, [STANDARD_FLAG, *registration_towns, *reporting]))
-        return _format_unspecified_group(group_name)
+        return _name_unspecified_group(reporting, registration_towns)
 
 class ElectionResult:
     def __init__(self, result_str):
@@ -383,30 +395,27 @@ class ElectionResult:
             raise TypeError("Reporting unit must be a single string (e.g. 'BERRY/CATHANCE/MARION TWPS'")
         else:
             _result = prepare_towns(result_str)
-            _registration_towns = extract_registration_towns(_result)
-            _reporting_towns = extract_reporting_towns(_result)
+            _registration = extract_registration_towns(_result)
+            _reporting = extract_reporting_towns(_result)
+            _has_unspecified_group = has_unspecified_group(_reporting, _registration)
             
-            self.has_unspecified_group = has_unspecified_group(_reporting_towns, _registration_towns)
-            self.reporting_towns = format_reporting_towns(_reporting_towns, _registration_towns, self.has_unspecified_group)
-            self.registration_towns = _registration_towns
+            self.reporting_towns = format_reporting_towns(_reporting, _registration, _has_unspecified_group)
+            self.registration_towns = _registration
+            self.has_unspecified_group = _has_unspecified_group
 
             self.unspecified_group_name = None
             self.unspecified_group_reporting_town = None
             self.unspecified_group_county = None
 
-    def __post_init__(self):
-        if self.has_unspecified_group:
-            self._assign_unspecified_group_attributes()
+            if self.has_unspecified_group:
+                self._assign_unspecified_group_attributes()
 
     def _assign_unspecified_group_attributes(self) -> str:
-        group_name = ' '.join(filter(None, [*self.registration_towns, *self.reporting_towns]))
-        multi_county = MULTI_COUNTY_PATTERN.match(group_name)
+        _group_name = [town for town in self.reporting_towns if UNSPECIFIED_FLAG in town][0]
+        match = FORMATTED_GROUP_PATTERN.match(_group_name)
+        self.unspecified_group_reporting_town = match.group('regtown')
         
-        if multi_county is None:
-            self.unspecified_group_reporting_town = REMOVE_FLAG_PATTERN.sub('', group_name)
-        else:
-            self.unspecified_group_county = multi_county.group('cty')
-            self.unspecified_group_reporting_town = multi_county.group('regtown')
-    
-        formatted_group = MULTI_COUNTY_PATTERN.sub(MULTI_COUNTY_FORMAT, group_name)
-        self.unspecified_group_name = ' '.join([STANDARD_FLAG, formatted_group])
+        if match.group('cty') is not None:
+            self.unspecified_group_county = match.group('cty')
+
+        self.unspecified_group_name = _group_name

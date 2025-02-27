@@ -1,0 +1,6 @@
+pandas
+build
+mypy
+pdoc
+ipykernel
+utils @ git+https://github.com/lkesich/utilities.git

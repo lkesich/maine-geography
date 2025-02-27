@@ -1,7 +1,7 @@
 """Regex patterns and helpers for parsing Maine election results and place names.
 """
 import re
-from mainegeo.lookups import CountyLookup, TownshipLookup
+from mainegeo.lookups import CountyLookup
 
 # Lazy loading lookup tables
 COUNTIES = CountyLookup()
@@ -61,8 +61,8 @@ ABBREVIATIONS = {
 # Building blocks
 GNIS_NAME = f"(?i)(?P<geotype>{'|'.join(GNIS_GEOTYPES)}) of (?P<town>.+)"
 SUFFIX_REPLACEMENTS = {
-    f'(?i)(?<![A-Z]){full}(?=S?$)': abbr
-    for abbr, full in ABBREVIATIONS.items()
+    f'(?i)(?<![A-Z]){full}(?=S?\\b)': abbr
+    for full, abbr in ABBREVIATIONS.items()
 }
 
 # Patterns
@@ -78,16 +78,15 @@ MULTI_COUNTY_REGISTRATION_TOWNS = set(['MILLINOCKET'])
 PLURAL = UNSPECIFIED_FLAG
 SINGULAR = re.sub('S\\b', '', UNSPECIFIED_FLAG)
 UNSPECIFIED_REGTOWN = f"(?P<regtown>{'|'.join(MULTI_COUNTY_REGISTRATION_TOWNS)})"
-UNSPECIFIED_COUNTY = f"(?P<cty>{'|'.join(COUNTIES.sos_county)})\\w*"
-STD_FLAG = f"(?P<std_flag>{STANDARD_FLAG} )?"
+UNSPECIFIED_COUNTY = f"(?P<cty>{'|'.join(COUNTIES.sos_county)})"
 SOS_FLAG = f"(?P<sos_flag>{UNSPECIFIED_FLAG}?)"
 
 # Patterns
 PLURAL_PATTERN = re.compile(f'\\b{PLURAL}\\b')
 SINGULAR_PATTERN = re.compile(f'\\b{SINGULAR}\\b')
-MULTI_COUNTY_PATTERN = re.compile(f"(?i){STD_FLAG}{UNSPECIFIED_REGTOWN} {UNSPECIFIED_COUNTY} {SOS_FLAG}")
-MULTI_COUNTY_FORMAT = r"\g<std_flag> \g<regtown> \g<sos_flag> [\g<cty>]"
-REMOVE_FLAG_PATTERN = re.compile(f' {UNSPECIFIED_FLAG}$')
+MULTI_COUNTY_PATTERN = re.compile(f"(?i){UNSPECIFIED_REGTOWN} {UNSPECIFIED_COUNTY}\\w* {SOS_FLAG}")
+MULTI_COUNTY_FORMAT = r"\g<regtown> \g<sos_flag> [\g<cty>]"
+FORMATTED_GROUP_PATTERN = re.compile(f'{STANDARD_FLAG} (?P<regtown>\\w+.*) {UNSPECIFIED_FLAG}( \\[{UNSPECIFIED_COUNTY}\\])?')
 
 ## Other
 # Known typos in election result files
