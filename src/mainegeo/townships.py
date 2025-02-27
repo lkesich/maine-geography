@@ -4,8 +4,8 @@ This module provides functions for parsing and normalizing township names
 and looking up their canonical names.
 
 All functions in this module are intended to be run on a string containing a single 
-town or township. For help parsing multi-town election reporting units into single 
-town strings, see `mainegeo.elections`.
+town or township, unless specifically indicated otherwise. For help parsing multi-town 
+election reporting units into single town strings, see `mainegeo.elections`.
 """
 
 __docformat__ = 'google'
@@ -13,12 +13,15 @@ __docformat__ = 'google'
 __all__ = [
     # Functions
     'is_unnamed_township',
-    'clean_township_code',
+    'extract_townships',
+    'clean_code',
+    'clean_codes',
     'has_alias',
     'extract_alias',
-    'format_township',
-    'format_town',
+    'clean_township',
     'normalize_suffix',
+    'strip_town',
+    'clean_town',
     
     # Classes
     'Township'
@@ -26,7 +29,7 @@ __all__ = [
 
 import re
 from typing import List
-from utils.strings import replace_all, squish, match_case
+from utils.strings import replace_all, squish, match_case, normalize_whitespace
 from utils.core import chain_operations
 from mainegeo.patterns import (
     UNNAMED_PATTERN, 
@@ -36,15 +39,17 @@ from mainegeo.patterns import (
     NON_ALIAS_CHARACTERS_PATTERN,
     GNIS_PATTERN,
     ABBREVIATIONS,
-    SUFFIX_REPLACEMENTS
+    PUNCTUATION_PATTERN,
+    SUFFIX_REPLACEMENTS,
+    AMPERSANDS_PATTERN
 )
 
-def is_unnamed_township(towns: str) -> bool:
+def is_unnamed_township(town: str) -> bool:
     """
     Check if a string contains an unnamed township.
 
     Args:
-        towns: One or more towns or townships
+        town: A single town or township
         
     Returns:
         True if input contains an unnamed township, else False
@@ -57,12 +62,9 @@ def is_unnamed_township(towns: str) -> bool:
         >>> is_unnamed_township('CROSS LAKE TWP')
         False
     """
-    if UNNAMED_PATTERN.search(towns) is None:
-        return False
-    else:
-        return True
+    return UNNAMED_PATTERN.search(town) is not None
 
-def clean_township_code(town: str) -> str:
+def clean_code(town: str) -> str:
     """
     Normalize punctuation and spacing of township code and drop text that is not part of the township code.
 
@@ -73,11 +75,11 @@ def clean_township_code(town: str) -> str:
         Normalized township string, or unmodified string if input does not contain township
         
     Example:
-        >>> clean_township_code('T4/R3 TWP')
+        >>> clean_code('T4/R3 TWP')
         'T4 R3'
-        >>> clean_township_code('T10SD')
+        >>> clean_code('T10SD')
         'T10 SD'
-        >>> clean_township_code('CROSS LAKE TWP (T17 R5)')
+        >>> clean_code('CROSS LAKE TWP (T17 R5)')
         'T17 R5'
     """
     if is_unnamed_township(town) is False:
@@ -86,6 +88,28 @@ def clean_township_code(town: str) -> str:
         elements = UNNAMED_ELEMENTS_PATTERN.findall(town)
         formatted_elements = [CLEAN_TOWNSHIP_PATTERN.sub('', e) for e in elements]
         return ' '.join(formatted_elements)
+
+def clean_codes(towns: str) -> str:
+    """
+    Normalize punctation and spacing of township codes in-place.
+
+    Args:
+        towns: String with one or more towns or townships
+
+    Returns:
+        Input string with punctuation and spacing normalized for all township codes
+        
+    Example:
+        >>> clean_codes('ASHLAND -- T12/R13, T9/R8')
+        'ASHLAND -- T12 R13, T9 R8'
+        >>> clean_codes('T4/R3 TWP')
+        'T4 R3 TWP'
+        >>> clean_codes('BARNARD TWP/EBEEMEE TWP (T5-R9 NWP)/T4R9 NWP TWP')
+        'BARNARD TWP/EBEEMEE TWP (T5 R9 NWP)/T4 R9 NWP TWP'
+    """
+    townships = UNNAMED_PATTERN.findall(towns)
+    cleaned = list(map(clean_code, townships))
+    return replace_all(dict(zip(townships, cleaned)), towns)
 
 def has_alias(town: str) -> str:
     """
@@ -109,10 +133,8 @@ def has_alias(town: str) -> str:
     """
     if is_unnamed_township(town) is False:
         return False
-    elif len(NON_ALIAS_CHARACTERS_PATTERN.sub('', town)) > 0:
-        return True
     else:
-        return False
+        return len(NON_ALIAS_CHARACTERS_PATTERN.sub('', town)) > 0
 
 def extract_alias(town: str) -> str:
     """
@@ -135,7 +157,7 @@ def extract_alias(town: str) -> str:
     else:
         return squish(re.sub(NON_ALIAS_PATTERN, '', town))
     
-def format_township(town: str) -> str:
+def clean_township(town: str) -> str:
     """
     Normalize punctuation and spacing of township code and alias.
 
@@ -146,18 +168,18 @@ def format_township(town: str) -> str:
         Normalized township string, or unmodified string if input does not contain township
         
     Example:
-        >>> format_township('T4/R3 TWP')
+        >>> clean_township('T4/R3 TWP')
         'T4 R3'
-        >>> format_township('T10SD')
+        >>> clean_township('T10SD')
         'T10 SD'
-        >>> format_township('CROSS LAKE TWP (T17 R5)')
+        >>> clean_township('CROSS LAKE TWP (T17 R5)')
         'CROSS LAKE TWP T17 R5'
     """
     if is_unnamed_township(town) is False:
         return town
     else:
         alias = extract_alias(town)
-        code = clean_township_code(town)
+        code = clean_code(town)
         return ' '.join(filter(None, [alias, code]))
     
 def normalize_suffix(town: str) -> str:
@@ -189,27 +211,60 @@ def normalize_suffix(town: str) -> str:
         town_name = ' '.join(filter(None, [name, suffix]))
 
     normalized = replace_all(SUFFIX_REPLACEMENTS, town_name)
-    return match_case(normalized, town)
+    return match_case(normalized, town, preserve_mixed_case=False)
+    
+def strip_town(town: str) -> str:
+    """
+    Strip punctuation and unnecessary whitespace from a town name substring.
 
-def format_town(town: str) -> str:
+    Args:
+        town: A single town or township
+
+    Returns:
+       str: Town name with punctuation stripped
     """
+    town_name = normalize_whitespace(town)
+    town_name = AMPERSANDS_PATTERN.sub('and', town_name)
+    town_name = PUNCTUATION_PATTERN.sub('', town_name)
+    return match_case(town_name, town, preserve_mixed_case=False)
+
+def clean_town(town: str) -> str:
+    """
+    Clean and format town name. 
+
+    Operations performed:
+        1. Strip or replace punctuation
+        2. Normalize whitespace
+        3. Abbreviate geotype suffixes
+        4. Normalize township codes
+
+    Args:
+        town: A single town or township
+
+    Returns:
+       str: Town name with punctuation stripped and formatting applied
+
     Example:
-        >>> format_town('City of Portland')
+        >>> clean_town('City of Portland')
         'Portland'
-        >>> format_town('T8/R11 TWP')
+        >>> clean_town('T8/R11 TWP')
         'T8 R11'
-        >>> format_town('CROSS LAKE TOWNSHIP (T17 R5)')
+        >>> clean_town('CROSS LAKE TWP (T17 R5)')
         'CROSS LAKE TWP T17 R5'
+        >>> clean_town('King & Bartlett Township')
+        'King and Bartlett Twp'
     """
-    order = [
-        normalize_suffix,
-        format_township,
+    cleaning_functions = [
+        strip_town
+        , normalize_suffix
+        , clean_township
+        , normalize_whitespace
     ]
-    return chain_operations(town, order)
+    return chain_operations(town, cleaning_functions)
     
 class Township:
     def __init__(self, township):
-        self.name = format_town(township)
+        self.name = clean_town(township)
         self.is_unnamed = is_unnamed_township(township)
 
         if self.is_unnamed:
@@ -217,5 +272,5 @@ class Township:
 
     def _assign_unnamed_township_attributes(self) -> str:
         self.has_alias = has_alias(self.name)
-        self.code = clean_township_code(self.name)
+        self.code = clean_code(self.name)
         self.alias = extract_alias(self.name)

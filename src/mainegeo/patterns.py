@@ -1,15 +1,18 @@
 """Regex patterns and helpers for parsing Maine election results and place names.
 """
 import re
-from mainegeo.lookups import CountyLookup
+from mainegeo.lookups import CountyLookup, TownshipLookup
+from string import Template
 
 # Lazy loading lookup tables
 COUNTIES = CountyLookup()
+TOWNSHIPS = TownshipLookup()
 
 # Base character sets for patterns
 ALPHA = "A-Za-z"
 ALNUM = ALPHA + "0-9"
 FUZZY = f"[^{ALNUM},]{{0,3}}"
+PUNCTUATION = f'[^ {ALNUM}]'
 
 ## Townships
 # Constants
@@ -43,10 +46,11 @@ MEANINGFUL_CHARACTERS = ["(", ")", "--"]
 REGISTRATION_PATTERN = re.compile(f'{PARENTHETICAL}|{PRECEDES_DASH}')
 CLEAN_TOWNSHIP_PATTERN = re.compile(f"[^{ALNUM}]|{LEADING_ZERO}")
 NON_ALIAS_CHARACTERS_PATTERN = re.compile(f'(?i){UNNAMED}|[^{ALNUM}]|twps?')
-NON_ALIAS_PATTERN = re.compile(f'(?i){UNNAMED}|[^ {ALNUM}]')
+NON_ALIAS_PATTERN = re.compile(f'(?i){UNNAMED}|{PUNCTUATION}')
 DROP_CHARACTERS_PATTERN = re.compile('|'.join(map(re.escape, DROP_CHARACTERS)))
 MEANINGFUL_CHARACTERS_PATTERN = re.compile('|'.join(map(re.escape, MEANINGFUL_CHARACTERS)))
 NONSTANDARD_DELIMITER_PATTERN = re.compile('|'.join(map(re.escape, NONSTANDARD_DELIMITERS)), re.IGNORECASE)
+PUNCTUATION_PATTERN = re.compile(f'{PUNCTUATION}')
 
 ## Name standardization
 # Constants
@@ -65,8 +69,21 @@ SUFFIX_REPLACEMENTS = {
     for full, abbr in ABBREVIATIONS.items()
 }
 
+# Factory functions
+def _generate_valid_ampersand_regex():
+    ampersand_pattern = re.compile('(\\w+ )&( \\w+)')
+    valid_ampersands = [ampersand_pattern.match(town) for town in TOWNSHIPS.town]
+    template = Template('(?:(?<=$a)(&)(?=$b))')
+    blocks = [
+        template.substitute(a=match.group(1), b=match.group(2))
+        for match in valid_ampersands
+        if match is not None
+    ]
+    return re.compile('(?i)' + '|'.join(blocks))
+
 # Patterns
 GNIS_PATTERN = re.compile(GNIS_NAME)
+AMPERSANDS_PATTERN = _generate_valid_ampersand_regex()
 
 ## Unspecified groups
 # Constants
@@ -103,3 +120,4 @@ KNOWN_TYPOS = {
     '^PISCATAQUIS TWPS$': 'MILLINOCKET PISCATAQUIS TWPS',
     'PLEASANT POINT VOTING DISTRICT RICT': 'PLEASANT POINT VOTING DISTRICT'
 }
+

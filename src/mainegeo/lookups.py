@@ -10,7 +10,7 @@ class CountyLookup(object):
 
 class TownshipLookup(object):
     def __init__(self):
-        with resources.files('mainegeo.data').joinpath('counties.csv').open('r') as f:
+        with resources.files('mainegeo.data').joinpath('townships.csv').open('r') as f:
             data = pd.read_csv(f)
             for column in data.columns:
                 setattr(self, column, data[column])               

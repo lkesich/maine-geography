@@ -19,10 +19,10 @@ __docformat__ = 'google'
 
 __all__ = [
     # Functions
-    'fix_known_typos',
-    'drop_non_meaningful_chars',
-    'drop_meaningful_chars',
-    'normalize_delimiters',
+    '_fix_known_typos',
+    '_drop_non_meaningful_chars',
+    '_drop_meaningful_chars',
+    '_normalize_delimiters',
     'prepare_towns',
     'extract_registration_towns',
     'extract_reporting_towns',
@@ -38,14 +38,9 @@ from typing import List
 from itertools import filterfalse
 from utils.strings import replace_all, squish, normalize_whitespace
 from utils.core import chain_operations
-from mainegeo.townships import (
-    clean_township_code,
-    is_unnamed_township,
-    format_town
-)
+from mainegeo import townships
 from mainegeo.patterns import (
     KNOWN_TYPOS,
-    UNNAMED_PATTERN,
     DROP_CHARACTERS_PATTERN,
     MEANINGFUL_CHARACTERS_PATTERN,
     STANDARD_DELIMITER,
@@ -59,10 +54,11 @@ from mainegeo.patterns import (
     SINGULAR,
     PLURAL_PATTERN,
     SINGULAR_PATTERN,
-    FORMATTED_GROUP_PATTERN
+    FORMATTED_GROUP_PATTERN,
+    AMPERSANDS_PATTERN
 )
 
-def fix_known_typos(result_str: str) -> str:
+def _fix_known_typos(result_str: str) -> str:
     """
     Fix known typos in-place in string.
 
@@ -74,16 +70,17 @@ def fix_known_typos(result_str: str) -> str:
     """
     return replace_all(KNOWN_TYPOS, result_str)
 
-def drop_non_meaningful_chars(result_str: str) -> str:
+def _drop_non_meaningful_chars(result_str: str) -> str:
     """
-    Drop special characters that don't communicate meaningful info.
+    Drop or replace special characters that don't communicate meaningful info.
 
     Args:
         result_str: Delimited result string with one or more towns or townships
     """
-    return DROP_CHARACTERS_PATTERN.sub('', result_str)
+    result = AMPERSANDS_PATTERN.sub('AND', result_str)
+    return DROP_CHARACTERS_PATTERN.sub('', result)
 
-def drop_meaningful_chars(result_str: str) -> str:
+def _drop_meaningful_chars(result_str: str) -> str:
     """
     Drop characters that communicate town aliases & registration town relationships.
     
@@ -95,7 +92,7 @@ def drop_meaningful_chars(result_str: str) -> str:
     """
     return MEANINGFUL_CHARACTERS_PATTERN.sub('', result_str)
 
-def normalize_delimiters(result_str: str) -> str:
+def _normalize_delimiters(result_str: str) -> str:
     """
     Replace all delimiters in result string with standard delimiter.
 
@@ -103,46 +100,6 @@ def normalize_delimiters(result_str: str) -> str:
         result_str: Delimited result string with one or more towns or townships
     """
     return NONSTANDARD_DELIMITER_PATTERN.sub(STANDARD_DELIMITER, result_str)
-
-def extract_townships(result_str: str) -> List[str]:
-    """
-    Get all unnamed townships in a string.
-
-    Args:
-        result_str: Delimited result string with one or more towns or townships
-        
-    Returns:
-        A list of all recognized unnamed townships, unmodified
-        
-    Example:
-        >>> extract_townships('T5 R7, T5 R8, T6 R8 TWPS (MOUNT CHASE)')
-        ['T5 R7', 'T5 R8', 'T6 R8']
-        >>> extract_townships('BARNARD TWP/EBEEMEE TWP (T5-R9 NWP)/T4-R9 NWP TWP')
-        ['T5-R9 NWP', 'T4-R9 NWP']
-    """
-    return UNNAMED_PATTERN.findall(result_str)
-
-def clean_township_codes(result_str: str) -> str:
-    """
-    Normalize punctation and spacing of township codes in-place.
-
-    Args:
-        result_str: Delimited result string with one or more towns or townships
-
-    Returns:
-        Input string with punctuation and spacing normalized for all township codes
-        
-    Example:
-        >>> clean_township_codes('ASHLAND -- T12/R13, T9/R8')
-        'ASHLAND -- T12 R13, T9 R8'
-        >>> clean_township_codes('T4/R3 TWP')
-        'T4 R3 TWP'
-        >>> clean_township_codes('BARNARD TWP/EBEEMEE TWP (T5-R9 NWP)')
-        'BARNARD TWP/EBEEMEE TWP (T5 R9 NWP)'
-    """
-    townships = extract_townships(result_str)
-    cleaned = list(map(clean_township_code, townships))
-    return replace_all(dict(zip(townships, cleaned)), result_str)
 
 def prepare_towns(result_str: str) -> str:
     """
@@ -165,31 +122,14 @@ def prepare_towns(result_str: str) -> str:
     """
     initial_cleanup = [
         str.upper
-        , fix_known_typos
-        , drop_non_meaningful_chars
-        , squish
-        , clean_township_codes
-        , normalize_delimiters
+        , _fix_known_typos
+        , normalize_whitespace
+        , _drop_non_meaningful_chars
+        , townships.clean_codes
+        , _normalize_delimiters
         , normalize_whitespace
     ]
     return chain_operations(result_str, initial_cleanup)
-
-def clean_town(town: str) -> str:
-    """
-    Strip punctuation and unnecessary whitespace from a town name substring. 
-
-    Args:
-        town: A single town or township
-
-    Returns:
-       str: Town name with punctuation stripped
-    """
-    post_split_operations = [
-        drop_meaningful_chars
-        , squish
-        , format_town
-    ]
-    return chain_operations(town, post_split_operations)
 
 def _find_registration_towns(result_str: str) -> str:
     """
@@ -218,7 +158,7 @@ def _find_registration_towns(result_str: str) -> str:
         '(ALTON, EDINBURG)'
     """
     flagged = REGISTRATION_PATTERN.findall(result_str)
-    substrings = list(filterfalse(is_unnamed_township, flagged))
+    substrings = list(filterfalse(townships.is_unnamed_township, flagged))
     
     if len(substrings) > 1:
         raise ValueError(f'Multiple registration town substrings found in result string: {result_str}')
@@ -255,7 +195,7 @@ def extract_registration_towns(result_str: str) -> List[str]:
         return []
     else:
         reg_towns = reg_town_substr.split(STANDARD_DELIMITER)
-        return list(map(clean_town, reg_towns))
+        return list(map(townships.clean_town, reg_towns))
     
 def extract_reporting_towns(result_str: str) -> List[str]:
     """
@@ -287,7 +227,7 @@ def extract_reporting_towns(result_str: str) -> List[str]:
         reporting_substr = re.sub(reg_town_substr, '', result_str)
 
     reporting = reporting_substr.split(STANDARD_DELIMITER)
-    return list(map(clean_town, reporting))
+    return list(map(townships.clean_town, reporting))
 
 def has_unspecified_group(reporting_towns: List[str], registration_towns: List[str]) -> bool:
     """
