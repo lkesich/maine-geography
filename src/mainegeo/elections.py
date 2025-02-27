@@ -30,7 +30,7 @@ __all__ = [
     'format_reporting_towns',
     
     # Classes
-    'Election'
+    'ElectionResult'
 ]
 
 import re

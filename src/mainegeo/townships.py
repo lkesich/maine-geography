@@ -13,12 +13,12 @@ __docformat__ = 'google'
 __all__ = [
     # Functions
     'is_unnamed_township',
-    'extract_townships',
     'clean_code',
     'clean_codes',
     'has_alias',
     'extract_alias',
     'clean_township',
+    'strip_suffix',
     'normalize_suffix',
     'strip_town',
     'clean_town',
@@ -41,6 +41,7 @@ from mainegeo.patterns import (
     ABBREVIATIONS,
     PUNCTUATION_PATTERN,
     SUFFIX_REPLACEMENTS,
+    SUFFIX_PATTERN,
     AMPERSANDS_PATTERN
 )
 
@@ -181,6 +182,9 @@ def clean_township(town: str) -> str:
         alias = extract_alias(town)
         code = clean_code(town)
         return ' '.join(filter(None, [alias, code]))
+    
+def strip_suffix(town: str) -> str:
+    return SUFFIX_PATTERN.sub('', town)
     
 def normalize_suffix(town: str) -> str:
     """

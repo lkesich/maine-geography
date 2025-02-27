@@ -84,6 +84,7 @@ def _generate_valid_ampersand_regex():
 # Patterns
 GNIS_PATTERN = re.compile(GNIS_NAME)
 AMPERSANDS_PATTERN = _generate_valid_ampersand_regex()
+SUFFIX_PATTERN = re.compile(f"\\b({'|'.join([*ABBREVIATIONS.keys(), *ABBREVIATIONS.values()])})S?$")
 
 ## Unspecified groups
 # Constants
