@@ -77,7 +77,7 @@ def _drop_non_meaningful_chars(result_str: str) -> str:
     Args:
         result_str: Delimited result string with one or more towns or townships
     """
-    result = AMPERSANDS_PATTERN.sub('AND', result_str)
+    result = AMPERSANDS_PATTERN.sub('AND', normalize_whitespace(result_str))
     return DROP_CHARACTERS_PATTERN.sub('', result)
 
 def _drop_meaningful_chars(result_str: str) -> str:
@@ -123,7 +123,6 @@ def prepare_towns(result_str: str) -> str:
     initial_cleanup = [
         str.upper
         , _fix_known_typos
-        , normalize_whitespace
         , _drop_non_meaningful_chars
         , townships.clean_codes
         , _normalize_delimiters
