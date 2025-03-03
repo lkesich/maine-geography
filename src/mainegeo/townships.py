@@ -1,4 +1,4 @@
-"""Township name parsing utilities.
+"""Town and township name standardization and parsing utilities.
 
 This module provides functions for parsing and normalizing township names
 and looking up their canonical names.
@@ -19,6 +19,7 @@ __all__ = [
     'extract_alias',
     'clean_township',
     'strip_suffix',
+    'strip_region',
     'normalize_suffix',
     'strip_town',
     'clean_town',
@@ -39,10 +40,11 @@ from mainegeo.patterns import (
     NON_ALIAS_CHARACTERS_PATTERN,
     GNIS_PATTERN,
     ABBREVIATIONS,
-    PUNCTUATION_PATTERN,
     SUFFIX_REPLACEMENTS,
     SUFFIX_PATTERN,
-    AMPERSANDS_PATTERN
+    LAST_REGION_PATTERN,
+    VALID_AMPERSANDS_PATTERN,
+    INVALID_PUNCTUATION_PATTERN
 )
 
 def is_unnamed_township(town: str) -> bool:
@@ -185,19 +187,21 @@ def clean_township(town: str) -> str:
     
 def strip_suffix(town: str) -> str:
     return SUFFIX_PATTERN.sub('', town)
+
+def strip_region(town: str) -> str:
+    return LAST_REGION_PATTERN.sub('', town)
     
 def normalize_suffix(town: str) -> str:
     """
     Normalize variations in geotype suffix abbreviation and location.
+
+    Does not alter pluralization.
     
     Args:
         town: A single town or township
 
     Returns:
         Town with normalized suffix
-
-    Note:
-        Does not alter pluralization.
 
     Example:
         >>> normalize_suffix('City of Portland')
@@ -219,17 +223,32 @@ def normalize_suffix(town: str) -> str:
     
 def strip_town(town: str) -> str:
     """
-    Strip punctuation and unnecessary whitespace from a town name substring.
+    Strip invalid punctuation and whitespace from a town name substring.
+
+    This function performs the following operations:
+        1. Strip leading and trailing whitespace and squish internal whitespace
+        1. Replace '&' characters that are recognized as part of a canonical town
+            name with 'and'
+        2. Strip all punctuation except '-' characters that are recognized as 
+            part of a canonical town name
 
     Args:
         town: A single town or township
 
     Returns:
        str: Town name with punctuation stripped
+
+    Example:
+        >>> strip_town("Loud's Island")
+        'Louds Island'
+        >>> strip_town('Dover-Foxcroft ')
+        'Dover-Foxcroft'
+        >>> strip_town('Taunton & Raynham Academy Grant')
+        'Taunton and Raynham Academy Grant'
     """
     town_name = normalize_whitespace(town)
-    town_name = AMPERSANDS_PATTERN.sub('and', town_name)
-    town_name = PUNCTUATION_PATTERN.sub('', town_name)
+    town_name = VALID_AMPERSANDS_PATTERN.sub('and', town_name)
+    town_name = INVALID_PUNCTUATION_PATTERN.sub('', town_name)
     return match_case(town_name, town, preserve_mixed_case=False)
 
 def clean_town(town: str) -> str:

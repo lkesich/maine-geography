@@ -3,6 +3,7 @@
 import re
 from mainegeo.lookups import CountyLookup, TownshipLookup
 from string import Template
+from typing import List
 
 # Lazy loading lookup tables
 COUNTIES = CountyLookup()
@@ -30,6 +31,7 @@ UNNAMED = f"((?:{TOWNSHIP})(?:{FUZZY}{RANGE})?(?:{FUZZY}{REGION}){{0,2}})"
 UNNAMED_PATTERN = re.compile(UNNAMED)
 UNNAMED_ELEMENTS = f"(?:{'|'.join([TOWNSHIP, RANGE, REGION])})"
 UNNAMED_ELEMENTS_PATTERN = re.compile(UNNAMED_ELEMENTS)
+LAST_REGION_PATTERN = f" {REGION}$"
 
 ## Result parsing
 # Building blocks
@@ -50,9 +52,19 @@ NON_ALIAS_PATTERN = re.compile(f'(?i){UNNAMED}|{PUNCTUATION}')
 DROP_CHARACTERS_PATTERN = re.compile('|'.join(map(re.escape, DROP_CHARACTERS)))
 MEANINGFUL_CHARACTERS_PATTERN = re.compile('|'.join(map(re.escape, MEANINGFUL_CHARACTERS)))
 NONSTANDARD_DELIMITER_PATTERN = re.compile('|'.join(map(re.escape, NONSTANDARD_DELIMITERS)), re.IGNORECASE)
-PUNCTUATION_PATTERN = re.compile(f'{PUNCTUATION}')
 
 ## Name standardization
+# Factory functions
+def _generate_valid_punctuation_regex(char:str, template:Template) -> List[str]:
+    pattern = re.compile(f'(?P<leading>\\w+ ?)(?P<char>{char})(?P<trailing> ?\\w+)')
+    valid_contexts = [pattern.match(town) for town in TOWNSHIPS.town]
+    return [
+        template.substitute(
+            leading=m.group('leading'), char=m.group('char'), trailing=m.group('trailing')
+        ) for m in valid_contexts
+        if m is not None
+    ]
+
 # Constants
 GNIS_GEOTYPES = ["CITY", "PLANTATION", "TOWNSHIP", "TOWN"]
 ABBREVIATIONS = {
@@ -62,29 +74,24 @@ ABBREVIATIONS = {
     "VOTING DISTRICT": "VOTING DIST"
 }
 
+# Templates
+VALID_AMPERSANDS_TEMPLATE = Template('(?:(?<=$leading)($char)(?=$trailing))')
+VALID_HYPHENS_TEMPLATE = Template('$leading$char(?=$trailing)')
+
 # Building blocks
 GNIS_NAME = f"(?i)(?P<geotype>{'|'.join(GNIS_GEOTYPES)}) of (?P<town>.+)"
 SUFFIX_REPLACEMENTS = {
     f'(?i)(?<![A-Z]){full}(?=S?\\b)': abbr
     for full, abbr in ABBREVIATIONS.items()
 }
-
-# Factory functions
-def _generate_valid_ampersand_regex():
-    ampersand_pattern = re.compile('(\\w+ )&( \\w+)')
-    valid_ampersands = [ampersand_pattern.match(town) for town in TOWNSHIPS.town]
-    template = Template('(?:(?<=$a)(&)(?=$b))')
-    blocks = [
-        template.substitute(a=match.group(1), b=match.group(2))
-        for match in valid_ampersands
-        if match is not None
-    ]
-    return re.compile('(?i)' + '|'.join(blocks))
+VALID_AMPERSANDS = _generate_valid_punctuation_regex('&', VALID_AMPERSANDS_TEMPLATE)
+VALID_HYPHENS = _generate_valid_punctuation_regex('-', VALID_HYPHENS_TEMPLATE)
 
 # Patterns
 GNIS_PATTERN = re.compile(GNIS_NAME)
-AMPERSANDS_PATTERN = _generate_valid_ampersand_regex()
-SUFFIX_PATTERN = re.compile(f"\\b({'|'.join([*ABBREVIATIONS.keys(), *ABBREVIATIONS.values()])})S?$")
+SUFFIX_PATTERN = re.compile(f" ({'|'.join([*ABBREVIATIONS.keys(), *ABBREVIATIONS.values()])})S?$")
+VALID_AMPERSANDS_PATTERN = re.compile('(?i)' +'|'.join(VALID_AMPERSANDS))
+INVALID_PUNCTUATION_PATTERN = re.compile(f"(?i){PUNCTUATION}(?<!{'|'.join(VALID_HYPHENS)})")
 
 ## Unspecified groups
 # Constants
@@ -116,9 +123,7 @@ KNOWN_TYPOS = {
     'ORNVEILLE' : 'ORNEVILLE',
     'SILIVER RIDGE TWP': 'SILVER RIDGE TWP',
     'FRANKLIN/T9 T10 SD': 'FRANKLIN/T9 SD/T10 SD',
-    'PISCATAQUS': 'PISCATAQUIS',
     '^PENOBSCOT TWPS$': 'MILLINOCKET PENOBSCOT TWPS',
     '^PISCATAQUIS TWPS$': 'MILLINOCKET PISCATAQUIS TWPS',
     'PLEASANT POINT VOTING DISTRICT RICT': 'PLEASANT POINT VOTING DISTRICT'
 }
-

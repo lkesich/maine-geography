@@ -55,7 +55,7 @@ from mainegeo.patterns import (
     PLURAL_PATTERN,
     SINGULAR_PATTERN,
     FORMATTED_GROUP_PATTERN,
-    AMPERSANDS_PATTERN
+    VALID_AMPERSANDS_PATTERN
 )
 
 def _fix_known_typos(result_str: str) -> str:
@@ -77,7 +77,7 @@ def _drop_non_meaningful_chars(result_str: str) -> str:
     Args:
         result_str: Delimited result string with one or more towns or townships
     """
-    result = AMPERSANDS_PATTERN.sub('AND', normalize_whitespace(result_str))
+    result = VALID_AMPERSANDS_PATTERN.sub('AND', normalize_whitespace(result_str))
     return DROP_CHARACTERS_PATTERN.sub('', result)
 
 def _drop_meaningful_chars(result_str: str) -> str:
