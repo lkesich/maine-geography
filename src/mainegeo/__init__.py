@@ -8,5 +8,6 @@ from . import townships
 
 __all__ = [
     'elections',
-    'townships'
+    'townships',
+    'matching'
 ]

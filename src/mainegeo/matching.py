@@ -1,14 +1,21 @@
-"""Place name matching.
+"""This module generates or loads a database of Maine town names and their
+aliases, and provides a function for matching.
 """
+
+__docformat__ = 'google'
+
+__all__ = [
+    # Classes
+    'TownDatabase'
+]
+
 from dataclasses import dataclass
 from typing import List
-from itertools import permutations
 from mainegeo import townships, lookups
 from mainegeo.entities import County, Cousub
 from importlib import resources
 from pathlib import Path
 import yaml
-import re
 
 @dataclass
 class TownReference:
@@ -27,9 +34,7 @@ class TownReference:
             self._generate_aliases()
 
     def _clean_aliases(self):
-        aliases = self.aliases
-        aliases.extend([self.name, self.cousub.basename, self.cousub.name])
-        aliases = filter(None, aliases)
+        aliases = filter(None, self.aliases)
         aliases = sum([a.strip('[]').split(',') for a in aliases], [])
         aliases = map(str.upper, aliases)
         aliases = map(str.strip, aliases)
@@ -37,24 +42,14 @@ class TownReference:
         
     def _generate_aliases(self):
         aliases = self.aliases
-        #aliases.extend(self._generate_variants(self.name.upper(), ['ST. ', 'SAINT ', 'ST ']))
-        #aliases.extend(self._generate_variants(self.name.upper(), [' AND ', ' & ']))
+        aliases.extend(filter(None, [self.name.upper(), self.cousub.basename.upper()]))
+        aliases.extend(list(map(townships.clean_code, aliases)))
         aliases.extend(list(map(townships.clean_town, aliases)))
         aliases.extend(list(map(townships.strip_suffix, aliases)))
         aliases.extend(list(map(townships.strip_region, aliases)))
         aliases.extend(list(map(townships.strip_region, aliases))) # 2x
         self.aliases = list(set(aliases))
         self.aliases.sort()
-
-    def _generate_variants(self, base: str, patterns: List[str]) -> List[str]:
-        if not any(pattern in base for pattern in patterns):
-            return []
-        else:
-            comb = list(permutations(patterns, 2))
-            find, replace = zip(*comb)
-            find = map(lambda f: r'\b' + re.escape(f) + r'\b', find)
-            variants = map(lambda f, r: re.sub(f, r, base), find, replace)
-            return list(set(variants))
         
 @dataclass
 class TownDatabase:
@@ -172,9 +167,10 @@ class TownDatabase:
             yaml.dump(serializable_data, f, sort_keys=False)
 
     def _process_data(self):
-        self._remove_duplicate_aliases_within_county()
-        self.data.sort(key=lambda x: x.name)
-        self._processed = True
+        if self.data is not None:
+            self._remove_duplicate_aliases_within_county()
+            self.data.sort(key=lambda x: x.name)
+            self._processed = True
 
     def _remove_all_duplicate_aliases(self):
         all = []
@@ -197,7 +193,7 @@ class TownDatabase:
         for town in self.data:
             canonical = town.name.upper()
             town.aliases = [a for a in town.aliases if a in unique_in_county or a == canonical]
-
+            
     def match_town(self, town: str, county_fips: int = None) -> str:
         if town in (None, ''):
             return None
@@ -213,23 +209,5 @@ class TownDatabase:
             countywide = [i for i in statewide if county_fips == i.county.fips]
             if len(countywide) == 1:
                 return countywide[0].name
-            else:
-                return None
-            
-    def match_town_gen(self, town: str, county_fips: int = None) -> str:
-        if town in (None, ''):
-            return None
-
-        statewide = (i for i in self.data if town.upper() in i.aliases)
-        if not any(statewide):
-            return None
-        elif sum(1 for _ in statewide) == 1:
-            return next(statewide).name
-        elif county_fips is None:
-            return None
-        else:
-            countywide = (i for i in statewide if county_fips == i.county.fips)
-            if sum(1 for _ in countywide) == 1:
-                return next(countywide).name
             else:
                 return None
