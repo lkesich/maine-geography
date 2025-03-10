@@ -29,7 +29,7 @@ __all__ = [
 ]
 
 import re
-from typing import List
+from dataclasses import dataclass
 from utils.strings import replace_all, squish, match_case, normalize_whitespace
 from utils.core import chain_operations
 from mainegeo.patterns import (
@@ -46,6 +46,7 @@ from mainegeo.patterns import (
     VALID_AMPERSANDS_PATTERN,
     INVALID_PUNCTUATION_PATTERN
 )
+from mainegeo.entities import County
 
 def is_unnamed_township(town: str) -> bool:
     """
@@ -289,6 +290,24 @@ class Township:
     def __init__(self, township):
         self.name = clean_town(township)
         self.is_unnamed = is_unnamed_township(township)
+
+        if self.is_unnamed:
+            self._assign_unnamed_township_attributes()
+
+    def _assign_unnamed_township_attributes(self) -> str:
+        self.has_alias = has_alias(self.name)
+        self.code = clean_code(self.name)
+        self.alias = extract_alias(self.name)
+
+
+@dataclass
+class Township2:
+    name: str
+    county: County
+
+    def __post_init__(self):
+        self.name = clean_town(self.name)
+        self.is_unnamed = is_unnamed_township(self.name)
 
         if self.is_unnamed:
             self._assign_unnamed_township_attributes()

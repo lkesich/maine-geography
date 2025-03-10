@@ -22,7 +22,7 @@ REGIONS = ["ED","MD","ND","SD","TS","BKP","BPP","EKR","NWP","WKR","NBKP","NBPP",
 # Building blocks
 REGION = f"(?:{'|'.join(REGIONS)})"
 RANGE = f"(?:R.?[\\d]{{1,2}})"
-TOWNSHIP_STANDARD = "T.?[\\d]{1,2}"
+TOWNSHIP_STANDARD = "(?:T.?[\\d]{1,2})"
 TOWNSHIP_ALTERNATE = f"(?<![{ALNUM}])T[ABCDX](?![{ALPHA}])"
 TOWNSHIP = f"(?:{TOWNSHIP_STANDARD}|{TOWNSHIP_ALTERNATE})"
 UNNAMED = f"((?:{TOWNSHIP})(?:{FUZZY}{RANGE})?(?:{FUZZY}{REGION}){{0,2}})"
@@ -31,7 +31,7 @@ UNNAMED = f"((?:{TOWNSHIP})(?:{FUZZY}{RANGE})?(?:{FUZZY}{REGION}){{0,2}})"
 UNNAMED_PATTERN = re.compile(UNNAMED)
 UNNAMED_ELEMENTS = f"(?:{'|'.join([TOWNSHIP, RANGE, REGION])})"
 UNNAMED_ELEMENTS_PATTERN = re.compile(UNNAMED_ELEMENTS)
-LAST_REGION_PATTERN = f" {REGION}$"
+LAST_REGION_PATTERN = re.compile(f" {REGION}$")
 
 ## Result parsing
 # Building blocks
@@ -54,6 +54,15 @@ MEANINGFUL_CHARACTERS_PATTERN = re.compile('|'.join(map(re.escape, MEANINGFUL_CH
 NONSTANDARD_DELIMITER_PATTERN = re.compile('|'.join(map(re.escape, NONSTANDARD_DELIMITERS)), re.IGNORECASE)
 
 ## Name standardization
+# Constants
+GNIS_GEOTYPES = ["CITY", "PLANTATION", "TOWNSHIP", "TOWN"]
+ABBREVIATIONS = {
+    "PLANTATION": "PLT",
+    "TOWNSHIP": "TWP",
+    "VOTING DISTRICT": "VOTING DIST"
+}
+CONTAINS_FALSE_SUFFIX = ['INDIAN TOWNSHIP']
+
 # Factory functions
 def _generate_valid_punctuation_regex(char:str, template:Template) -> List[str]:
     pattern = re.compile(f'(?P<leading>\\w+ ?)(?P<char>{char})(?P<trailing> ?\\w+)')
@@ -65,14 +74,9 @@ def _generate_valid_punctuation_regex(char:str, template:Template) -> List[str]:
         if m is not None
     ]
 
-# Constants
-GNIS_GEOTYPES = ["CITY", "PLANTATION", "TOWNSHIP", "TOWN"]
-ABBREVIATIONS = {
-    "PLANTATION": "PLT",
-    "TOWNSHIP": "TWP",
-    "RESERVATION": "RES",
-    "VOTING DISTRICT": "VOTING DIST"
-}
+def _generate_false_suffix_regex() -> str:
+    leading = map(lambda x: re.sub(ALL_SUFFIXES, '', x), CONTAINS_FALSE_SUFFIX)
+    return '|'.join(map(str.strip, leading))
 
 # Templates
 VALID_AMPERSANDS_TEMPLATE = Template('(?:(?<=$leading)($char)(?=$trailing))')
@@ -81,15 +85,17 @@ VALID_HYPHENS_TEMPLATE = Template('$leading$char(?=$trailing)')
 # Building blocks
 GNIS_NAME = f"(?i)(?P<geotype>{'|'.join(GNIS_GEOTYPES)}) of (?P<town>.+)"
 SUFFIX_REPLACEMENTS = {
-    f'(?i)(?<![A-Z]){full}(?=S?\\b)': abbr
+    f'(?i)(?<![A-Z]){full}(?=S?$)': abbr
     for full, abbr in ABBREVIATIONS.items()
 }
 VALID_AMPERSANDS = _generate_valid_punctuation_regex('&', VALID_AMPERSANDS_TEMPLATE)
 VALID_HYPHENS = _generate_valid_punctuation_regex('-', VALID_HYPHENS_TEMPLATE)
+ALL_SUFFIXES = '|'.join([*ABBREVIATIONS.keys(), *ABBREVIATIONS.values()])
+PRECEDES_FALSE_SUFFIX = _generate_false_suffix_regex()
 
 # Patterns
 GNIS_PATTERN = re.compile(GNIS_NAME)
-SUFFIX_PATTERN = re.compile(f" ({'|'.join([*ABBREVIATIONS.keys(), *ABBREVIATIONS.values()])})S?$")
+SUFFIX_PATTERN = re.compile(f"(?i)(?<!{PRECEDES_FALSE_SUFFIX}) ({ALL_SUFFIXES})S?$")
 VALID_AMPERSANDS_PATTERN = re.compile('(?i)' +'|'.join(VALID_AMPERSANDS))
 INVALID_PUNCTUATION_PATTERN = re.compile(f"(?i){PUNCTUATION}(?<!{'|'.join(VALID_HYPHENS)})")
 
