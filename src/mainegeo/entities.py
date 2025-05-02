@@ -1,6 +1,10 @@
 from dataclasses import dataclass
 from mainegeo import lookups
 from enum import Enum
+from functools import cache
+
+def cached_class_attr(f):
+    return classmethod(property(cache(f)))
 
 class NameType(Enum):
     HISTORICAL = "historical"
@@ -29,38 +33,22 @@ class Cousub:
 class County:
     name: str = None
     code: str = None
-    fips: str|int = None
+    fips: int = None
 
     _lookup = None
     
     def __post_init__(self):
-        self._get_missing_info()
+        self._assign_missing_attributes()
     
     @classmethod
-    def _get_lookup(cls):
-        if cls._lookup is None:
-            cls._lookup = lookups.CountyLookup()
+    def _lazy_load_lookup(cls):
+        cls._lookup = cls._lookup or lookups.CountyLookup()
         return cls._lookup
-
-    def _get_missing_info(self):
-        if all((self.name, self.code, self.fips)):
-            return        
-        elif not any((self.name, self.code, self.fips)):
-            return
-        else:
-            lookup = self._get_lookup()        
-            if self.fips is None:
-                if self.code is not None:
-                    self.fips = lookup.code_to_fips.get(self.code)
-                else:
-                    self.fips = lookup.name_to_fips.get(self.name)
-            if self.code is None:
-                if self.fips is not None:
-                    self.code = lookup.fips_to_code.get(int(self.fips))
-                else:
-                    self.code = lookup.name_to_code.get(self.name)
-            if self.name is None:
-                if self.fips is not None:
-                    self.name = lookup.fips_to_name.get(int(self.fips))
-                else:
-                    self.name = lookup.code_to_name.get(self.code)
+            
+    def _assign_missing_attributes(self):
+        attrs = (self.name, self.code, self.fips)
+        if not all(attrs):
+            lookup = self._lazy_load_lookup()
+            self.fips = self.fips or lookup.code_to_fips.get(self.code) or lookup.name_to_fips.get(self.name)
+            self.code = self.code or lookup.fips_to_code.get(self.fips) or lookup.name_to_code.get(self.name)
+            self.name = self.name or lookup.fips_to_name.get(self.fips) or lookup.code_to_name.get(self.code)

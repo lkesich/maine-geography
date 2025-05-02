@@ -34,9 +34,11 @@ __all__ = [
 ]
 
 import re
-from typing import List
+from dataclasses import dataclass, field
+from functools import cached_property
+from typing import List, Type
 from itertools import filterfalse
-from utils.strings import replace_all, squish, normalize_whitespace
+from utils.strings import replace_all, normalize_whitespace
 from utils.core import chain_operations
 from mainegeo import townships
 from mainegeo.patterns import (
@@ -328,33 +330,124 @@ def format_reporting_towns(
     else:
         return _name_unspecified_group(reporting, registration_towns)
 
-class ElectionResult:
-    def __init__(self, result_str):
-        if not isinstance(result_str, str):
-            raise TypeError("Reporting unit must be a single string (e.g. 'BERRY/CATHANCE/MARION TWPS'")
-        else:
-            _result = prepare_towns(result_str)
-            _registration = extract_registration_towns(_result)
-            _reporting = extract_reporting_towns(_result)
-            _has_unspecified_group = has_unspecified_group(_reporting, _registration)
-            
-            self.reporting_towns = format_reporting_towns(_reporting, _registration, _has_unspecified_group)
-            self.registration_towns = _registration
-            self.has_unspecified_group = _has_unspecified_group
 
-            self.unspecified_group_name = None
-            self.unspecified_group_reporting_town = None
-            self.unspecified_group_county = None
+from mainegeo.entities import County
 
-            if self.has_unspecified_group:
-                self._assign_unspecified_group_attributes()
+@dataclass
+class ResultGeo:
+    name: str
+    county: County
 
-    def _assign_unspecified_group_attributes(self) -> str:
-        _group_name = [town for town in self.reporting_towns if UNSPECIFIED_FLAG in town][0]
-        match = FORMATTED_GROUP_PATTERN.match(_group_name)
-        self.unspecified_group_reporting_town = match.group('regtown')
+@dataclass
+class Town(ResultGeo):
+    pass
+
+@dataclass
+class Township(ResultGeo):
+    @property
+    def has_alias(self):
+        from mainegeo.townships import has_alias
+        return has_alias(self.name)
+    
+    @property
+    def alias(self):
+        from mainegeo.townships import extract_alias
+        return extract_alias(self.name)
+    
+    @property
+    def code(self):
+        from mainegeo.townships import clean_code
+        return clean_code(self.name)
+
+@dataclass
+class UnspecifiedGroup(ResultGeo):
+    @cached_property
+    def _format_match(self) -> re.Match:
+        from mainegeo.patterns import FORMATTED_GROUP_PATTERN
+        return FORMATTED_GROUP_PATTERN.match(self.name)
+
+    @property
+    def group_county(self) -> County:
+        county_code = self._format_match.group('cty') or self.county.code
+        return County(code=county_code)
+    
+    @property
+    def group_registration_town(self) -> Town:
+        reg_town_name = self._format_match.group('regtown') or self.county.code
+        return Town(name=reg_town_name, county=self.county)
+
+@dataclass
+class ReportingUnit:
+    raw_string: str
+    county: County
+    reporting_towns: List[ResultGeo] = field(default_factory=list)
+    registration_towns: List[ResultGeo] = field(default_factory=list)
+    has_unspecified_group: bool = False
+
+    @property
+    def formatted_string(self) -> str:
+        """
+        Return a formatted string representation of this reporting unit.
+        """
+        parts = [obj.name for obj in self.reporting_towns]
+        return ', '.join(parts)
+    
+    @classmethod
+    def from_result_string(cls, result_string: str, county: County) -> "ReportingUnit":
+        """
+        Factory method to create a fully processed ReportingUnit.
+        """
+        from mainegeo.elections import (
+            prepare_towns,
+            extract_registration_towns,
+            extract_reporting_towns,
+            has_unspecified_group, 
+            format_reporting_towns
+        )
         
-        if match.group('cty') is not None:
-            self.unspecified_group_county = match.group('cty')
+        prepared_result = prepare_towns(result_string)
+        registration_names = extract_registration_towns(prepared_result)
+        raw_reporting_names = extract_reporting_towns(prepared_result)
+        has_group = has_unspecified_group(raw_reporting_names, registration_names)
+        reporting_names = format_reporting_towns(
+            raw_reporting_names, registration_names, has_group
+        )
+        
+        unit = cls(
+            raw_string=result_string,
+            county=county,
+            has_unspecified_group=has_group,
+        )
+        
+        unit._create_objects_from_names(reporting_names, registration_names)
+        #unit._standardize_names()
+        
+        return unit
+                    
+    def _create_objects_from_names(self, reporting_names: List[str], registration_names: List[str]):
+        """
+        Convert parsed name strings into ResultGeo objects.
+        """
+        for name in registration_names:
+            regtown_object = Town(name, self.county)
+            self.registration_towns.append(regtown_object)
 
-        self.unspecified_group_name = _group_name
+        for name in reporting_names:
+            ResultClass = self._classify_fragment(name)
+            reporting_object = ResultClass(name, self.county)
+            self.reporting_towns.append(reporting_object)
+
+    def _classify_fragment(self, fragment_name: str) -> Type[ResultGeo]:
+        """
+        Return correct ResultGeo child class for a reporting towns string fragment.
+        """
+        from mainegeo.townships import is_unnamed_township
+        if is_unnamed_township(fragment_name):
+            return Township
+        
+        from mainegeo.patterns import UNSPECIFIED_FLAG
+        if UNSPECIFIED_FLAG in fragment_name:
+            return UnspecifiedGroup
+        
+        if fragment_name:
+            return Town

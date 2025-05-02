@@ -22,14 +22,10 @@ __all__ = [
     'strip_region',
     'normalize_suffix',
     'strip_town',
-    'clean_town',
-    
-    # Classes
-    'Township'
+    'clean_town'
 ]
 
 import re
-from dataclasses import dataclass
 from utils.strings import replace_all, squish, match_case, normalize_whitespace
 from utils.core import chain_operations
 from mainegeo.patterns import (
@@ -46,7 +42,6 @@ from mainegeo.patterns import (
     VALID_AMPERSANDS_PATTERN,
     INVALID_PUNCTUATION_PATTERN
 )
-from mainegeo.entities import County
 
 def is_unnamed_township(town: str) -> bool:
     """
@@ -155,6 +150,8 @@ def extract_alias(town: str) -> str:
         'CROSS LAKE TWP'
         >>> extract_alias('T3 Indian Purchase Twp')
         'Indian Purchase Twp'
+        >>> extract_alias('PRENTISS TWP (T7 R3 NBPP)')
+        'PRENTISS TWP'
     """
     if has_alias(town) is False:
         return None
@@ -285,34 +282,3 @@ def clean_town(town: str) -> str:
         , normalize_whitespace
     ]
     return chain_operations(town, cleaning_functions)
-    
-class Township:
-    def __init__(self, township):
-        self.name = clean_town(township)
-        self.is_unnamed = is_unnamed_township(township)
-
-        if self.is_unnamed:
-            self._assign_unnamed_township_attributes()
-
-    def _assign_unnamed_township_attributes(self) -> str:
-        self.has_alias = has_alias(self.name)
-        self.code = clean_code(self.name)
-        self.alias = extract_alias(self.name)
-
-
-@dataclass
-class Township2:
-    name: str
-    county: County
-
-    def __post_init__(self):
-        self.name = clean_town(self.name)
-        self.is_unnamed = is_unnamed_township(self.name)
-
-        if self.is_unnamed:
-            self._assign_unnamed_township_attributes()
-
-    def _assign_unnamed_township_attributes(self) -> str:
-        self.has_alias = has_alias(self.name)
-        self.code = clean_code(self.name)
-        self.alias = extract_alias(self.name)

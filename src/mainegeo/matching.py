@@ -10,7 +10,8 @@ __all__ = [
 ]
 
 from dataclasses import dataclass
-from typing import List
+from functools import cache, cached_property
+from typing import List, Dict
 from mainegeo import townships, lookups
 from mainegeo.entities import County, Cousub
 from importlib import resources
@@ -50,7 +51,46 @@ class TownReference:
         aliases.extend(list(map(townships.strip_region, aliases))) # 2x
         self.aliases = list(set(aliases))
         self.aliases.sort()
+
+@dataclass
+class TownReference:
+    name: str
+    geocode: str
+    gnis_id: int
+    town_type: str
+    county: County
+    cousub: Cousub
+    aliases: List[str]
+    _processed: bool = False
+
+    def __post_init__(self):
+        if self._processed is False:
+            self._clean_aliases()
+            self._generate_aliases()
+
+    def _clean_aliases(self):
+        aliases = filter(None, self.aliases)
+        aliases = sum([a.strip('[]').split(',') for a in aliases], [])
+        aliases = map(str.upper, aliases)
+        aliases = map(str.strip, aliases)
+        self.aliases = list(set(filter(None, aliases)))
         
+    def _generate_aliases(self):
+        aliases = self.aliases
+        aliases.extend(filter(None, [self.name.upper(), self.cousub.basename.upper()]))
+        aliases.extend(list(map(townships.clean_code, aliases)))
+        aliases.extend(list(map(townships.clean_town, aliases)))
+        aliases.extend(list(map(townships.strip_suffix, aliases)))
+        aliases.extend(list(map(townships.strip_region, aliases)))
+        aliases.extend(list(map(townships.strip_region, aliases))) # 2x
+        self.aliases = list(set(aliases))
+        self.aliases.sort()
+
+@dataclass(frozen=True)
+class TownAlias:
+    name: str
+    county_fips: int
+
 @dataclass
 class TownDatabase:
     data: List[TownReference] = None
@@ -168,46 +208,54 @@ class TownDatabase:
 
     def _process_data(self):
         if self.data is not None:
-            self._remove_duplicate_aliases_within_county()
+            self._remove_duplicate_aliases()
             self.data.sort(key=lambda x: x.name)
             self._processed = True
 
-    def _remove_all_duplicate_aliases(self):
+    def _validate_data(self):
+        if None in self.data.geocodes:
+            raise ValueError("Missing geocodes in source data")
+        elif len(self.data.geocodes) - len(set(self.data.geocodes)) != 0:
+            raise ValueError("Non-unique geocodes in source data")
+
+    def _remove_duplicate_aliases(self):
+        for town in self.data:
+            town.aliases = [
+                alias_name for alias_name in town.aliases
+                if TownAlias(alias_name, town.county.fips) in self._unique_aliases
+                or alias_name == town.name.upper()
+            ]
+
+    @cached_property
+    def _suggested_aliases(self) -> List[TownAlias]:
         all = []
         for town in self.data:
-            all.extend(town.aliases)
-        
-        unique_in_state = set([alias for alias in all if all.count(alias) == 1])
-        
+            for alias in town.aliases:
+                all.append(TownAlias(alias, town.county.fips))
+        return all
+    
+    @cached_property
+    def _unique_aliases(self) -> List[TownAlias]:
+        counts = {}
+        for alias in self._suggested_aliases:
+            counts[alias] = counts.get(alias, 0) + 1
+        return [alias for alias, count in counts.items() if count == 1]
+    
+    @cached_property
+    def alias_lookup(self) -> Dict[TownAlias, TownReference]:
+        records = {}
         for town in self.data:
-            canonical = town.name.upper()
-            town.aliases = [a for a in town.aliases if a in unique_in_state or a == canonical]
-
-    def _remove_duplicate_aliases_within_county(self):
-        all = []
-        for town in self.data:
-            all.extend(map(lambda alias: f'{alias}_{town.county.fips}', town.aliases))
-
-        unique_in_county = [alias.split('_')[0] for alias in all if all.count(alias) == 1]
-        
-        for town in self.data:
-            canonical = town.name.upper()
-            town.aliases = [a for a in town.aliases if a in unique_in_county or a == canonical]
+            for alias_name in town.aliases:
+                alias = TownAlias(alias_name, town.county.fips)
+                if alias in self._unique_aliases:
+                    records[alias] = town
+        return records
             
-    def match_town(self, town: str, county_fips: int = None) -> str:
-        if town in (None, ''):
-            return None
-
-        statewide = [i for i in self.data if town.upper() in i.aliases]
-        if not any(statewide):
-            return None
-        elif len(statewide) == 1:
-            return statewide[0].name
-        elif county_fips is None:
-            return None
-        else:
-            countywide = [i for i in statewide if county_fips == i.county.fips]
-            if len(countywide) == 1:
-                return countywide[0].name
-            else:
-                return None
+    def search_database(self, **kwargs) -> List[TownReference]:
+        return [
+            town for town in self.data
+            if all(getattr(town, k) == v for k, v in kwargs.items())
+        ]
+    
+    def match(self, town: str, county_fips: int = None) -> TownReference:
+        return self.alias_lookup[TownAlias(town.upper(), county_fips)]
