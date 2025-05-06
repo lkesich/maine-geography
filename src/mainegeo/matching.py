@@ -10,86 +10,16 @@ __all__ = [
 ]
 
 from dataclasses import dataclass
-from functools import cache, cached_property
-from typing import List, Dict
-from mainegeo import townships, lookups
-from mainegeo.entities import County, Cousub
+from functools import cached_property, cache
+from typing import List, Dict, Optional
+from mainegeo import lookups
+from mainegeo.entities import County, Cousub, TownReference, TownAlias
 from importlib import resources
 from pathlib import Path
 import yaml
 
-@dataclass
-class TownReference:
-    name: str
-    geocode: str
-    gnis_id: int
-    town_type: str
-    county: County
-    cousub: Cousub
-    aliases: List[str]
-    _processed: bool = False
-
-    def __post_init__(self):
-        if self._processed is False:
-            self._clean_aliases()
-            self._generate_aliases()
-
-    def _clean_aliases(self):
-        aliases = filter(None, self.aliases)
-        aliases = sum([a.strip('[]').split(',') for a in aliases], [])
-        aliases = map(str.upper, aliases)
-        aliases = map(str.strip, aliases)
-        self.aliases = list(set(filter(None, aliases)))
-        
-    def _generate_aliases(self):
-        aliases = self.aliases
-        aliases.extend(filter(None, [self.name.upper(), self.cousub.basename.upper()]))
-        aliases.extend(list(map(townships.clean_code, aliases)))
-        aliases.extend(list(map(townships.clean_town, aliases)))
-        aliases.extend(list(map(townships.strip_suffix, aliases)))
-        aliases.extend(list(map(townships.strip_region, aliases)))
-        aliases.extend(list(map(townships.strip_region, aliases))) # 2x
-        self.aliases = list(set(aliases))
-        self.aliases.sort()
-
-@dataclass
-class TownReference:
-    name: str
-    geocode: str
-    gnis_id: int
-    town_type: str
-    county: County
-    cousub: Cousub
-    aliases: List[str]
-    _processed: bool = False
-
-    def __post_init__(self):
-        if self._processed is False:
-            self._clean_aliases()
-            self._generate_aliases()
-
-    def _clean_aliases(self):
-        aliases = filter(None, self.aliases)
-        aliases = sum([a.strip('[]').split(',') for a in aliases], [])
-        aliases = map(str.upper, aliases)
-        aliases = map(str.strip, aliases)
-        self.aliases = list(set(filter(None, aliases)))
-        
-    def _generate_aliases(self):
-        aliases = self.aliases
-        aliases.extend(filter(None, [self.name.upper(), self.cousub.basename.upper()]))
-        aliases.extend(list(map(townships.clean_code, aliases)))
-        aliases.extend(list(map(townships.clean_town, aliases)))
-        aliases.extend(list(map(townships.strip_suffix, aliases)))
-        aliases.extend(list(map(townships.strip_region, aliases)))
-        aliases.extend(list(map(townships.strip_region, aliases))) # 2x
-        self.aliases = list(set(aliases))
-        self.aliases.sort()
-
-@dataclass(frozen=True)
-class TownAlias:
-    name: str
-    county_fips: int
+def cached_class_attr(f):
+    return classmethod(property(cache(f)))
 
 @dataclass
 class TownDatabase:
@@ -99,54 +29,74 @@ class TownDatabase:
     def __post_init__(self):
         if self._processed is False:
             self._process_data()
+            self._validate_data()
+
+    @cached_class_attr
+    def json_path(cls):
+        """ Unprocessed data """
+        return resources.files('mainegeo.data').joinpath('townships.json')
+    
+    @cached_class_attr
+    def yaml_path(cls):
+        """ Processed data """
+        return resources.files('mainegeo.data').joinpath('townships.yaml')
 
     @classmethod
     def build(cls):
         file_path = resources.files('mainegeo.data').joinpath('townships.yaml')    
-        if Path(file_path).exists():    # first call
+        # first call
+        if Path(file_path).exists():
             return cls.load_from_yaml(file_path)
-        else:    # subsequent calls
+        # subsequent calls
+        else:
             towndb = cls.create_from_raw_data()
             towndb.save_to_yaml(file_path)
             return towndb
 
     @classmethod
     def create_from_raw_data(cls):
-        townships = lookups.TownshipLookup().data   
-        towns = [
-            TownReference(
-                name = record['town'],
-                geocode = record['town_geocode'],
-                gnis_id = record['gnis_id'],
-                town_type = record['geotype'],
-                county = County(
-                    fips = record['county_fips'], 
-                    name = record['county_name'],
-                    code = record['sos_county']
-                ),
-                cousub = Cousub(
-                    geocode = record['cousub_geocode'],
-                    name = record['cousub_name'],
-                    basename = record['cousub_basename'],
-                    geoclass = record['class']
-                ),
-                aliases = [
-                    record['maine_gis_name'],
-                    record['voting_name'],
-                    record['tribal_name'],
-                    record['gnis_variants'],
-                    record['historical_names'],
-                    record['islands']
+        import json
+        with cls.json_path.open('r') as file:
+            towns = json.load(file, object_hook=cls.json_object_hook)
+            return cls(towns, _processed=False)
+    
+    @cached_class_attr
+    def json_object_hook(cls, json_record):
+        return TownReference(
+            name = json_record['town'],
+            geocode = json_record['town_geocode'],
+            gnis_id = json_record['gnis_id'],
+            town_type = json_record['geotype'],
+            county = County(
+                fips = json_record['county_fips'], 
+                name = json_record['county_name'],
+                code = json_record['sos_county']
+            ),
+            cousub = Cousub(
+                geocode = json_record['cousub_geocode'],
+                name = json_record['cousub_name'],
+                basename = json_record['cousub_basename'],
+                geoclass = json_record['class']
+            ),
+            aliases = [
+                [
+                    json_record['maine_gis_name'],
+                    json_record['town'],
+                    json_record['cousub_basename'],
+                    json_record['voting_name'],
+                    json_record['tribal_name']
                 ],
-                _processed = False
-            ) for record in townships
-        ]
-        return cls(towns, _processed=False)
+                json_record['gnis_variants'],
+                json_record['historical_names'],
+                json_record['islands']
+            ],
+            _processed = False
+        )
     
     @classmethod
     def load_from_yaml(cls, file_path = None):
         if file_path is None:
-            file_path = resources.files('mainegeo.data').joinpath('townships.yaml')
+            file_path = cls.yaml_path
          
         with open(file_path, 'r') as f:
             data = yaml.safe_load(f)
@@ -213,9 +163,10 @@ class TownDatabase:
             self._processed = True
 
     def _validate_data(self):
-        if None in self.data.geocodes:
+        geocodes = [town.geocode for town in self.data]
+        if not all(geocodes):
             raise ValueError("Missing geocodes in source data")
-        elif len(self.data.geocodes) - len(set(self.data.geocodes)) != 0:
+        elif len(geocodes) != len(set(geocodes)):
             raise ValueError("Non-unique geocodes in source data")
 
     def _remove_duplicate_aliases(self):
@@ -230,8 +181,9 @@ class TownDatabase:
     def _suggested_aliases(self) -> List[TownAlias]:
         all = []
         for town in self.data:
-            for alias in town.aliases:
-                all.append(TownAlias(alias, town.county.fips))
+            for alias_name in town.aliases:
+                all.append(TownAlias(alias_name))
+                all.append(TownAlias(alias_name, town.county.fips))
         return all
     
     @cached_property
@@ -246,9 +198,11 @@ class TownDatabase:
         records = {}
         for town in self.data:
             for alias_name in town.aliases:
-                alias = TownAlias(alias_name, town.county.fips)
-                if alias in self._unique_aliases:
-                    records[alias] = town
+                state_alias = TownAlias(alias_name)
+                county_alias = TownAlias(alias_name, town.county.fips)
+                for alias in (state_alias, county_alias):
+                    if alias in self._unique_aliases:
+                        records[alias] = town
         return records
             
     def search_database(self, **kwargs) -> List[TownReference]:
@@ -256,6 +210,24 @@ class TownDatabase:
             town for town in self.data
             if all(getattr(town, k) == v for k, v in kwargs.items())
         ]
+        
+    def match(self, town: str, county_fips: Optional[int] = None) -> TownReference:
+        """
+        Match a town name variant to the alias database and return the TownReference object.
+        """
+        state_alias = TownAlias(town.upper())
+        state_match = self.alias_lookup.get(state_alias)
+        if state_match:
+            return state_match
+        elif county_fips:
+            county_alias = TownAlias(town.upper(), county_fips)
+            county_match = self.alias_lookup.get(county_alias)
+            return county_match
     
-    def match(self, town: str, county_fips: int = None) -> TownReference:
-        return self.alias_lookup[TownAlias(town.upper(), county_fips)]
+    def canonical_name(self, town: str, county_fips: Optional[int] = None) -> str:
+        """
+        Match a town to the alias database and return the canonical name only.
+        """
+        match = self.match(town, county_fips)
+        if match:
+            return match.name

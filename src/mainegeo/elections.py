@@ -43,6 +43,7 @@ from utils.core import chain_operations
 from mainegeo import townships
 from mainegeo.patterns import (
     KNOWN_TYPOS,
+    AMBIGUOUS_GROUP_NAMES,
     DROP_CHARACTERS_PATTERN,
     MEANINGFUL_CHARACTERS_PATTERN,
     STANDARD_DELIMITER,
@@ -64,13 +65,32 @@ def _fix_known_typos(result_str: str) -> str:
     """
     Fix known typos in-place in string.
 
-    These typos are unique and unlikely to be repeated. They are stored in 
-    the module-level KNOWN_TYPOS dictionary.
+    These typos are true misspellings, which are unique and unlikely to be repeated.
+    They are stored in the module-level KNOWN_TYPOS dictionary.
 
     Args:
         result_str: Delimited result string with one or more towns or townships
     """
     return replace_all(KNOWN_TYPOS, result_str)
+
+def _rename_ambiguous_groups(result_str: str) -> str:
+    """
+    Fix ambiguous unspecified group names in-place in string.
+
+    These typos recur from time to time, but follow a general pattern. It simplifies
+    unspecified group name detection significantly if they are corrected early in
+    processing. They are stored in the module-level AMBIGUOUS_GROUP_NAMES dictionary.
+
+    Args:
+        result_str: Delimited result string with one or more towns or townships
+
+    Example:
+        >>> _rename_ambiguous_groups('MILLINOCKET -- PISCATAQUIS TWP')
+        'MILLINOCKET -- PISCATAQUIS TWPS'
+        >>> _rename_ambiguous_groups('PENOBSCOT TWPS')
+        'MILLINOCKET PENOBSCOT TWPS'
+    """
+    return replace_all(AMBIGUOUS_GROUP_NAMES, result_str)
 
 def _drop_non_meaningful_chars(result_str: str) -> str:
     """
@@ -250,7 +270,7 @@ def has_unspecified_group(reporting_towns: List[str], registration_towns: List[s
         True
         >>> has_unspecified_group(['PENOBSCOT TWP'], ['MILLINOCKET'])
         True
-        >>> has_unspecified_group(['ASHLAND','LOWER CUPSUPTIC TWPS'], ['RANGELEY'])
+        >>> has_unspecified_group(['ADAMSTOWN','LOWER CUPSUPTIC TWPS'], ['RANGELEY'])
         False
         >>> has_unspecified_group(['LEXINGTON', 'SPRING LAKE TWPS'], [])
         False
@@ -325,13 +345,15 @@ def format_reporting_towns(
     """
     reporting = [_format_plural(town, has_unspecified_group) for town in reporting_towns]
     
-    if has_unspecified_group is False:
-        return reporting
-    else:
+    if has_unspecified_group:
         return _name_unspecified_group(reporting, registration_towns)
+    else:
+        return reporting
 
 
 from mainegeo.entities import County
+from mainegeo.matching import TownDatabase
+towndb = TownDatabase.build()
 
 @dataclass
 class ResultGeo:
@@ -340,7 +362,18 @@ class ResultGeo:
 
 @dataclass
 class Town(ResultGeo):
-    pass
+    @cached_property
+    def matched_town(self):
+        return towndb.match(self.name, self.county.fips)
+    
+    @property
+    def canonical_name(self):
+        if self.matched_town:
+            return self.matched_town.name
+
+    @property
+    def consensus_name(self):
+        return self.canonical_name or self.name
 
 @dataclass
 class Township(ResultGeo):
@@ -358,6 +391,22 @@ class Township(ResultGeo):
     def code(self):
         from mainegeo.townships import clean_code
         return clean_code(self.name)
+    
+    @cached_property
+    def matched_town(self):
+        for name in (self.name, self.code, self.alias):
+            match = towndb.match(name, self.county.fips)
+            if match:
+                return match
+    
+    @property
+    def canonical_name(self):
+        if self.matched_town:
+            return self.matched_town.name
+
+    @property
+    def consensus_name(self):
+        return self.canonical_name or self.name
 
 @dataclass
 class UnspecifiedGroup(ResultGeo):
@@ -375,6 +424,10 @@ class UnspecifiedGroup(ResultGeo):
     def group_registration_town(self) -> Town:
         reg_town_name = self._format_match.group('regtown') or self.county.code
         return Town(name=reg_town_name, county=self.county)
+    
+    @property
+    def consensus_name(self):
+        return self.name
 
 @dataclass
 class ReportingUnit:
