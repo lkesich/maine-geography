@@ -61,98 +61,6 @@ from mainegeo.patterns import (
     VALID_AMPERSANDS_PATTERN
 )
 
-def _fix_known_typos(result_str: str) -> str:
-    """
-    Fix known typos in-place in string.
-
-    These typos are true misspellings, which are unique and unlikely to be repeated.
-    They are stored in the module-level KNOWN_TYPOS dictionary.
-
-    Args:
-        result_str: Delimited result string with one or more towns or townships
-    """
-    return replace_all(KNOWN_TYPOS, result_str)
-
-def _rename_ambiguous_groups(result_str: str) -> str:
-    """
-    Fix ambiguous unspecified group names in-place in string.
-
-    These typos recur from time to time, but follow a general pattern. It simplifies
-    unspecified group name detection significantly if they are corrected early in
-    processing. They are stored in the module-level AMBIGUOUS_GROUP_NAMES dictionary.
-
-    Args:
-        result_str: Delimited result string with one or more towns or townships
-
-    Example:
-        >>> _rename_ambiguous_groups('MILLINOCKET -- PISCATAQUIS TWP')
-        'MILLINOCKET -- PISCATAQUIS TWPS'
-        >>> _rename_ambiguous_groups('PENOBSCOT TWPS')
-        'MILLINOCKET PENOBSCOT TWPS'
-    """
-    return replace_all(AMBIGUOUS_GROUP_NAMES, result_str)
-
-def _drop_non_meaningful_chars(result_str: str) -> str:
-    """
-    Drop or replace special characters that don't communicate meaningful info.
-
-    Args:
-        result_str: Delimited result string with one or more towns or townships
-    """
-    result = VALID_AMPERSANDS_PATTERN.sub('AND', normalize_whitespace(result_str))
-    return DROP_CHARACTERS_PATTERN.sub('', result)
-
-def _drop_meaningful_chars(result_str: str) -> str:
-    """
-    Drop characters that communicate town aliases & registration town relationships.
-    
-    Note:
-        Use only after registration towns are identified.
-
-    Args:
-        result_str: Delimited result string with one or more towns or townships
-    """
-    return MEANINGFUL_CHARACTERS_PATTERN.sub('', result_str)
-
-def _normalize_delimiters(result_str: str) -> str:
-    """
-    Replace all delimiters in result string with standard delimiter.
-
-    Args:
-        result_str: Delimited result string with one or more towns or townships
-    """
-    return NONSTANDARD_DELIMITER_PATTERN.sub(STANDARD_DELIMITER, result_str)
-
-def prepare_towns(result_str: str) -> str:
-    """
-    Perform inital normalizations on election result string.
-
-    Args:
-        result_str: Delimited result string with one or more towns or townships
-
-    Returns:
-        str: Result string with known typos fixed and normalized capitalization, 
-        whitespace, and delimiters
-
-    Example:
-        >>> prepare_towns('FORT KENT/BIG TWENTY TWP/   T15 R15 WELS')
-        'FORT KENT, BIG TWENTY TWP, T15 R15 WELS'
-        >>> prepare_towns('T12/R13 WELS/T9 R8 WELS')
-        'T12 R13 WELS, T9 R8 WELS'
-        >>> prepare_towns('T10 SD TWP (CHERRYFIELD, FRANKLIN & MILBRIDGE)')
-        'T10 SD TWP (CHERRYFIELD, FRANKLIN, MILBRIDGE)'
-    """
-    initial_cleanup = [
-        str.upper
-        , _fix_known_typos
-        , _rename_ambiguous_groups
-        , _drop_non_meaningful_chars
-        , townships.clean_codes
-        , _normalize_delimiters
-        , normalize_whitespace
-    ]
-    return chain_operations(result_str, initial_cleanup)
-
 def _find_registration_towns(result_str: str) -> str:
     """
     Extract registration town substring based on SoS formatting identifiers.
@@ -386,6 +294,112 @@ def format_reporting_towns(
         return _name_unspecified_group(reporting, registration_towns)
     else:
         return reporting
+
+@dataclass
+class ResultString:
+    raw: str
+
+    @property
+    def normalized(self) -> str:
+        """
+        Perform inital normalizations on election result string.
+
+        Args:
+            result_str: Delimited result string with one or more towns or townships
+
+        Returns:
+            str: Result string with known typos fixed and normalized capitalization, 
+            whitespace, and delimiters
+
+        Example:
+            >>> prepare_towns('FORT KENT/BIG TWENTY TWP/   T15 R15 WELS')
+            'FORT KENT, BIG TWENTY TWP, T15 R15 WELS'
+            >>> prepare_towns('T12/R13 WELS/T9 R8 WELS')
+            'T12 R13 WELS, T9 R8 WELS'
+            >>> prepare_towns('T10 SD TWP (CHERRYFIELD, FRANKLIN & MILBRIDGE)')
+            'T10 SD TWP (CHERRYFIELD, FRANKLIN, MILBRIDGE)'
+        """
+        initial_cleanup = [
+            str.upper
+            , self._fix_known_typos
+            , self._rename_ambiguous_groups
+            , self._drop_non_meaningful_chars
+            , townships.clean_codes
+            , self._normalize_delimiters
+            , normalize_whitespace
+        ]
+        return chain_operations(self.raw, initial_cleanup)
+    
+    @staticmethod
+    def _fix_known_typos(result_str: str) -> str:
+        """
+        Fix known typos in-place in string.
+
+        These typos are true misspellings, which are unique and unlikely to be repeated.
+        They are stored in the module-level KNOWN_TYPOS dictionary.
+
+        Args:
+            result_str: Delimited result string with one or more towns or townships
+        """
+        return replace_all(KNOWN_TYPOS, result_str)
+
+    @staticmethod
+    def _rename_ambiguous_groups(result_str: str) -> str:
+        """
+        Fix ambiguous unspecified group names in-place in string.
+
+        These typos recur from time to time, but follow a general pattern. It simplifies
+        unspecified group name detection significantly if they are corrected early in
+        processing. They are stored in the module-level AMBIGUOUS_GROUP_NAMES dictionary.
+
+        Args:
+            result_str: Delimited result string with one or more towns or townships
+
+        Example:
+            >>> _rename_ambiguous_groups('MILLINOCKET -- PISCATAQUIS TWP')
+            'MILLINOCKET -- PISCATAQUIS TWPS'
+            >>> _rename_ambiguous_groups('PENOBSCOT TWPS')
+            'MILLINOCKET PENOBSCOT TWPS'
+        """
+        return replace_all(AMBIGUOUS_GROUP_NAMES, result_str)
+
+    @staticmethod
+    def _drop_non_meaningful_chars(result_str: str) -> str:
+        """
+        Drop or replace special characters that don't communicate meaningful info.
+
+        Args:
+            result_str: Delimited result string with one or more towns or townships
+        """
+        result = VALID_AMPERSANDS_PATTERN.sub('AND', normalize_whitespace(result_str))
+        return DROP_CHARACTERS_PATTERN.sub('', result)
+
+    @staticmethod
+    def _drop_meaningful_chars(result_str: str) -> str:
+        """
+        Drop characters that communicate town aliases & registration town relationships.
+        
+        Note:
+            Use only after registration towns are identified.
+
+        Args:
+            result_str: Delimited result string with one or more towns or townships
+        """
+        return MEANINGFUL_CHARACTERS_PATTERN.sub('', result_str)
+
+    @staticmethod
+    def _normalize_delimiters(result_str: str) -> str:
+        """
+        Replace all delimiters in result string with standard delimiter.
+
+        Args:
+            result_str: Delimited result string with one or more towns or townships
+        """
+        return NONSTANDARD_DELIMITER_PATTERN.sub(STANDARD_DELIMITER, result_str)
+
+
+
+
 
 from mainegeo.entities import County
 from mainegeo.matching import TownDatabase

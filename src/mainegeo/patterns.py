@@ -51,7 +51,7 @@ NON_ALIAS_CHARACTERS_PATTERN = re.compile(f'(?i){UNNAMED}|[^{ALNUM}]|twps?')
 NON_ALIAS_PATTERN = re.compile(f'(?i){UNNAMED}(?: twp)?|{PUNCTUATION}')
 DROP_CHARACTERS_PATTERN = re.compile('|'.join(map(re.escape, DROP_CHARACTERS)))
 MEANINGFUL_CHARACTERS_PATTERN = re.compile('|'.join(map(re.escape, MEANINGFUL_CHARACTERS)))
-NONSTANDARD_DELIMITER_PATTERN = re.compile('|'.join(map(re.escape, NONSTANDARD_DELIMITERS)), re.IGNORECASE)
+NONSTANDARD_DELIMITER_PATTERN = re.compile('|'.join(map(re.escape, NONSTANDARD_DELIMITERS)), re.I)
 
 ## Name standardization
 # Constants
