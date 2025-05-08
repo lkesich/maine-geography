@@ -52,6 +52,7 @@ NON_ALIAS_PATTERN = re.compile(f'(?i){UNNAMED}(?: twp)?|{PUNCTUATION}')
 DROP_CHARACTERS_PATTERN = re.compile('|'.join(map(re.escape, DROP_CHARACTERS)))
 MEANINGFUL_CHARACTERS_PATTERN = re.compile('|'.join(map(re.escape, MEANINGFUL_CHARACTERS)))
 NONSTANDARD_DELIMITER_PATTERN = re.compile('|'.join(map(re.escape, NONSTANDARD_DELIMITERS)), re.I)
+ORPHAN_PARENTHESIS_PATTERN = re.compile(f'^(?P<result>[^(]+)(?P<orphan_parenthesis>[)])$')
 
 ## Name standardization
 # Constants

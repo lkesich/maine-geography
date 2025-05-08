@@ -8,8 +8,8 @@ The Maine SoS uses reporting units that provide the following challenges for par
     4. Delimiters, indicators of reporting vs. registration, and indicators of township aliases
        are not standard over time.
 
-This module provides functions for parsing Maine election result reporting unit strings into 
-reporting and registration towns, and standardizing the format of unspecified town groups.
+This module provides functions for parsing Maine election result strings into consistent objects, 
+extracting reporting and registration towns, and standardizing the format of unspecified town groups.
 
 Most functions in this module can be run on a delimited result string containing multiple towns,
 or a list of multiple towns.
@@ -18,36 +18,36 @@ or a list of multiple towns.
 __docformat__ = 'google'
 
 __all__ = [
-    # Functions
-    '_fix_known_typos',
-    '_drop_non_meaningful_chars',
-    '_drop_meaningful_chars',
-    '_normalize_delimiters',
-    'prepare_towns',
-    'extract_registration_towns',
-    'extract_reporting_towns',
-    'has_unspecified_group',
-    'format_reporting_towns',
-    
-    # Classes
-    'ElectionResult'
+    'ResultString',
+    'ReportingUnit'
 ]
 
 import re
-from dataclasses import dataclass, field
-from functools import cached_property
+from dataclasses import dataclass
+from functools import cached_property, cache
 from typing import List, Type
 from itertools import filterfalse
+
 from utils.strings import replace_all, normalize_whitespace
 from utils.core import chain_operations
-from mainegeo import townships
+
+from mainegeo.matching import TownDatabase
+from mainegeo.entities import County
+from mainegeo.townships import (
+    clean_code,
+    clean_codes,
+    clean_town,
+    is_unnamed_township,
+    has_alias,
+    extract_alias
+)
 from mainegeo.patterns import (
     KNOWN_TYPOS,
     AMBIGUOUS_GROUP_NAMES,
     DROP_CHARACTERS_PATTERN,
-    MEANINGFUL_CHARACTERS_PATTERN,
     STANDARD_DELIMITER,
     NONSTANDARD_DELIMITER_PATTERN,
+    ORPHAN_PARENTHESIS_PATTERN,
     REGISTRATION_PATTERN,
     UNSPECIFIED_FLAG,
     STANDARD_FLAG,
@@ -57,339 +57,196 @@ from mainegeo.patterns import (
     SINGULAR,
     PLURAL_PATTERN,
     SINGULAR_PATTERN,
-    FORMATTED_GROUP_PATTERN,
-    VALID_AMPERSANDS_PATTERN
+    VALID_AMPERSANDS_PATTERN,
+    FORMATTED_GROUP_PATTERN
 )
 
-def _fix_known_typos(result_str: str) -> str:
-    """
-    Fix known typos in-place in string.
+def cached_class_attr(f):
+    return classmethod(property(cache(f)))
 
-    These typos are true misspellings, which are unique and unlikely to be repeated.
-    They are stored in the module-level KNOWN_TYPOS dictionary.
+@dataclass
+class ResultString:
+    raw_string: str
 
-    Args:
-        result_str: Delimited result string with one or more towns or townships
-    """
-    return replace_all(KNOWN_TYPOS, result_str)
+    @cached_property
+    def normalized_string(self) -> str:
+        """
+        Result string with capitalization, whitespace and delimiters normalized.
 
-def _rename_ambiguous_groups(result_str: str) -> str:
-    """
-    Fix ambiguous unspecified group names in-place in string.
+        Typos found in the KNOWN_TYPOS and AMBIGUOUS_GROUP_NAMES dicts are also fixed.
 
-    These typos recur from time to time, but follow a general pattern. It simplifies
-    unspecified group name detection significantly if they are corrected early in
-    processing. They are stored in the module-level AMBIGUOUS_GROUP_NAMES dictionary.
-
-    Args:
-        result_str: Delimited result string with one or more towns or townships
-
-    Example:
-        >>> _rename_ambiguous_groups('MILLINOCKET -- PISCATAQUIS TWP')
-        'MILLINOCKET -- PISCATAQUIS TWPS'
-        >>> _rename_ambiguous_groups('PENOBSCOT TWPS')
-        'MILLINOCKET PENOBSCOT TWPS'
-    """
-    return replace_all(AMBIGUOUS_GROUP_NAMES, result_str)
-
-def _drop_non_meaningful_chars(result_str: str) -> str:
-    """
-    Drop or replace special characters that don't communicate meaningful info.
-
-    Args:
-        result_str: Delimited result string with one or more towns or townships
-    """
-    result = VALID_AMPERSANDS_PATTERN.sub('AND', normalize_whitespace(result_str))
-    return DROP_CHARACTERS_PATTERN.sub('', result)
-
-def _drop_meaningful_chars(result_str: str) -> str:
-    """
-    Drop characters that communicate town aliases & registration town relationships.
+        Example:
+            >>> result = ResultString('FORT KENT/BIG TWENTY TWP/   T15 R15 WELS')
+            >>> result.normalized_string
+            'FORT KENT, BIG TWENTY TWP, T15 R15 WELS'
+            >>> result = ResultString('T12/R13 WELS/T9 R8 WELS')
+            >>> result.normalized_string
+            'T12 R13 WELS, T9 R8 WELS'
+            >>> result = ResultString('T10 SD TWP (CHERRYFIELD, FRANKLIN & MILBRIDGE)')
+            >>> result.normalized_string
+            'T10 SD TWP (CHERRYFIELD, FRANKLIN, MILBRIDGE)'
+        """
+        initial_cleanup = [
+            str.upper
+            , self._fix_known_typos
+            , self._rename_ambiguous_groups
+            , self._drop_non_meaningful_chars
+            , clean_codes
+            , self._normalize_delimiters
+            , normalize_whitespace
+        ]
+        return chain_operations(self.raw_string, initial_cleanup)
     
-    Note:
-        Use only after registration towns are identified.
+    @cached_property
+    def registration_town_names(self) -> List[str]:
+        """
+        List of registration town names extracted from result string.
 
-    Args:
-        result_str: Delimited result string with one or more towns or townships
-    """
-    return MEANINGFUL_CHARACTERS_PATTERN.sub('', result_str)
+        Note:
+            Splits strings by package-level STANDARD_DELIMITER.
 
-def _normalize_delimiters(result_str: str) -> str:
-    """
-    Replace all delimiters in result string with standard delimiter.
+        Example:
+            >>> result = ResultString('MOUNT CHASE -- T5 R7 TWP')
+            >>> result.registration_town_names
+            ['MOUNT CHASE']
+            >>> result = ResultString('T7 SD TWP (STEUBEN)')
+            >>> result.registration_town_names
+            ['STEUBEN']
+            >>> result = ResultString('CROSS LAKE TWP (T17 R5)')
+            >>> result.registration_town_names
+            []
+            >>> result = ResultString('ARGYLE TWP (ALTON, EDINBURG)')
+            >>> result.registration_town_names
+            ['ALTON', 'EDINBURG']
+        """
+        if self._registration_town_substring is None:
+            return []
+        else:
+            reg_towns = self._registration_town_substring.split(STANDARD_DELIMITER)
+            return list(map(clean_town, reg_towns))
 
-    Args:
-        result_str: Delimited result string with one or more towns or townships
-    """
-    return NONSTANDARD_DELIMITER_PATTERN.sub(STANDARD_DELIMITER, result_str)
+    @cached_property
+    def reporting_town_names(self) -> List[str]:
+        """
+        Extract list of reporting town names from result string.
 
-def prepare_towns(result_str: str) -> str:
-    """
-    Perform inital normalizations on election result string.
+        Note:
+            Drops parentheses around township alias, but does not remove alias.
 
-    Args:
-        result_str: Delimited result string with one or more towns or townships
+        Args:
+            result_str: Delimited result string with one or more towns or townships
 
-    Returns:
-        str: Result string with known typos fixed and normalized capitalization, 
-        whitespace, and delimiters
+        Returns:
+            List: Reporting towns with formatting identifiers stripped
 
-    Example:
-        >>> prepare_towns('FORT KENT/BIG TWENTY TWP/   T15 R15 WELS')
-        'FORT KENT, BIG TWENTY TWP, T15 R15 WELS'
-        >>> prepare_towns('T12/R13 WELS/T9 R8 WELS')
-        'T12 R13 WELS, T9 R8 WELS'
-        >>> prepare_towns('T10 SD TWP (CHERRYFIELD, FRANKLIN & MILBRIDGE)')
-        'T10 SD TWP (CHERRYFIELD, FRANKLIN, MILBRIDGE)'
-    """
-    initial_cleanup = [
-        str.upper
-        , _fix_known_typos
-        , _rename_ambiguous_groups
-        , _drop_non_meaningful_chars
-        , townships.clean_codes
-        , _normalize_delimiters
-        , normalize_whitespace
-    ]
-    return chain_operations(result_str, initial_cleanup)
+        Example:
+            >>> extract_reporting_towns('MOUNT CHASE--T5 R7 TWP')
+            ['T5 R7']
+            >>> extract_reporting_towns('HERSEYTOWN, SOLDIERTOWN TWPS (MEDWAY)')
+            ['HERSEYTOWN', 'SOLDIERTOWN TWPS']
+            >>> extract_reporting_towns('ARGYLE TWP (ALTON, EDINBURG)')
+            ['ARGYLE TWP']
+            >>> extract_reporting_towns('BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP')
+            ['BARNARD TWP', 'EBEEMEE TWP T5 R9 NWP', 'T4 R9 NWP']
+        """
+        if self._registration_town_substring is None:
+            reporting_substr = self.normalized_string
+        else:
+            reporting_substr = re.sub(self._registration_town_substring, '', self.normalized_string)
 
-def _find_registration_towns(result_str: str) -> str:
-    """
-    Extract registration town substring based on SoS formatting identifiers.
+        reporting = reporting_substr.split(STANDARD_DELIMITER)
+        return list(map(clean_town, reporting))
 
-    SoS formatting identifiers include parentheticals and double dashes (--).
+    @cached_property
+    def _registration_town_substring(self) -> str:
+        """
+        Registration town substring extracted based on SoS formatting identifiers.
 
-    Note:
-        Ignores parentheticals that are township aliases.
+        SoS formatting identifiers include parentheticals and double dashes (--).
+        Parentheticals that are township aliases are ignored. 
 
-    Args:
-        result_str: Delimited result string with one or more towns or townships
+        Note:
+            Substring includes formatting indicators.
 
-    Returns:
-        str: A substring that contains the registration town(s) and formatting identifer
+        Raises:
+            ValueError: If result string contains multiple registration town substrings.
 
-    Raises:
-        ValueError: If result string contains multiple registration town substrings.
+        Example:
+            >>> result = ResultString('MOUNT CHASE -- T5 R7 TWP')
+            >>> result._registration_town_substring
+            'MOUNT CHASE --'
+            >>> result = ResultString('T7 SD TWP (STEUBEN)')
+            >>> result._registration_town_substring
+            '(STEUBEN)'
+            >>> result = ResultString('ARGYLE TWP (ALTON, EDINBURG)')
+            >>> result._registration_town_substring
+            '(ALTON, EDINBURG)'
+        """
+        flagged = REGISTRATION_PATTERN.findall(self.normalized_string)
+        substrings = list(filterfalse(is_unnamed_township, flagged))
+        
+        if len(substrings) > 1:
+            raise ValueError(f'Multiple registration town substrings found in result string: {self.normalized_string}')
+        elif len(substrings) == 0:
+            return None
+        else:
+            return substrings[0]
 
-    Example:
-        >>> _find_registration_towns('MOUNT CHASE -- T5 R7 TWP')
-        'MOUNT CHASE --'
-        >>> _find_registration_towns('T7 SD TWP (STEUBEN)')
-        '(STEUBEN)'
-        >>> _find_registration_towns('ARGYLE TWP (ALTON, EDINBURG)')
-        '(ALTON, EDINBURG)'
-    """
-    flagged = REGISTRATION_PATTERN.findall(result_str)
-    substrings = list(filterfalse(townships.is_unnamed_township, flagged))
-    
-    if len(substrings) > 1:
-        raise ValueError(f'Multiple registration town substrings found in result string: {result_str}')
-    elif len(substrings) == 0:
-        return None
-    else:
-        return substrings[0]
+    @staticmethod
+    def _fix_known_typos(result_str: str) -> str:
+        """
+        Fix known typos in-place in string.
 
-def extract_registration_towns(result_str: str) -> List[str]:
-    """
-    Extract list of registration town names from result string.
+        These typos are true misspellings, which are unique and unlikely to be repeated.
+        They are stored in the KNOWN_TYPOS dict in the patterns module.
 
-    Note:
-        Splits by module-level standard delimiter.
+        Args:
+            result_str: Delimited result string with one or more towns or townships
+        """
+        return replace_all(KNOWN_TYPOS, result_str)
 
-    Args:
-        result_str: Delimited result string with one or more towns or townships
+    @staticmethod
+    def _rename_ambiguous_groups(result_str: str) -> str:
+        """
+        Fix ambiguous unspecified group names in-place in string.
 
-    Returns:
-        List: Registration towns with formatting identifiers stripped
+        These typos recur from time to time, but follow a general pattern. It simplifies
+        unspecified group name detection significantly if they are corrected early in
+        processing. They are stored in the AMBIGUOUS_GROUP_NAMES dict in the patterns module.
 
-    Example:
-        >>> extract_registration_towns('MOUNT CHASE -- T5 R7 TWP')
-        ['MOUNT CHASE']
-        >>> extract_registration_towns('T7 SD TWP (STEUBEN)')
-        ['STEUBEN']
-        >>> extract_registration_towns('ARGYLE TWP (ALTON, EDINBURG)')
-        ['ALTON', 'EDINBURG']
-        >>> extract_registration_towns('CROSS LAKE TWP (T17 R5)')
-        []
-    """
-    reg_town_substr = _find_registration_towns(result_str)
-    if reg_town_substr is None:
-        return []
-    else:
-        reg_towns = reg_town_substr.split(STANDARD_DELIMITER)
-        return list(map(townships.clean_town, reg_towns))
-    
-def extract_reporting_towns(result_str: str) -> List[str]:
-    """
-    Extract list of reporting town names from result string.
+        Args:
+            result_str: Delimited result string with one or more towns or townships
 
-    Note:
-        Drops parentheses around township alias, but does not remove alias.
+        Example:
+            >>> ResultString._rename_ambiguous_groups('MILLINOCKET -- PISCATAQUIS TWP')
+            'MILLINOCKET -- PISCATAQUIS TWPS'
+            >>> ResultString._rename_ambiguous_groups('PENOBSCOT TWPS')
+            'MILLINOCKET PENOBSCOT TWPS'
+        """
+        return replace_all(AMBIGUOUS_GROUP_NAMES, result_str)
 
-    Args:
-        result_str: Delimited result string with one or more towns or townships
+    @staticmethod
+    def _drop_non_meaningful_chars(result_str: str) -> str:
+        """
+        Drop or replace special characters that don't communicate meaningful info.
 
-    Returns:
-        List: Reporting towns with formatting identifiers stripped
+        Args:
+            result_str: Delimited result string with one or more towns or townships
+        """
+        result = VALID_AMPERSANDS_PATTERN.sub('AND', normalize_whitespace(result_str))
+        return DROP_CHARACTERS_PATTERN.sub('', result)
 
-    Example:
-        >>> extract_reporting_towns('MOUNT CHASE--T5 R7 TWP')
-        ['T5 R7']
-        >>> extract_reporting_towns('HERSEYTOWN, SOLDIERTOWN TWPS (MEDWAY)')
-        ['HERSEYTOWN', 'SOLDIERTOWN TWPS']
-        >>> extract_reporting_towns('ARGYLE TWP (ALTON, EDINBURG)')
-        ['ARGYLE TWP']
-        >>> extract_reporting_towns('BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP')
-        ['BARNARD TWP', 'EBEEMEE TWP T5 R9 NWP', 'T4 R9 NWP']
-    """
-    reg_town_substr = _find_registration_towns(result_str)
-    if reg_town_substr is None:
-        reporting_substr = result_str
-    else:
-        reporting_substr = re.sub(reg_town_substr, '', result_str)
+    @staticmethod
+    def _normalize_delimiters(result_str: str) -> str:
+        """
+        Replace all delimiters in result string with standard delimiter.
 
-    reporting = reporting_substr.split(STANDARD_DELIMITER)
-    return list(map(townships.clean_town, reporting))
-
-def has_unspecified_group(reporting_towns: List[str], registration_towns: List[str]) -> bool:
-    """
-    Check if a result string includes an unspecified group.
-
-    Args:
-        reporting_towns: List of one or more towns
-        registration_towns: List of non-reporting registration towns (if any)
-
-    Returns:
-        True if the result string includes an unspecified group, else false
-
-    Examples:
-        >>> has_unspecified_group(['TWPS'], ['BROWNVILLE'])
-        True
-        >>> has_unspecified_group(['JACKMAN TWPS'], [])
-        True
-        >>> has_unspecified_group(['MILLINOCKET PISCATAQUIS TWPS'], [])
-        True
-        >>> has_unspecified_group(['PENOBSCOT TWP'], ['MILLINOCKET'])
-        True
-        >>> has_unspecified_group(['ADAMSTOWN','LOWER CUPSUPTIC TWPS'], ['RANGELEY'])
-        False
-        >>> has_unspecified_group(['LEXINGTON', 'SPRING LAKE TWPS'], [])
-        False
-    """
-    def _result_string():
-        return ' '.join(filter(None, [*registration_towns, *reporting_towns]))
-
-    if len(registration_towns) > 1 or len(reporting_towns) > 2:
-        return False
-    elif len(registration_towns) > 0 and len(reporting_towns) > 1:
-        return False
-    elif UNSPECIFIED_FLAG in reporting_towns:
-        return True
-    elif MULTI_COUNTY_PATTERN.match(_result_string()) is not None:
-        return True
-    elif len(reporting_towns) > 1 or len(registration_towns) > 0:
-        return False
-    elif any(UNSPECIFIED_FLAG in town for town in reporting_towns):
-        return True
-    else:
-        return False
-    
-def has_unspecified_group2(reporting_towns: List[str], registration_towns: List[str]) -> bool:
-    """
-    Check if a result string includes an unspecified group.
-
-    Args:
-        reporting_towns: List of one or more towns
-        registration_towns: List of non-reporting registration towns (if any)
-
-    Returns:
-        True if the result string includes an unspecified group, else false
-
-    Examples:
-        >>> has_unspecified_group(['TWPS'], ['BROWNVILLE'])
-        True
-        >>> has_unspecified_group(['JACKMAN TWPS'], [])
-        True
-        >>> has_unspecified_group(['MILLINOCKET PISCATAQUIS TWPS'], [])
-        True
-        >>> has_unspecified_group(['ADAMSTOWN','LOWER CUPSUPTIC TWPS'], ['RANGELEY'])
-        False
-        >>> has_unspecified_group(['LEXINGTON', 'SPRING LAKE TWPS'], [])
-        False
-    """
-    if len(reporting_towns) > 2:
-        return False
-    elif len(registration_towns) > 1:
-        return False
-    elif UNSPECIFIED_FLAG in reporting_towns:
-        return True
-    elif len(reporting_towns) > 1:
-        return False
-    elif not any(UNSPECIFIED_FLAG in town for town in reporting_towns):
-        return False
-    else:
-        return True
-
-def _format_plural(town: str, has_unspecified_group: bool) -> str:
-    """
-    Correct errors of pluralization in town or group names.
-
-    After this function is used, the presence or absence of a plural in a town name
-    reliably indicates whether it is an unspecified group.
-    """  
-    if has_unspecified_group:
-        return SINGULAR_PATTERN.sub(PLURAL, town)
-    else:
-        return PLURAL_PATTERN.sub(SINGULAR, town)
-    
-def _format_unspecified_group(group_name: str) -> str:
-    """
-    Apply special format to unspecified groups that include a county.
-    """  
-    return MULTI_COUNTY_PATTERN.sub(MULTI_COUNTY_FORMAT, group_name)
-
-def _name_unspecified_group(
-        reporting_towns: List[str], 
-        registration_towns: List[str]) -> List[str]:
-    """
-    Label unspecified groups with their reporting town and a standard 'unspecified' flag.
-    """
-    name_elements = [STANDARD_FLAG, *registration_towns, *reporting_towns]
-    group_name = _format_unspecified_group(' '.join(filter(None, name_elements)))    
-    return [group_name if UNSPECIFIED_FLAG in town else town for town in reporting_towns]
-    
-def format_reporting_towns(
-        reporting_towns: List[str], 
-        registration_towns: List[str], 
-        has_unspecified_group:bool) -> List[str]:
-    """
-    Apply consistent format to towns and unspecified groups.
-
-    Args:
-        reporting_towns: List of one or more towns
-        registration_towns: List of non-reporting registration towns (if any)
-
-    Returns:
-        list: Reporting towns with standard formatting applied.
-
-    Examples:
-        >>> format_reporting_towns(['LEXINGTON', 'SPRING LAKE TWPS'], [], False)
-        ['LEXINGTON', 'SPRING LAKE TWP']
-        >>> format_reporting_towns(['FRANKLIN', 'TWPS'], [], True)
-        ['FRANKLIN', 'UNSPECIFIED FRANKLIN TWPS']
-        >>> format_reporting_towns(['PENOBSCOT TWP'], ['MILLINOCKET'], True)
-        ['UNSPECIFIED MILLINOCKET TWPS [PEN]']
-    """
-    reporting = [_format_plural(town, has_unspecified_group) for town in reporting_towns]
-    
-    if has_unspecified_group:
-        return _name_unspecified_group(reporting, registration_towns)
-    else:
-        return reporting
-
-from mainegeo.entities import County
-from mainegeo.matching import TownDatabase
-towndb = TownDatabase.build()
+        Args:
+            result_str: Delimited result string with one or more towns or townships
+        """
+        delimit = NONSTANDARD_DELIMITER_PATTERN.sub(STANDARD_DELIMITER, result_str)
+        cleanup = ORPHAN_PARENTHESIS_PATTERN.sub('\g<result>', delimit)
+        return cleanup
 
 @dataclass
 class ResultGeo:
@@ -397,10 +254,17 @@ class ResultGeo:
     county: County
 
 @dataclass
-class Town(ResultGeo):
+class Municipality(ResultGeo):
+    @cached_class_attr
+    def towndb(cls):
+        towndb = TownDatabase.build()
+        return towndb
+
+@dataclass
+class NamedTownship(Municipality):
     @cached_property
     def matched_town(self):
-        return towndb.match(self.name, self.county.fips)
+        return self.towndb.match(self.name, self.county.fips)
     
     @property
     def canonical_name(self):
@@ -412,26 +276,23 @@ class Town(ResultGeo):
         return self.canonical_name or self.name
 
 @dataclass
-class Township(ResultGeo):
+class UnnamedTownship(Municipality):
     @property
     def has_alias(self):
-        from mainegeo.townships import has_alias
         return has_alias(self.name)
     
     @property
     def alias(self):
-        from mainegeo.townships import extract_alias
         return extract_alias(self.name)
     
     @property
     def code(self):
-        from mainegeo.townships import clean_code
         return clean_code(self.name)
     
     @cached_property
     def matched_town(self):
         for name in (self.name, self.code, self.alias):
-            match = towndb.match(name, self.county.fips)
+            match = self.towndb.match(name, self.county.fips)
             if match:
                 return match
     
@@ -448,7 +309,6 @@ class Township(ResultGeo):
 class UnspecifiedGroup(ResultGeo):
     @cached_property
     def _format_match(self) -> re.Match:
-        from mainegeo.patterns import FORMATTED_GROUP_PATTERN
         return FORMATTED_GROUP_PATTERN.match(self.name)
 
     @property
@@ -457,9 +317,9 @@ class UnspecifiedGroup(ResultGeo):
         return County(code=county_code)
     
     @property
-    def group_registration_town(self) -> Town:
+    def group_registration_town(self) -> NamedTownship:
         reg_town_name = self._format_match.group('regtown') or self.county.code
-        return Town(name=reg_town_name, county=self.county)
+        return NamedTownship(name=reg_town_name, county=self.county)
     
     @property
     def consensus_name(self):
@@ -467,76 +327,183 @@ class UnspecifiedGroup(ResultGeo):
 
 @dataclass
 class ReportingUnit:
-    raw_string: str
+    parsed_string: ResultString
     county: County
-    reporting_towns: List[ResultGeo] = field(default_factory=list)
-    registration_towns: List[ResultGeo] = field(default_factory=list)
-    has_unspecified_group: bool = False
+
+    @classmethod
+    def from_strings(cls, result_str: str, county_code: str) -> "ReportingUnit":
+        """
+        Factory method to create a fully processed ReportingUnit.
+        """
+        unit = cls(
+            parsed_string=ResultString(result_str),
+            county=County(code=county_code)
+        )
+        return unit
+    
+    @property
+    def raw_string(self) -> str:
+        """
+        Return original SoS name for this reporting unit.
+        """
+        return self.parsed_string.raw_string
 
     @property
     def formatted_string(self) -> str:
         """
         Return a formatted string representation of this reporting unit.
         """
-        parts = [obj.name for obj in self.reporting_towns]
-        return ', '.join(parts)
+        return ', '.join(self.reporting_town_standard_names)
     
-    @classmethod
-    def from_result_string(cls, result_string: str, county: County) -> "ReportingUnit":
+    @property
+    def reporting_town_standard_names(self):
         """
-        Factory method to create a fully processed ReportingUnit.
+        List of reporting town names. Canonical name if match was found, else raw name.
         """
-        from mainegeo.elections import (
-            prepare_towns,
-            extract_registration_towns,
-            extract_reporting_towns,
-            has_unspecified_group, 
-            format_reporting_towns
-        )
-        
-        prepared_result = prepare_towns(result_string)
-        registration_names = extract_registration_towns(prepared_result)
-        raw_reporting_names = extract_reporting_towns(prepared_result)
-        has_group = has_unspecified_group(raw_reporting_names, registration_names)
-        reporting_names = format_reporting_towns(
-            raw_reporting_names, registration_names, has_group
-        )
-        
-        unit = cls(
-            raw_string=result_string,
-            county=county,
-            has_unspecified_group=has_group,
-        )
-        
-        unit._create_objects_from_names(reporting_names, registration_names)
-        #unit._standardize_names()
-        
-        return unit
-                    
-    def _create_objects_from_names(self, reporting_names: List[str], registration_names: List[str]):
+        return [town.consensus_name for town in self.reporting_towns]
+    
+    @property
+    def registration_town_standard_names(self):
         """
-        Convert parsed name strings into ResultGeo objects.
+        List of registration town names. Canonical name if match was found, else raw name.
         """
-        for name in registration_names:
-            regtown_object = Town(name, self.county)
-            self.registration_towns.append(regtown_object)
+        return [town.consensus_name for town in self.registration_towns]
 
-        for name in reporting_names:
+    @cached_property
+    def registration_towns(self) -> List[NamedTownship]:
+        """
+        List of registration towns as NamedTownship objects.
+        """
+        objects = []
+        for name in self.parsed_string.registration_town_names:
+            regtown_object = NamedTownship(name, self.county)
+            objects.append(regtown_object)
+        return objects
+
+    @cached_property
+    def reporting_towns(self) -> List[ResultGeo]:
+        """
+        List of registration towns as ResultGeo child objects.
+        """
+        formatted_reporting_names = self._format_reporting_towns(
+            self.parsed_string.reporting_town_names,
+            self.parsed_string.registration_town_names,
+            self.has_unspecified_group
+        )
+        objects = []
+        for name in formatted_reporting_names:
             ResultClass = self._classify_fragment(name)
             reporting_object = ResultClass(name, self.county)
-            self.reporting_towns.append(reporting_object)
+            objects.append(reporting_object)
+        return objects
+    
+    @cached_property
+    def has_unspecified_group(self) -> bool:
+        """
+        Return True if the result object includes an unspecified group, else False.
 
-    def _classify_fragment(self, fragment_name: str) -> Type[ResultGeo]:
+        Examples:
+            >>> unit = ReportingUnit.from_strings('MEDWAY/TOWNSHIPS', 'PEN')
+            >>> unit.has_unspecified_group
+            True
+            >>> unit = ReportingUnit.from_strings('ADAMSTOWN/LOWER CUPSUPTIC TWPS (RANGELEY)', 'OXF')
+            >>> unit.has_unspecified_group
+            False
+            >>> unit = ReportingUnit.from_strings('MILLINOCKET PIS TWPS', 'PIS')
+            >>> unit.has_unspecified_group
+            True
+            >>> unit = ReportingUnit.from_strings('LEXINGTON & SPRING LAKE TWPS', 'SOM')
+            >>> unit.has_unspecified_group
+            False
+        """
+        reporting = self.parsed_string.reporting_town_names
+        registration = self.parsed_string.registration_town_names
+        
+        if len(registration) > 1:
+            return False
+        elif len(reporting) in (1,2) and UNSPECIFIED_FLAG in reporting:
+            return True
+        elif len(reporting) == 1 and UNSPECIFIED_FLAG in reporting[0]:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def _format_reporting_towns(
+            reporting_towns: List[str], 
+            registration_towns: List[str], 
+            has_unspecified_group: bool) -> List[str]:
+        """
+        Apply consistent format to towns and unspecified groups.
+
+        Args:
+            reporting_towns: List of one or more towns
+            registration_towns: List of non-reporting registration towns (if any)
+            has_unspecified_group: True if unit contains unspecified group, else False
+
+        Returns:
+            list: Reporting towns with standard formatting applied.
+
+        Examples:
+            >>> ReportingUnit._format_reporting_towns(['LEXINGTON', 'SPRING LAKE TWPS'], [], False)
+            ['LEXINGTON', 'SPRING LAKE TWP']
+            >>> ReportingUnit._format_reporting_towns(['FRANKLIN', 'TWPS'], [], True)
+            ['FRANKLIN', 'UNSPECIFIED FRANKLIN TWPS']
+            >>> ReportingUnit._format_reporting_towns(['PENOBSCOT TWPS'], ['MILLINOCKET'], True)
+            ['UNSPECIFIED MILLINOCKET TWPS [PEN]']
+        """
+        reporting = [
+            ReportingUnit._format_plural(town, has_unspecified_group)
+            for town in reporting_towns
+        ]
+        
+        if has_unspecified_group:
+            return ReportingUnit._name_unspecified_group(reporting, registration_towns)
+        else:
+            return reporting
+
+    @staticmethod    
+    def _format_plural(town: str, has_unspecified_group: bool) -> str:
+        """
+        Correct errors of pluralization in town or group names.
+
+        After this function is used, the presence or absence of a plural in a town name
+        reliably indicates whether it is an unspecified group.
+        """  
+        if has_unspecified_group:
+            return SINGULAR_PATTERN.sub(PLURAL, town)
+        else:
+            return PLURAL_PATTERN.sub(SINGULAR, town)
+
+    @staticmethod    
+    def _format_unspecified_group(group_name: str) -> str:
+        """
+        Apply special format to unspecified groups that include a county.
+        """  
+        return MULTI_COUNTY_PATTERN.sub(MULTI_COUNTY_FORMAT, group_name)
+    
+    @staticmethod
+    def _name_unspecified_group(
+            reporting_towns: List[str], 
+            registration_towns: List[str]) -> List[str]:
+        """
+        Label unspecified groups with their reporting town and a standard 'unspecified' flag.
+        """
+        name_elements = [STANDARD_FLAG, *registration_towns, *reporting_towns]
+        unformatted_group_name = ' '.join(filter(None, name_elements))
+        group_name = ReportingUnit._format_unspecified_group(unformatted_group_name)
+        return [group_name if UNSPECIFIED_FLAG in town else town for town in reporting_towns]
+    
+    @staticmethod
+    def _classify_fragment(fragment_name: str) -> Type[ResultGeo]:
         """
         Return correct ResultGeo child class for a reporting towns string fragment.
         """
-        from mainegeo.townships import is_unnamed_township
         if is_unnamed_township(fragment_name):
-            return Township
+            return UnnamedTownship
         
-        from mainegeo.patterns import UNSPECIFIED_FLAG
         if UNSPECIFIED_FLAG in fragment_name:
             return UnspecifiedGroup
         
         if fragment_name:
-            return Town
+            return NamedTownship
