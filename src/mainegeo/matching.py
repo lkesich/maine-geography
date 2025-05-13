@@ -59,8 +59,8 @@ class TownDatabase:
             towns = json.load(file, object_hook=cls.json_object_hook)
             return cls(towns, _processed=False)
     
-    @cached_class_attr
-    def json_object_hook(cls, json_record):
+    @staticmethod
+    def json_object_hook(json_record):
         return TownReference(
             name = json_record['town'],
             geocode = json_record['town_geocode'],

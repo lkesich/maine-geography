@@ -43,11 +43,15 @@ class County:
     fips: int = None
     
     def __post_init__(self):
+        self._normalize_types()
         self._assign_missing_attributes()
     
     @cached_class_attr
     def lookup(cls):
         return lookups.CountyLookup()
+    
+    def _normalize_types(self):
+        if self.fips: self.fips = int(self.fips)
             
     def _assign_missing_attributes(self):
         attrs = (self.name, self.code, self.fips)
