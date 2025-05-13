@@ -12,7 +12,6 @@ __all__ = [
 from dataclasses import dataclass
 from functools import cached_property, cache
 from typing import List, Dict, Optional
-from mainegeo import lookups
 from mainegeo.entities import County, Cousub, TownReference, TownAlias
 from importlib import resources
 from pathlib import Path
