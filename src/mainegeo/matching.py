@@ -87,6 +87,7 @@ class TownDatabase:
                 ],
                 json_record['gnis_variants'],
                 json_record['historical_names'],
+                json_record['misspellings'],
                 json_record['islands']
             ],
             _processed = False

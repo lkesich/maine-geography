@@ -64,9 +64,11 @@ ABBREVIATIONS = {
     "RESERVATION": "RES"
 }
 CONTAINS_FALSE_SUFFIX = ['INDIAN TOWNSHIP']
+SUBORDINATE_SUFFIXES = ['GORE', 'GRANT']
+DIRECTIONS = ['NORTH', 'SOUTH', 'EAST', 'WEST']
 
 # Factory functions
-def _generate_valid_punctuation_regex(char:str, template:Template) -> List[str]:
+def generate_valid_punctuation_regex(char:str, template:Template) -> List[str]:
     pattern = re.compile(f'(?P<leading>\\w+ ?)(?P<char>{char})(?P<trailing> ?\\w+)')
     valid_contexts = [pattern.match(town) for town in TOWNSHIPS.town]
     return [
@@ -76,7 +78,7 @@ def _generate_valid_punctuation_regex(char:str, template:Template) -> List[str]:
         if m is not None
     ]
 
-def _generate_false_suffix_regex() -> str:
+def generate_false_suffix_regex() -> str:
     leading = map(lambda x: re.sub(ALL_SUFFIXES, '', x), CONTAINS_FALSE_SUFFIX)
     return '|'.join(map(str.strip, leading))
 
@@ -90,10 +92,10 @@ SUFFIX_REPLACEMENTS = {
     f'(?i)(?<![A-Z]){full}(?=S?$)': abbr
     for full, abbr in ABBREVIATIONS.items()
 }
-VALID_AMPERSANDS = _generate_valid_punctuation_regex('&', VALID_AMPERSANDS_TEMPLATE)
-VALID_HYPHENS = _generate_valid_punctuation_regex('-', VALID_HYPHENS_TEMPLATE)
+VALID_AMPERSANDS = generate_valid_punctuation_regex('&', VALID_AMPERSANDS_TEMPLATE)
+VALID_HYPHENS = generate_valid_punctuation_regex('-', VALID_HYPHENS_TEMPLATE)
 ALL_SUFFIXES = '|'.join([*ABBREVIATIONS.keys(), *ABBREVIATIONS.values()])
-PRECEDES_FALSE_SUFFIX = _generate_false_suffix_regex()
+PRECEDES_FALSE_SUFFIX = generate_false_suffix_regex()
 
 # Patterns
 GNIS_PATTERN = re.compile(GNIS_NAME)
@@ -112,7 +114,7 @@ PLURAL = UNSPECIFIED_FLAG
 SINGULAR = re.sub('S\\b', '', UNSPECIFIED_FLAG)
 UNSPECIFIED_REGTOWN = f"(?P<regtown>{'|'.join(MULTI_COUNTY_REGISTRATION_TOWNS)})"
 UNSPECIFIED_COUNTY = f"(?P<cty>{'|'.join(COUNTIES.sos_county)})"
-SOS_FLAG = f"(?P<sos_flag>{UNSPECIFIED_FLAG}?)"
+SOS_FLAG = f"(?P<sos_flag>{UNSPECIFIED_FLAG})"
 
 # Patterns
 PLURAL_PATTERN = re.compile(f'\\b{PLURAL}\\b')
@@ -122,18 +124,11 @@ MULTI_COUNTY_FORMAT = r"\g<regtown> \g<sos_flag> [\g<cty>]"
 FORMATTED_GROUP_PATTERN = re.compile(f'{STANDARD_FLAG} (?P<regtown>\\w+.*) {UNSPECIFIED_FLAG}( \\[{UNSPECIFIED_COUNTY}\\])?')
 
 ## Other
-# Known typos in election result files
+# Known typos in election result files (excluding name variants)
 KNOWN_TYPOS = {
     'MARIONTWP' : 'MARION TWP',
-    'CONNER' : 'CONNOR',
-    'EDUMUNDS' : 'EDMUNDS',
-    'ELLIOTSVILLE' : 'ELLIOTTSVILLE',
-    'ORNVEILLE' : 'ORNEVILLE',
-    'SILIVER RIDGE TWP': 'SILVER RIDGE TWP',
     'PISCATAQUS': 'PISCATAQUIS',
     'FRANKLIN/T9 T10 SD': 'FRANKLIN/T9 SD/T10 SD',
-    '^PENOBSCOT TWPS$': 'MILLINOCKET PENOBSCOT TWPS',
-    '^PISCATAQUIS TWPS$': 'MILLINOCKET PISCATAQUIS TWPS',
     'PLEASANT POINT VOTING DISTRICT RICT': 'PLEASANT POINT VOTING DISTRICT'
 }
 

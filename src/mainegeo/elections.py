@@ -409,7 +409,10 @@ class ReportingUnit:
             >>> unit = ReportingUnit.from_strings('ADAMSTOWN/LOWER CUPSUPTIC TWPS (RANGELEY)', 'OXF')
             >>> unit.has_unspecified_group
             False
-            >>> unit = ReportingUnit.from_strings('MILLINOCKET PIS TWPS', 'PIS')
+            >>> unit = ReportingUnit.from_strings('MILLINOCKET PISCATAQUIS TWPS', 'PIS')
+            >>> unit.has_unspecified_group
+            True
+            >>> unit = ReportingUnit.from_strings('MILLINOCKET/PEN TWPS', 'PEN')
             >>> unit.has_unspecified_group
             True
             >>> unit = ReportingUnit.from_strings('LEXINGTON & SPRING LAKE TWPS', 'SOM')
@@ -418,12 +421,15 @@ class ReportingUnit:
         """
         reporting = self.parsed_string.reporting_town_names
         registration = self.parsed_string.registration_town_names
-        
+        group_name = ' '.join(filter(None, [*registration, *reporting]))
+
         if len(registration) > 1:
             return False
         elif len(reporting) in (1,2) and UNSPECIFIED_FLAG in reporting:
             return True
         elif len(reporting) == 1 and UNSPECIFIED_FLAG in reporting[0]:
+            return True
+        elif MULTI_COUNTY_PATTERN.match(group_name):
             return True
         else:
             return False
