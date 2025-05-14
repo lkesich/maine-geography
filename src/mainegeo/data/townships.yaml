@@ -2697,6 +2697,8 @@ towns:
     basename: Connor
     geoclass: Z3
   aliases:
+  - CONNER
+  - CONNER TWP
   - CONNOR
   - CONNOR TWP
   - TOWNSHIP OF CONNOR
@@ -3079,6 +3081,8 @@ towns:
   - DAY BLOCK
   - DAY BLOCK TOWNSHIP
   - DAY BLOCK TWP
+  - DAYBLOCK
+  - DAYBLOCK TWP
   - T31
   - T31 MD
   - T31 MD BPP
@@ -3763,6 +3767,8 @@ towns:
   - EDMUNDS
   - EDMUNDS TOWNSHIP
   - EDMUNDS TWP
+  - EDUMUNDS
+  - EDUMUNDS TWP
   - NUMBER 10
   - NUMBER 10 TOWNSHIP
   - NUMBER 10 TWP
@@ -7680,6 +7686,7 @@ towns:
     geoclass: Z3
   aliases:
   - MOXIE GORE
+  - MOXIE GORE TWP
   - T1 R5
   - T1 R5 BKP
   - T1 R5 BKP EKR
@@ -8319,6 +8326,8 @@ towns:
   - ORNEVILLE
   - ORNEVILLE TOWNSHIP
   - ORNEVILLE TWP
+  - ORNVEILLE
+  - ORNVEILLE TWP
   - TOWNSHIP OF ORNEVILLE
 - name: Orono
   geocode: '19490'
@@ -10278,6 +10287,8 @@ towns:
     basename: South Aroostook
     geoclass: Z3
   aliases:
+  - SILIVER RIDGE
+  - SILIVER RIDGE TWP
   - SILVER RIDGE
   - SILVER RIDGE TOWNSHIP
   - SILVER RIDGE TWP

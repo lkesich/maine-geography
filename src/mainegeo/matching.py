@@ -95,8 +95,7 @@ class TownDatabase:
     
     @classmethod
     def load_from_yaml(cls, file_path = None):
-        if file_path is None:
-            file_path = cls.yaml_path
+        file_path = file_path or cls.yaml_path
          
         with open(file_path, 'r') as f:
             data = yaml.safe_load(f)
@@ -126,7 +125,9 @@ class TownDatabase:
             
             return cls(towns, _processed=True)
         
-    def save_to_yaml(self, file_path):
+    def save_to_yaml(self, file_path = None):
+        file_path = file_path or self.yaml_path
+        
         serializable_data = {
             'towns': [
                 {
