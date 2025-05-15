@@ -63,9 +63,9 @@ ABBREVIATIONS = {
     "VOTING DISTRICT": "VOTING DIST",
     "RESERVATION": "RES"
 }
-CONTAINS_FALSE_SUFFIX = ['INDIAN TOWNSHIP']
-SUBORDINATE_SUFFIXES = ['GORE', 'GRANT', 'ISLAND']
+JUNIOR_SUFFIXES = ['GORE', 'GRANT', 'ISLAND']
 DIRECTIONS = ['NORTH', 'SOUTH', 'EAST', 'WEST']
+CONTAINS_FALSE_SUFFIX = ['INDIAN TOWNSHIP']
 
 # Factory functions
 def generate_valid_punctuation_regex(char:str, template:Template) -> List[str]:
@@ -96,12 +96,16 @@ VALID_AMPERSANDS = generate_valid_punctuation_regex('&', VALID_AMPERSANDS_TEMPLA
 VALID_HYPHENS = generate_valid_punctuation_regex('-', VALID_HYPHENS_TEMPLATE)
 ALL_SUFFIXES = '|'.join([*ABBREVIATIONS.keys(), *ABBREVIATIONS.values()])
 PRECEDES_FALSE_SUFFIX = generate_false_suffix_regex()
+JUNIOR_SUFFIX = f"\\b({'|'.join(JUNIOR_SUFFIXES)})"
+
 
 # Patterns
 GNIS_PATTERN = re.compile(GNIS_NAME)
 SUFFIX_PATTERN = re.compile(f"(?i)(?<!{PRECEDES_FALSE_SUFFIX}) ({ALL_SUFFIXES})S?$")
 VALID_AMPERSANDS_PATTERN = re.compile('(?i)' +'|'.join(VALID_AMPERSANDS))
 INVALID_PUNCTUATION_PATTERN = re.compile(f"(?i){PUNCTUATION}(?<!{'|'.join(VALID_HYPHENS)})")
+ENDSWITH_JUNIOR_SUFFIX_PATTERN = re.compile(f"(?i).+{JUNIOR_SUFFIX}$")
+CONTAINS_JUNIOR_SUFFIX_PATTERN = re.compile(f"(?i).+{JUNIOR_SUFFIX} TWP$")
 
 ## Unspecified groups
 # Constants

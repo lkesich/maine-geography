@@ -18,8 +18,9 @@ __all__ = [
     'has_alias',
     'extract_alias',
     'clean_township',
-    'strip_suffix',
     'strip_region',
+    'strip_suffix',
+    'toggle_suffix',
     'normalize_suffix',
     'strip_town',
     'clean_town'
@@ -28,6 +29,7 @@ __all__ = [
 import re
 from utils.strings import replace_all, squish, match_case, normalize_whitespace
 from utils.core import chain_operations
+from mainegeo.entities import TownType
 from mainegeo.patterns import (
     UNNAMED_PATTERN, 
     UNNAMED_ELEMENTS_PATTERN,
@@ -40,7 +42,9 @@ from mainegeo.patterns import (
     SUFFIX_PATTERN,
     LAST_REGION_PATTERN,
     VALID_AMPERSANDS_PATTERN,
-    INVALID_PUNCTUATION_PATTERN
+    INVALID_PUNCTUATION_PATTERN,
+    CONTAINS_JUNIOR_SUFFIX_PATTERN,
+    ENDSWITH_JUNIOR_SUFFIX_PATTERN
 )
 
 def is_unnamed_township(town: str) -> bool:
@@ -183,11 +187,44 @@ def clean_township(town: str) -> str:
         code = clean_code(town)
         return ' '.join(filter(None, [alias, code]))
     
+def strip_region(town: str) -> str:
+    return LAST_REGION_PATTERN.sub('', town)
+
 def strip_suffix(town: str) -> str:
     return SUFFIX_PATTERN.sub('', town)
 
-def strip_region(town: str) -> str:
-    return LAST_REGION_PATTERN.sub('', town)
+def toggle_suffix(town: str, town_type: TownType = None) -> str:
+    """
+    Adds or removes a township suffix to grants, gores, and islands.
+
+    The TWP suffix is not canonical for all grants, gores, and islands.
+    This function is used to generate plausible aliases for further testing.
+
+    Args:
+        town: A single town or township
+        town_type: A TownType object. If provided, will increase accuracy.
+
+    Returns:
+        Gore, grant or island with township suffix added or removed, or else town
+
+    Example:
+        >>> toggle_suffix('MOXIE GORE TWP')
+        'MOXIE GORE'
+        >>> toggle_suffix('HOPKINS ACADEMY GRANT')
+        'HOPKINS ACADEMY GRANT TWP'
+        >>> toggle_suffix('LOUDS ISLAND', TownType.UNORGANIZED)
+        'LOUDS ISLAND TWP'
+        >>> toggle_suffix('CHEBEAGUE ISLAND', TownType.TOWN)
+        'CHEBEAGUE ISLAND'
+    """
+    if town_type not in (TownType.UNORGANIZED, TownType.ISLAND, None):
+        return town
+    elif ENDSWITH_JUNIOR_SUFFIX_PATTERN.match(town):
+        return town + match_case(' TWP', town)
+    elif CONTAINS_JUNIOR_SUFFIX_PATTERN.match(town):
+            return town[0:-4]
+    else:
+        return town
     
 def normalize_suffix(town: str) -> str:
     """

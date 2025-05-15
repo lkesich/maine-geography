@@ -12,13 +12,63 @@ __all__ = [
 from dataclasses import dataclass
 from functools import cached_property, cache
 from typing import List, Dict, Optional
-from mainegeo.entities import County, Cousub, TownReference, TownAlias
 from importlib import resources
 from pathlib import Path
 import yaml
+from mainegeo.entities import (County, Cousub, TownType)
+from mainegeo.townships import (
+    clean_code,
+    clean_town,
+    strip_suffix,
+    strip_region,
+    toggle_suffix
+)
 
 def cached_class_attr(f):
     return classmethod(property(cache(f)))
+
+@dataclass
+class TownReference:
+    name: str
+    geocode: str
+    gnis_id: int
+    town_type: TownType
+    county: County
+    cousub: Cousub
+    aliases: List[str]
+    _processed: Optional[bool] = False
+
+    def __post_init__(self):
+        if not self._processed:
+            self._clean_aliases()
+            self._infer_aliases()
+            self._processed = True
+
+    def _clean_aliases(self):
+        aliases = sum(self.aliases, [])
+        aliases = map(str.upper, filter(None, aliases))
+        self.aliases = list(set(aliases))
+        
+    def _infer_aliases(self):
+        aliases = self.aliases
+        aliases.extend(list(map(clean_code, aliases)))
+        aliases.extend(list(map(clean_town, aliases)))
+        aliases.extend(list(map(strip_suffix, aliases)))
+        aliases.extend(list(map(strip_region, aliases)))
+        aliases.extend(list(map(strip_region, aliases))) # 2x
+
+        if self.town_type in (TownType.UNORGANIZED, TownType.ISLAND):
+            aliases.extend(list(map(toggle_suffix, aliases)))
+        
+        self.aliases = list(set(aliases))
+        self.aliases.sort()
+
+@dataclass(frozen=True)
+class TownAlias:
+    """ A lightweight frozen container holding the minimum elements required for matching.
+    """
+    name: str
+    county_fips: Optional[int] = None
 
 @dataclass
 class TownDatabase:
@@ -65,7 +115,7 @@ class TownDatabase:
             name = json_record['town'],
             geocode = json_record['town_geocode'],
             gnis_id = json_record['gnis_id'],
-            town_type = json_record['geotype'],
+            town_type = TownType(json_record['geotype']),
             county = County(
                 fips = json_record['county_fips'], 
                 name = json_record['county_name'],
@@ -106,7 +156,7 @@ class TownDatabase:
                     name = yml['name'],
                     geocode = yml['geocode'],
                     gnis_id = yml['gnis_id'],
-                    town_type = yml['town_type'],
+                    town_type = TownType(yml['town_type']),
                     county = County(
                         fips = yml['county']['fips'], 
                         name = yml['county']['name'],
@@ -133,7 +183,7 @@ class TownDatabase:
                 {
                     'name': town.name,
                     'geocode': town.geocode,
-                    'town_type': town.town_type,
+                    'town_type': town.town_type.value,
                     'gnis_id': town.gnis_id,
                     'county': {
                         'fips': town.county.fips,

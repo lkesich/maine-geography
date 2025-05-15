@@ -1,6 +1,6 @@
 import pandas as pd
 from importlib import resources
-from functools import cached_property, cache
+from functools import cache
 
 def cached_class_attr(f):
     return classmethod(property(cache(f)))

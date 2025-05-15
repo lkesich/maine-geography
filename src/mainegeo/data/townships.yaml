@@ -1231,6 +1231,7 @@ towns:
     geoclass: Z3
   aliases:
   - BLAKE GORE
+  - BLAKE GORE TWP
   - T5 R4
   - T5 R4 NBKP
 - name: Blanchard Twp
@@ -2582,6 +2583,7 @@ towns:
     geoclass: Z3
   aliases:
   - COBURN GORE
+  - COBURN GORE TWP
   - GORE NORTH T2/3 R6
   - GORE NORTH T2/3 R6 WBKP
   - GORE NORTH T23 R6
@@ -4567,6 +4569,7 @@ towns:
     geoclass: Z3
   aliases:
   - GORHAM GORE
+  - GORHAM GORE TWP
   - T1 R9
   - T1 R9 WBKP
 - name: Gouldsboro
@@ -5208,11 +5211,14 @@ towns:
     geoclass: Z1
   aliases:
   - HIBBERT'S GORE
+  - HIBBERT'S GORE TWP
   - HIBBERTS
   - HIBBERTS GORE
   - HIBBERTS GORE TWP
   - TOWNSHIP OF HIBBERTS GORE
+  - TOWNSHIP OF HIBBERTS GORE TWP
   - UNORGANIZED TERRITORY OF HIBBERTS GORE
+  - UNORGANIZED TERRITORY OF HIBBERTS GORE TWP
 - name: Highland Plt
   geocode: '25150'
   town_type: Plantation
@@ -6261,8 +6267,11 @@ towns:
     geoclass: Z3
   aliases:
   - LINCOLN COUNTY ISLAND
+  - LINCOLN COUNTY ISLAND TWP
   - LOUDS ISLAND
+  - LOUDS ISLAND TWP
   - MUSCONGUS ISLAND
+  - MUSCONGUS ISLAND TWP
 - name: Lincoln Plt
   geocode: '17160'
   town_type: Plantation
@@ -6973,6 +6982,7 @@ towns:
     geoclass: Z3
   aliases:
   - MASSACHUSETTS GORE
+  - MASSACHUSETTS GORE TWP
   - T3 R6
   - T3 R6 WBKP
 - name: Matinicus Isle Plt
@@ -8088,6 +8098,7 @@ towns:
   - NORTH YARMOUTH ACADEMY GRANT
   - NORTH YARMOUTH ACADEMY GRANT TWP
   - TOWNSHIP OF NORTH YARMOUTH ACADEMY GRANT
+  - TOWNSHIP OF NORTH YARMOUTH ACADEMY GRANT TWP
 - name: Northeast Carry Twp
   geocode: '21820'
   town_type: Unorganized Township
@@ -8837,9 +8848,12 @@ towns:
   - PERKINS SWAN ISLAND TWP
   - PERKINS TOWNSHIP
   - PERKINS TOWNSHIP SWAN ISLAND
+  - PERKINS TOWNSHIP SWAN ISLAND TWP
   - PERKINS TWP
   - PERKINS TWP SWAN ISLAND
+  - PERKINS TWP SWAN ISLAND TWP
   - TOWNSHIP OF PERKINS SWAN ISLAND
+  - TOWNSHIP OF PERKINS SWAN ISLAND TWP
 - name: Perry
   geocode: '29360'
   town_type: Town
@@ -8983,6 +8997,7 @@ towns:
     geoclass: Z3
   aliases:
   - PITTSTON ACADEMY GRANT
+  - PITTSTON ACADEMY GRANT TWP
   - T2 R4 NBKP
 - name: Pleasant Ridge Plt
   geocode: '25250'
@@ -15053,8 +15068,10 @@ towns:
   - ND T1 R1
   - ND T1 R1 NBKP
   - TAUNTON & RAYNHAM ACADEMY GRANT
+  - TAUNTON & RAYNHAM ACADEMY GRANT TWP
   - TAUNTON AND RAYNHAM
   - TAUNTON AND RAYNHAM ACADEMY GRANT
+  - TAUNTON AND RAYNHAM ACADEMY GRANT TWP
 - name: Temple
   geocode: 07190
   town_type: Town
@@ -15636,6 +15653,7 @@ towns:
     geoclass: Z3
   aliases:
   - VEAZIE GORE
+  - VEAZIE GORE TWP
 - name: Verona Island
   geocode: 09350
   town_type: Town
