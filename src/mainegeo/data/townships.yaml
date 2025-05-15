@@ -3769,8 +3769,6 @@ towns:
   - EDMUNDS
   - EDMUNDS TOWNSHIP
   - EDMUNDS TWP
-  - EDUMUNDS
-  - EDUMUNDS TWP
   - NUMBER 10
   - NUMBER 10 TOWNSHIP
   - NUMBER 10 TWP
@@ -8337,8 +8335,6 @@ towns:
   - ORNEVILLE
   - ORNEVILLE TOWNSHIP
   - ORNEVILLE TWP
-  - ORNVEILLE
-  - ORNVEILLE TWP
   - TOWNSHIP OF ORNEVILLE
 - name: Orono
   geocode: '19490'
@@ -9554,8 +9550,10 @@ towns:
     basename: Northeast Somerset
     geoclass: Z3
   aliases:
+  - ROCKWOOD STRIP
   - ROCKWOOD STRIP T1 R1
   - ROCKWOOD STRIP T1 R1 NBKP
+  - ROCKWOOD STRIP TWP
   - T1 R1
   - T1 R1 NBKP
 - name: Rockwood Strip T2 R1 NBKP
@@ -10302,8 +10300,6 @@ towns:
     basename: South Aroostook
     geoclass: Z3
   aliases:
-  - SILIVER RIDGE
-  - SILIVER RIDGE TWP
   - SILVER RIDGE
   - SILVER RIDGE TOWNSHIP
   - SILVER RIDGE TWP
