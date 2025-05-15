@@ -263,16 +263,26 @@ class TownDatabase:
             if all(getattr(town, k) == v for k, v in kwargs.items())
         ]
         
-    def match(self, town: str, county_fips: Optional[int] = None) -> TownReference:
+    def match(self, town: str, county_fips: int = None, cleaned: bool = True) -> TownReference:
         """
         Match a town name variant to the alias database and return the TownReference object.
+
+        Args:
+            town: A single town or township name
+            county_fips: Integer code for county. If used, will improve match rate.
+            cleaned: True if the town name is already clean, False if it should be cleaned.
         """
-        state_alias = TownAlias(town.upper())
+        if cleaned:
+            town_name = town.upper()
+        else:
+            town_name = clean_town(town.upper())
+        
+        state_alias = TownAlias(town_name)
         state_match = self.alias_lookup.get(state_alias)
         if state_match:
             return state_match
         elif county_fips:
-            county_alias = TownAlias(town.upper(), county_fips)
+            county_alias = TownAlias(town_name, county_fips)
             county_match = self.alias_lookup.get(county_alias)
             return county_match
     
