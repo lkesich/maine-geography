@@ -222,11 +222,9 @@ class TownDatabase:
 
     def _remove_duplicate_aliases(self):
         for town in self.data:
-            canonical = town.name.upper()
             town.aliases = [
                 alias_name for alias_name in town.aliases
-                if TownAlias(alias_name, town.county.fips) in self._unique_aliases
-                    or alias_name == canonical
+                if TownAlias(alias_name, town.county.fips) in self.alias_lookup.keys()
             ]
 
     @cached_property
@@ -249,11 +247,14 @@ class TownDatabase:
     def alias_lookup(self) -> Dict[TownAlias, TownReference]:
         records = {}
         for town in self.data:
+            canonical = town.name.upper()
+            
             for alias_name in town.aliases:
                 state_alias = TownAlias(alias_name)
                 county_alias = TownAlias(alias_name, town.county.fips)
+                
                 for alias in (state_alias, county_alias):
-                    if alias in self._unique_aliases:
+                    if alias in self._unique_aliases or alias_name == canonical:
                         records[alias] = town
         return records
             

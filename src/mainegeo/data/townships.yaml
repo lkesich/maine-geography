@@ -700,6 +700,7 @@ towns:
   aliases:
   - BANGOR
   - CITY OF BANGOR
+  - KENDUSKEAG
   - KENDUSKEAG PLANTATION
   - KENDUSKEAG PLT
   - SUNBURY TOWN
@@ -9332,6 +9333,7 @@ towns:
     geoclass: T1
   aliases:
   - PLANTATION OF RANGELEY
+  - RANGELEY
   - RANGELEY PLT
 - name: Raymond
   geocode: 05190
