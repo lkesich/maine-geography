@@ -16,7 +16,6 @@ from importlib import resources
 from pathlib import Path
 import yaml
 from mainegeo.entities import (County, Cousub, TownType)
-from mainegeo.patterns import ENFORCED_ALIASES
 from mainegeo.townships import (
     clean_code,
     clean_town,
@@ -228,17 +227,7 @@ class TownDatabase:
                 alias_name for alias_name in town.aliases
                 if TownAlias(alias_name, town.county.fips) in self._unique_aliases
                     or alias_name == canonical
-                    or TownDatabase._alias_is_enforced(town.name, alias_name)
             ]
-
-    @staticmethod
-    def _alias_is_enforced(town_name, alias_name):
-        """
-        Check if alias should be used even if not unique and not canonical.
-        """
-        town = town_name.upper()
-        alias = alias_name.upper()
-        return ENFORCED_ALIASES.get(town) == alias
 
     @cached_property
     def _suggested_aliases(self) -> List[TownAlias]:
