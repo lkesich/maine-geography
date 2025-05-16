@@ -21,7 +21,8 @@ from mainegeo.townships import (
     clean_town,
     strip_suffix,
     strip_region,
-    toggle_suffix
+    toggle_suffix,
+    extract_alias
 )
 
 def cached_class_attr(f):
@@ -263,7 +264,7 @@ class TownDatabase:
             town for town in self.data
             if all(getattr(town, k) == v for k, v in kwargs.items())
         ]
-        
+            
     def match(self, town: str, county_fips: int = None, cleaned: bool = True) -> TownReference:
         """
         Match a town name variant to the alias database and return the TownReference object.
@@ -277,16 +278,42 @@ class TownDatabase:
             town_name = town.upper()
         else:
             town_name = clean_town(town.upper())
+
+        def lazy_get_code(unmatched_town: str):
+            township_code = clean_code(unmatched_town)
+            if township_code != unmatched_town:
+                return township_code
+            
+        def lazy_get_alias(unmatched_town: str):
+            township_alias = extract_alias(unmatched_town)
+            if township_alias != unmatched_town:
+                return township_alias
         
-        state_alias = TownAlias(town_name)
-        state_match = self.alias_lookup.get(state_alias)
-        if state_match:
-            return state_match
-        elif county_fips:
-            county_alias = TownAlias(town_name, county_fips)
-            county_match = self.alias_lookup.get(county_alias)
-            return county_match
-    
+        # lazy evaluation
+        names = [
+            lambda: town_name,
+            lambda: lazy_get_code(town_name),
+            lambda: lazy_get_alias(town_name)
+        ]
+
+        for get_name in names:
+            name = get_name()
+            if name:           
+                state_alias = TownAlias(name)
+                state_match = self.alias_lookup.get(state_alias)
+                
+                if state_match:
+                    return state_match
+                
+                if county_fips is None:
+                    continue
+
+                county_alias = TownAlias(name, county_fips)
+                county_match = self.alias_lookup.get(county_alias)
+
+                if county_match:
+                    return county_match
+            
     def canonical_name(self, town: str, county_fips: Optional[int] = None) -> str:
         """
         Match a town to the alias database and return the canonical name only.
