@@ -52,11 +52,15 @@ class TownReference:
         
     def _infer_aliases(self):
         aliases = self.aliases
+        
         aliases.extend(list(map(clean_code, aliases)))
         aliases.extend(list(map(clean_town, aliases)))
         aliases.extend(list(map(strip_suffix, aliases)))
         aliases.extend(list(map(strip_region, aliases)))
         aliases.extend(list(map(strip_region, aliases))) # 2x
+
+        township_aliases = filter(None, map(extract_alias, aliases))
+        aliases.extend(list(township_aliases))
 
         if self.town_type in (TownType.UNORGANIZED, TownType.ISLAND):
             aliases.extend(list(map(toggle_suffix, aliases)))
@@ -273,11 +277,17 @@ class TownDatabase:
             town: A single town or township name
             county_fips: Integer code for county. If used, will improve match rate.
             cleaned: True if the town name is already clean, False if it should be cleaned.
+
+        Examples:
+            >>> towndb = TownDatabase.build()
+            >>> towndb.match('Cross Lake Twp (T17 R5)', cleaned = False).name
+            'Cross Lake Twp'
+            >>> towndb.match('Prentiss Twp') is None
+            True
+            >>> towndb.match('Prentiss Twp', county_fips = 19).name
+            'Prentiss Twp T7 R3 NBPP'
         """
-        if cleaned:
-            town_name = town.upper()
-        else:
-            town_name = clean_town(town.upper())
+        town_name = town.upper() if cleaned else clean_town(town.upper())
 
         def lazy_get_code(unmatched_town: str):
             township_code = clean_code(unmatched_town)

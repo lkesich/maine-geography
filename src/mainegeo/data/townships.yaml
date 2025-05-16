@@ -622,7 +622,6 @@ towns:
     basename: Northeast Somerset
     geoclass: Z3
   aliases:
-  - BALD MOUNTAIN
   - BALD MOUNTAIN T2 R3
   - BALD MOUNTAIN TOWNSHIP T2 R3
   - BALD MOUNTAIN TWP T2 R3
@@ -1127,11 +1126,17 @@ towns:
     basename: Northwest Aroostook
     geoclass: Z3
   aliases:
+  - '12'
+  - 12 WELS
   - 12 WELS T20 R11
   - 12 WELS T20 R11 WELS
   - BIG TWENTY
   - BIG TWENTY TOWNSHIP
   - BIG TWENTY TWP
+  - R12
+  - R12 WELS
+  - R12 WELS R12
+  - R12 WELS R12 WELS
   - R12 WELS T20 R11 R12
   - R12 WELS T20 R11 R12 WELS
   - T20 R11
@@ -2585,6 +2590,9 @@ towns:
   aliases:
   - COBURN GORE
   - COBURN GORE TWP
+  - GORE NORTH
+  - GORE NORTH 3 R6
+  - GORE NORTH 3 R6 WBKP
   - GORE NORTH T2/3 R6
   - GORE NORTH T2/3 R6 WBKP
   - GORE NORTH T23 R6
@@ -4603,6 +4611,7 @@ towns:
     basename: North Oxford
     geoclass: Z3
   aliases:
+  - '2'
   - 2 TA
   - GRAFTON
   - GRAFTON TOWNSHIP
@@ -6465,11 +6474,19 @@ towns:
     basename: North Penobscot
     geoclass: Z3
   aliases:
+  - AND R9
+  - AND R9 WELS
+  - AND R9 WELS R9
+  - AND R9 WELS R9 WELS
   - AND R9 WELS TA R8 ND R9
   - AND R9 WELS TA R8 ND R9 WELS
   - LONG A
   - LONG A TOWNSHIP
   - LONG A TWP
+  - R9
+  - R9 WELS
+  - R9 WELS R9
+  - R9 WELS R9 WELS
   - R9 WELS TA R8 ND R9
   - R9 WELS TA R8 ND R9 WELS
   - TA R8 AND R9
@@ -8112,6 +8129,7 @@ towns:
     basename: Northwest Piscataquis
     geoclass: Z3
   aliases:
+  - BURBANK
   - BURBANK T3 R15
   - BURBANK T3 R15 WELS
   - BURBANK-T3 R15
@@ -9180,8 +9198,10 @@ towns:
   - PRENTICE TOWNSHIP
   - PRENTICE TWP
   - PRENTISS
+  - PRENTISS TOWNSHIP
   - PRENTISS TOWNSHIP T7 R3
   - PRENTISS TOWNSHIP T7 R3 NBPP
+  - PRENTISS TWP
   - PRENTISS TWP T7 R3
   - PRENTISS TWP T7 R3 NBPP
   - T07 R03
@@ -9552,7 +9572,6 @@ towns:
     basename: Northeast Somerset
     geoclass: Z3
   aliases:
-  - ROCKWOOD STRIP
   - ROCKWOOD STRIP T1 R1
   - ROCKWOOD STRIP T1 R1 NBKP
   - ROCKWOOD STRIP TWP
@@ -10432,6 +10451,7 @@ towns:
     geoclass: Z3
   aliases:
   - SOLDIERTOWN
+  - SOLDIERTOWN TOWNSHIP
   - SOLDIERTOWN TOWNSHIP T2 R7
   - SOLDIERTOWN TOWNSHIP T2 R7 WELS
   - SOLDIERTOWN TWP
@@ -14292,6 +14312,7 @@ towns:
     basename: East Hancock
     geoclass: Z3
   aliases:
+  - S D
   - S D T7
   - T 7 S D
   - T7
@@ -15057,10 +15078,14 @@ towns:
     basename: Northeast Somerset
     geoclass: Z3
   aliases:
+  - ASKWITH AND
+  - ASKWITH AND ND
   - ASKWITH AND ND T1 R1
   - ASKWITH AND ND T1 R1 NBKP
   - ASKWITH AND T1 R1
   - ASKWITH AND T1 R1 NBKP
+  - ND
+  - ND ND
   - ND ND T1 R1
   - ND ND T1 R1 NBKP
   - ND T1 R1

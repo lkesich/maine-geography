@@ -147,7 +147,7 @@ def extract_alias(town: str) -> str:
         town: A single town or township
 
     Returns:
-        Input string with punctuation and spacing normalized for all township codes
+        Input string with township code removed.
 
     Example:
         >>> extract_alias('CROSS LAKE TWP (T17 R5)')
@@ -157,9 +157,7 @@ def extract_alias(town: str) -> str:
         >>> extract_alias('PRENTISS TWP (T7 R3 NBPP)')
         'PRENTISS TWP'
     """
-    if has_alias(town) is False:
-        return None
-    else:
+    if has_alias(town):
         return squish(re.sub(NON_ALIAS_PATTERN, '', town))
     
 def clean_township(town: str) -> str:
