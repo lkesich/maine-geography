@@ -5,9 +5,14 @@ See individual module documentation for detailed information.
 """
 from . import elections
 from . import townships
+from . import matching
+from . import helpers
+from . import patterns
 
 __all__ = [
     'elections',
     'townships',
-    'matching'
+    'matching',
+    'helpers',
+    'patterns'
 ]

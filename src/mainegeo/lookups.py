@@ -1,29 +1,46 @@
 import pandas as pd
 from importlib import resources
-from functools import cache
+from functools import cache, cached_property
 
 def cached_class_attr(f):
     return classmethod(property(cache(f)))
 
-class CountyLookup:
+class CountyData:
     @cached_class_attr
     def csv_path(cls):
         return resources.files('mainegeo.data').joinpath('counties.csv')
 
     def __init__(self):
         with self.csv_path.open('r') as f:
-            data = pd.read_csv(f).replace({float('nan'): None})
+            data = pd.read_csv(f)
             for column in data.columns:
                 setattr(self, column, data[column])
-            self.data = data.to_dict(orient="records")
-            self.code_to_fips = dict(zip(self.sos_county, self.county_fips))
-            self.name_to_fips = dict(zip(self.county_name, self.county_fips))
-            self.fips_to_code = dict(zip(self.county_fips, self.sos_county))
-            self.name_to_code = dict(zip(self.county_name, self.sos_county))
-            self.code_to_name = dict(zip(self.sos_county, self.county_name))
-            self.fips_to_name = dict(zip(self.county_fips, self.county_name))
+            
+    @cached_property
+    def code_to_fips(self):
+        return dict(zip(self.sos_county, self.county_fips))
 
-class TownshipLookup:
+    @cached_property
+    def name_to_fips(self):
+        return dict(zip(self.county_name, self.county_fips))
+    
+    @cached_property
+    def fips_to_code(self):
+        return dict(zip(self.county_fips, self.sos_county))
+
+    @cached_property
+    def name_to_code(self):
+        return dict(zip(self.county_name, self.sos_county))
+    
+    @cached_property
+    def code_to_name(self):
+        return dict(zip(self.sos_county, self.county_name))
+    
+    @cached_property
+    def fips_to_name(self):
+        return dict(zip(self.county_fips, self.county_name))
+
+class TownshipData:
     @cached_class_attr
     def json_path(cls):
         """ Unprocessed data """
@@ -34,4 +51,3 @@ class TownshipLookup:
             data = pd.read_json(f)
             for column in data.columns:
                 setattr(self, column, data[column])
-            self.data = data.to_dict(orient="records")

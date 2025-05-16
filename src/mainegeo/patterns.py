@@ -1,37 +1,44 @@
 """Regex patterns and helpers for parsing Maine election results and place names.
 """
+
+__docformat__ = 'google'
+
+__all__ = [
+    'REGIONS',
+    'GNIS_GEOTYPES'
+]
+
 import re
-from mainegeo.lookups import CountyLookup, TownshipLookup
+from mainegeo.lookups import CountyData, TownshipData
 from string import Template
 from typing import List
 
 # Lazy loading lookup tables
-COUNTIES = CountyLookup()
-TOWNSHIPS = TownshipLookup()
+COUNTIES = CountyData()
+TOWNSHIPS = TownshipData()
 
 # Base character sets for patterns
-ALPHA = "A-Za-z"
-ALNUM = ALPHA + "0-9"
-FUZZY = f"[^{ALNUM},]{{0,3}}"
-PUNCTUATION = f'[^ {ALNUM}]'
+FUZZY = f"[^,\\w]{{0,3}}"
+PUNCTUATION = f'[^ \\w]'
 
 ## Townships
 # Constants
-REGIONS = ["ED","MD","ND","SD","TS","BKP","BPP","EKR","NWP","WKR","NBKP","NBPP","WBKP","WELS"]
+REGIONS: List[str] = ["ED","MD","ND","SD","TS","BKP","BPP","EKR","NWP","WKR","NBKP","NBPP","WBKP","WELS"]
 
 # Building blocks
 REGION = f"(?:{'|'.join(REGIONS)})"
 RANGE = f"(?:R.?[\\d]{{1,2}})"
-TOWNSHIP_STANDARD = "(?:T.?[\\d]{1,2})"
-TOWNSHIP_ALTERNATE = f"(?<![{ALNUM}])T[ABCDX](?![{ALPHA}])"
+TOWNSHIP_STANDARD = "(?:T.?\\d{1,2})"
+TOWNSHIP_ALTERNATE = f"(?<!\\w)T[ABCDX](?![a-z])"
 TOWNSHIP = f"(?:{TOWNSHIP_STANDARD}|{TOWNSHIP_ALTERNATE})"
 UNNAMED = f"((?:{TOWNSHIP})(?:{FUZZY}{RANGE})?(?:{FUZZY}{REGION}){{0,2}})"
+UNNAMED_ELEMENTS = f"(?:{'|'.join([TOWNSHIP, RANGE, REGION])})"
 
 # Patterns
-UNNAMED_PATTERN = re.compile(UNNAMED)
-UNNAMED_ELEMENTS = f"(?:{'|'.join([TOWNSHIP, RANGE, REGION])})"
-UNNAMED_ELEMENTS_PATTERN = re.compile(UNNAMED_ELEMENTS)
-LAST_REGION_PATTERN = re.compile(f" {REGION}$")
+UNNAMED_PATTERN = re.compile(UNNAMED, re.I)
+UNNAMED_ELEMENTS_PATTERN = re.compile(UNNAMED_ELEMENTS, re.I)
+LAST_REGION_PATTERN = re.compile(f" {REGION}$", re.I)
+
 
 ## Result parsing
 # Building blocks
@@ -46,8 +53,8 @@ MEANINGFUL_CHARACTERS = ["(", ")", "--"]
 
 # Patterns
 REGISTRATION_PATTERN = re.compile(f'{PARENTHETICAL}|{PRECEDES_DASH}')
-CLEAN_TOWNSHIP_PATTERN = re.compile(f"[^{ALNUM}]|{LEADING_ZERO}")
-NON_ALIAS_CHARACTERS_PATTERN = re.compile(f'(?i){UNNAMED}|[^{ALNUM}]|twps?')
+CLEAN_TOWNSHIP_PATTERN = re.compile(f"[^\\w]|{LEADING_ZERO}")
+NON_ALIAS_CHARACTERS_PATTERN = re.compile(f'(?i){UNNAMED}|[^\\w]|twps?')
 NON_ALIAS_PATTERN = re.compile(f'(?i){UNNAMED}(?: twp)?|{PUNCTUATION}')
 DROP_CHARACTERS_PATTERN = re.compile('|'.join(map(re.escape, DROP_CHARACTERS)))
 MEANINGFUL_CHARACTERS_PATTERN = re.compile('|'.join(map(re.escape, MEANINGFUL_CHARACTERS)))
@@ -98,7 +105,6 @@ ALL_SUFFIXES = '|'.join([*ABBREVIATIONS.keys(), *ABBREVIATIONS.values()])
 PRECEDES_FALSE_SUFFIX = generate_false_suffix_regex()
 JUNIOR_SUFFIX = f"\\b({'|'.join(JUNIOR_SUFFIXES)})"
 
-
 # Patterns
 GNIS_PATTERN = re.compile(GNIS_NAME)
 SUFFIX_PATTERN = re.compile(f"(?i)(?<!{PRECEDES_FALSE_SUFFIX}) ({ALL_SUFFIXES})S?$")
@@ -106,6 +112,7 @@ VALID_AMPERSANDS_PATTERN = re.compile('(?i)' +'|'.join(VALID_AMPERSANDS))
 INVALID_PUNCTUATION_PATTERN = re.compile(f"(?i){PUNCTUATION}(?<!{'|'.join(VALID_HYPHENS)})")
 ENDSWITH_JUNIOR_SUFFIX_PATTERN = re.compile(f"(?i).+{JUNIOR_SUFFIX}$")
 CONTAINS_JUNIOR_SUFFIX_PATTERN = re.compile(f"(?i).+{JUNIOR_SUFFIX} TWP$")
+
 
 ## Unspecified groups
 # Constants
@@ -126,6 +133,7 @@ SINGULAR_PATTERN = re.compile(f'\\b{SINGULAR}\\b')
 MULTI_COUNTY_PATTERN = re.compile(f"(?i){UNSPECIFIED_REGTOWN} {UNSPECIFIED_COUNTY}\\w* {SOS_FLAG}")
 MULTI_COUNTY_FORMAT = r"\g<regtown> \g<sos_flag> [\g<cty>]"
 FORMATTED_GROUP_PATTERN = re.compile(f'{STANDARD_FLAG} (?P<regtown>\\w+.*) {UNSPECIFIED_FLAG}( \\[{UNSPECIFIED_COUNTY}\\])?')
+
 
 ## Other
 # Known typos in election result files (excluding name variants)

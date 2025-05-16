@@ -31,109 +31,10 @@
             <h2>API Documentation</h2>
                 <ul class="memberlist">
             <li>
-                    <a class="variable" href="#ALPHA">ALPHA</a>
-            </li>
-            <li>
-                    <a class="variable" href="#ALNUM">ALNUM</a>
-            </li>
-            <li>
-                    <a class="variable" href="#FUZZY">FUZZY</a>
-            </li>
-            <li>
                     <a class="variable" href="#REGIONS">REGIONS</a>
             </li>
             <li>
-                    <a class="variable" href="#REGION">REGION</a>
-            </li>
-            <li>
-                    <a class="variable" href="#RANGE">RANGE</a>
-            </li>
-            <li>
-                    <a class="variable" href="#TOWNSHIP_STANDARD">TOWNSHIP_STANDARD</a>
-            </li>
-            <li>
-                    <a class="variable" href="#TOWNSHIP_ALTERNATE">TOWNSHIP_ALTERNATE</a>
-            </li>
-            <li>
-                    <a class="variable" href="#TOWNSHIP">TOWNSHIP</a>
-            </li>
-            <li>
-                    <a class="variable" href="#UNNAMED">UNNAMED</a>
-            </li>
-            <li>
-                    <a class="variable" href="#UNNAMED_PATTERN">UNNAMED_PATTERN</a>
-            </li>
-            <li>
-                    <a class="variable" href="#UNNAMED_ELEMENTS">UNNAMED_ELEMENTS</a>
-            </li>
-            <li>
-                    <a class="variable" href="#UNNAMED_ELEMENTS_PATTERN">UNNAMED_ELEMENTS_PATTERN</a>
-            </li>
-            <li>
-                    <a class="variable" href="#LEADING_ZERO">LEADING_ZERO</a>
-            </li>
-            <li>
-                    <a class="variable" href="#NOT_REPORTING">NOT_REPORTING</a>
-            </li>
-            <li>
-                    <a class="variable" href="#PARENTHETICAL">PARENTHETICAL</a>
-            </li>
-            <li>
-                    <a class="variable" href="#PRECEDES_DASH">PRECEDES_DASH</a>
-            </li>
-            <li>
-                    <a class="variable" href="#STANDARD_DELIMITER">STANDARD_DELIMITER</a>
-            </li>
-            <li>
-                    <a class="variable" href="#NONSTANDARD_DELIMITERS">NONSTANDARD_DELIMITERS</a>
-            </li>
-            <li>
-                    <a class="variable" href="#DROP_CHARACTERS">DROP_CHARACTERS</a>
-            </li>
-            <li>
-                    <a class="variable" href="#MEANINGFUL_CHARACTERS">MEANINGFUL_CHARACTERS</a>
-            </li>
-            <li>
-                    <a class="variable" href="#ABBREVIATIONS">ABBREVIATIONS</a>
-            </li>
-            <li>
                     <a class="variable" href="#GNIS_GEOTYPES">GNIS_GEOTYPES</a>
-            </li>
-            <li>
-                    <a class="variable" href="#GNIS_NAME">GNIS_NAME</a>
-            </li>
-            <li>
-                    <a class="variable" href="#SUFFIX">SUFFIX</a>
-            </li>
-            <li>
-                    <a class="variable" href="#REGISTRATION_PATTERN">REGISTRATION_PATTERN</a>
-            </li>
-            <li>
-                    <a class="variable" href="#CLEAN_TOWNSHIP_PATTERN">CLEAN_TOWNSHIP_PATTERN</a>
-            </li>
-            <li>
-                    <a class="variable" href="#NON_ALIAS_CHARACTERS_PATTERN">NON_ALIAS_CHARACTERS_PATTERN</a>
-            </li>
-            <li>
-                    <a class="variable" href="#NON_ALIAS_PATTERN">NON_ALIAS_PATTERN</a>
-            </li>
-            <li>
-                    <a class="variable" href="#DROP_CHARACTERS_PATTERN">DROP_CHARACTERS_PATTERN</a>
-            </li>
-            <li>
-                    <a class="variable" href="#MEANINGFUL_CHARACTERS_PATTERN">MEANINGFUL_CHARACTERS_PATTERN</a>
-            </li>
-            <li>
-                    <a class="variable" href="#NONSTANDARD_DELIMITER_PATTERN">NONSTANDARD_DELIMITER_PATTERN</a>
-            </li>
-            <li>
-                    <a class="variable" href="#GNIS_PATTERN">GNIS_PATTERN</a>
-            </li>
-            <li>
-                    <a class="variable" href="#SUFFIX_PATTERN">SUFFIX_PATTERN</a>
-            </li>
-            <li>
-                    <a class="variable" href="#KNOWN_TYPOS">KNOWN_TYPOS</a>
             </li>
     </ul>
 
@@ -158,343 +59,175 @@
 
                         <label class="view-source-button" for="mod-patterns-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;Regex patterns and helpers for parsing Maine election results and place names.</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="c1"># Base character sets for patterns</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="n">ALPHA</span> <span class="o">=</span> <span class="s2">&quot;A-Za-z&quot;</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="n">ALNUM</span> <span class="o">=</span> <span class="n">ALPHA</span> <span class="o">+</span> <span class="s2">&quot;0-9&quot;</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="n">FUZZY</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[^</span><span class="si">{</span><span class="n">ALNUM</span><span class="si">}</span><span class="s2">,]</span><span class="se">{{</span><span class="s2">0,3</span><span class="se">}}</span><span class="s2">&quot;</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="c1"># Township components</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="n">REGIONS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ED&quot;</span><span class="p">,</span><span class="s2">&quot;MD&quot;</span><span class="p">,</span><span class="s2">&quot;ND&quot;</span><span class="p">,</span><span class="s2">&quot;SD&quot;</span><span class="p">,</span><span class="s2">&quot;TS&quot;</span><span class="p">,</span><span class="s2">&quot;BKP&quot;</span><span class="p">,</span><span class="s2">&quot;BPP&quot;</span><span class="p">,</span><span class="s2">&quot;EKR&quot;</span><span class="p">,</span><span class="s2">&quot;NWP&quot;</span><span class="p">,</span><span class="s2">&quot;WKR&quot;</span><span class="p">,</span><span class="s2">&quot;NBKP&quot;</span><span class="p">,</span><span class="s2">&quot;NBPP&quot;</span><span class="p">,</span><span class="s2">&quot;WBKP&quot;</span><span class="p">,</span><span class="s2">&quot;WELS&quot;</span><span class="p">]</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="n">REGION</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">REGIONS</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="n">RANGE</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:R.?[</span><span class="se">\\</span><span class="s2">d]</span><span class="se">{{</span><span class="s2">1,2</span><span class="se">}}</span><span class="s2">)&quot;</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="n">TOWNSHIP_STANDARD</span> <span class="o">=</span> <span class="s2">&quot;T.?[</span><span class="se">\\</span><span class="s2">d]{1,2}&quot;</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="n">TOWNSHIP_ALTERNATE</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?&lt;![</span><span class="si">{</span><span class="n">ALNUM</span><span class="si">}</span><span class="s2">])T[ABCDX](?![</span><span class="si">{</span><span class="n">ALPHA</span><span class="si">}</span><span class="s2">])&quot;</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="n">TOWNSHIP</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="n">TOWNSHIP_STANDARD</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">TOWNSHIP_ALTERNATE</span><span class="si">}</span><span class="s2">)&quot;</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="c1"># Core township pattern</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="n">UNNAMED</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;((?:</span><span class="si">{</span><span class="n">TOWNSHIP</span><span class="si">}</span><span class="s2">)(?:</span><span class="si">{</span><span class="n">FUZZY</span><span class="si">}{</span><span class="n">RANGE</span><span class="si">}</span><span class="s2">)?(?:</span><span class="si">{</span><span class="n">FUZZY</span><span class="si">}{</span><span class="n">REGION</span><span class="si">}</span><span class="s2">)</span><span class="se">{{</span><span class="s2">0,2</span><span class="se">}}</span><span class="s2">)&quot;</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="n">UNNAMED_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">UNNAMED</span><span class="p">)</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="n">UNNAMED_ELEMENTS</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">TOWNSHIP</span><span class="p">,</span><span class="w"> </span><span class="n">RANGE</span><span class="p">,</span><span class="w"> </span><span class="n">REGION</span><span class="p">])</span><span class="si">}</span><span class="s2">)&quot;</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="n">UNNAMED_ELEMENTS_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">UNNAMED_ELEMENTS</span><span class="p">)</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="c1"># Result parsing pattern blocks</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="n">LEADING_ZERO</span> <span class="o">=</span> <span class="s1">&#39;(?&lt;=[^</span><span class="se">\\</span><span class="s1">d])0(?=</span><span class="se">\\</span><span class="s1">d)&#39;</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="n">NOT_REPORTING</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;(?!AND|&amp;)&#39;</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="n">PARENTHETICAL</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">(</span><span class="si">{</span><span class="n">NOT_REPORTING</span><span class="si">}</span><span class="s1">[^</span><span class="se">\\</span><span class="s1">(]+</span><span class="se">\\</span><span class="s1">)&#39;</span>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a><span class="n">PRECEDES_DASH</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;^[^-]+--&#39;</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a><span class="n">STANDARD_DELIMITER</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="n">NONSTANDARD_DELIMITERS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&amp;&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;(AND &quot;</span><span class="p">]</span>
-</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a><span class="n">DROP_CHARACTERS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;~&quot;</span><span class="p">]</span>
-</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a><span class="n">MEANINGFUL_CHARACTERS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;(&quot;</span><span class="p">,</span> <span class="s2">&quot;)&quot;</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">]</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>
-</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a><span class="c1"># Name standardization pattern blocks</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a><span class="n">ABBREVIATIONS</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>    <span class="s2">&quot;PLANTATION&quot;</span><span class="p">:</span> <span class="s2">&quot;PLT&quot;</span><span class="p">,</span>
-</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>    <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">:</span> <span class="s2">&quot;TWP&quot;</span><span class="p">,</span>
-</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>    <span class="s2">&quot;RESERVATION&quot;</span><span class="p">:</span> <span class="s2">&quot;RES&quot;</span><span class="p">,</span>
-</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>    <span class="s2">&quot;VOTING DISTRICT&quot;</span><span class="p">:</span> <span class="s2">&quot;VOTING DIST&quot;</span>
-</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a><span class="p">}</span>
-</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a><span class="n">GNIS_GEOTYPES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CITY&quot;</span><span class="p">,</span> <span class="s2">&quot;PLANTATION&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWN&quot;</span><span class="p">]</span>
-</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a><span class="n">GNIS_NAME</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?i)(?P&lt;geotype&gt;</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GNIS_GEOTYPES</span><span class="p">)</span><span class="si">}</span><span class="s2">) of (?P&lt;town&gt;.+)&quot;</span>
-</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a><span class="n">SUFFIX</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?i) (</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ABBREVIATIONS</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="si">}</span><span class="s2">)$&quot;</span>
-</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>
-</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a><span class="c1"># Function-specific patterns</span>
-</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a><span class="n">REGISTRATION_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">PARENTHETICAL</span><span class="si">}</span><span class="s1">|</span><span class="si">{</span><span class="n">PRECEDES_DASH</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a><span class="n">CLEAN_TOWNSHIP_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[^</span><span class="si">{</span><span class="n">ALNUM</span><span class="si">}</span><span class="s2">]|</span><span class="si">{</span><span class="n">LEADING_ZERO</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a><span class="n">NON_ALIAS_CHARACTERS_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;(?i)</span><span class="si">{</span><span class="n">UNNAMED</span><span class="si">}</span><span class="s1">|[^</span><span class="si">{</span><span class="n">ALNUM</span><span class="si">}</span><span class="s1">]|twps?&#39;</span><span class="p">)</span>
-</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a><span class="n">NON_ALIAS_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;(?i)</span><span class="si">{</span><span class="n">UNNAMED</span><span class="si">}</span><span class="s1">|[^ </span><span class="si">{</span><span class="n">ALNUM</span><span class="si">}</span><span class="s1">]&#39;</span><span class="p">)</span>
-</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a><span class="n">DROP_CHARACTERS_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">,</span> <span class="n">DROP_CHARACTERS</span><span class="p">)))</span>
-</span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a><span class="n">MEANINGFUL_CHARACTERS_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">,</span> <span class="n">MEANINGFUL_CHARACTERS</span><span class="p">)))</span>
-</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a><span class="n">NONSTANDARD_DELIMITER_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">,</span> <span class="n">NONSTANDARD_DELIMITERS</span><span class="p">)),</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
-</span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a><span class="n">GNIS_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">GNIS_NAME</span><span class="p">)</span>
-</span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a><span class="n">SUFFIX_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">SUFFIX</span><span class="p">)</span>
-</span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a>
-</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a><span class="c1"># Known typos in election result files</span>
-</span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a><span class="n">KNOWN_TYPOS</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a>    <span class="s1">&#39;MARIONTWP&#39;</span> <span class="p">:</span> <span class="s1">&#39;MARION TWP&#39;</span><span class="p">,</span>
-</span><span id="L-59"><a href="#L-59"><span class="linenos">59</span></a>    <span class="s1">&#39;CONNER&#39;</span> <span class="p">:</span> <span class="s1">&#39;CONNOR&#39;</span><span class="p">,</span>
-</span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a>    <span class="s1">&#39;EDUMUNDS&#39;</span> <span class="p">:</span> <span class="s1">&#39;EDMUNDS&#39;</span><span class="p">,</span>
-</span><span id="L-61"><a href="#L-61"><span class="linenos">61</span></a>    <span class="s1">&#39;ELLIOTSVILLE&#39;</span> <span class="p">:</span> <span class="s1">&#39;ELLIOTTSVILLE&#39;</span><span class="p">,</span>
-</span><span id="L-62"><a href="#L-62"><span class="linenos">62</span></a>    <span class="s1">&#39;ORNVEILLE&#39;</span> <span class="p">:</span> <span class="s1">&#39;ORNEVILLE&#39;</span><span class="p">,</span>
-</span><span id="L-63"><a href="#L-63"><span class="linenos">63</span></a>    <span class="s1">&#39;SILIVER RIDGE TWP&#39;</span><span class="p">:</span> <span class="s1">&#39;SILVER RIDGE TWP&#39;</span><span class="p">,</span>
-</span><span id="L-64"><a href="#L-64"><span class="linenos">64</span></a>    <span class="s1">&#39;FRANKLIN/T9 T10 SD&#39;</span><span class="p">:</span> <span class="s1">&#39;FRANKLIN/T9 SD/T10 SD&#39;</span><span class="p">,</span>
-</span><span id="L-65"><a href="#L-65"><span class="linenos">65</span></a>    <span class="s1">&#39;PISCATAQUS&#39;</span><span class="p">:</span> <span class="s1">&#39;PISCATAQUIS&#39;</span><span class="p">,</span>
-</span><span id="L-66"><a href="#L-66"><span class="linenos">66</span></a>    <span class="s1">&#39;^PENOBSCOT TWPS$&#39;</span><span class="p">:</span> <span class="s1">&#39;MILLINOCKET PENOBSCOT TWPS&#39;</span><span class="p">,</span>
-</span><span id="L-67"><a href="#L-67"><span class="linenos">67</span></a>    <span class="s1">&#39;^PISCATAQUIS TWPS$&#39;</span><span class="p">:</span> <span class="s1">&#39;MILLINOCKET PISCATAQUIS TWPS&#39;</span><span class="p">,</span>
-</span><span id="L-68"><a href="#L-68"><span class="linenos">68</span></a>    <span class="s1">&#39;PLEASANT POINT VOTING DISTRICT RICT&#39;</span><span class="p">:</span> <span class="s1">&#39;PLEASANT POINT VOTING DISTRICT&#39;</span>
-</span><span id="L-69"><a href="#L-69"><span class="linenos">69</span></a><span class="p">}</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">  1</span></a><span class="sd">&quot;&quot;&quot;Regex patterns and helpers for parsing Maine election results and place names.</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos">  2</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a>
+</span><span id="L-4"><a href="#L-4"><span class="linenos">  4</span></a><span class="n">__docformat__</span> <span class="o">=</span> <span class="s1">&#39;google&#39;</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a>
+</span><span id="L-6"><a href="#L-6"><span class="linenos">  6</span></a><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos">  7</span></a>    <span class="s1">&#39;REGIONS&#39;</span><span class="p">,</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a>    <span class="s1">&#39;GNIS_GEOTYPES&#39;</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a><span class="p">]</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a>
+</span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">mainegeo.lookups</span><span class="w"> </span><span class="kn">import</span> <span class="n">CountyData</span><span class="p">,</span> <span class="n">TownshipData</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">string</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a>
+</span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a><span class="c1"># Lazy loading lookup tables</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a><span class="n">COUNTIES</span> <span class="o">=</span> <span class="n">CountyData</span><span class="p">()</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a><span class="n">TOWNSHIPS</span> <span class="o">=</span> <span class="n">TownshipData</span><span class="p">()</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a>
+</span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a><span class="c1"># Base character sets for patterns</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a><span class="n">FUZZY</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[^,</span><span class="se">\\</span><span class="s2">w]</span><span class="se">{{</span><span class="s2">0,3</span><span class="se">}}</span><span class="s2">&quot;</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a><span class="n">PUNCTUATION</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;[^ </span><span class="se">\\</span><span class="s1">w]&#39;</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a>
+</span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a><span class="c1">## Townships</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a><span class="c1"># Constants</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a><span class="n">REGIONS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ED&quot;</span><span class="p">,</span><span class="s2">&quot;MD&quot;</span><span class="p">,</span><span class="s2">&quot;ND&quot;</span><span class="p">,</span><span class="s2">&quot;SD&quot;</span><span class="p">,</span><span class="s2">&quot;TS&quot;</span><span class="p">,</span><span class="s2">&quot;BKP&quot;</span><span class="p">,</span><span class="s2">&quot;BPP&quot;</span><span class="p">,</span><span class="s2">&quot;EKR&quot;</span><span class="p">,</span><span class="s2">&quot;NWP&quot;</span><span class="p">,</span><span class="s2">&quot;WKR&quot;</span><span class="p">,</span><span class="s2">&quot;NBKP&quot;</span><span class="p">,</span><span class="s2">&quot;NBPP&quot;</span><span class="p">,</span><span class="s2">&quot;WBKP&quot;</span><span class="p">,</span><span class="s2">&quot;WELS&quot;</span><span class="p">]</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a>
+</span><span id="L-28"><a href="#L-28"><span class="linenos"> 28</span></a><span class="c1"># Building blocks</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos"> 29</span></a><span class="n">REGION</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">REGIONS</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a><span class="n">RANGE</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:R.?[</span><span class="se">\\</span><span class="s2">d]</span><span class="se">{{</span><span class="s2">1,2</span><span class="se">}}</span><span class="s2">)&quot;</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a><span class="n">TOWNSHIP_STANDARD</span> <span class="o">=</span> <span class="s2">&quot;(?:T.?</span><span class="se">\\</span><span class="s2">d{1,2})&quot;</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a><span class="n">TOWNSHIP_ALTERNATE</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?&lt;!</span><span class="se">\\</span><span class="s2">w)T[ABCDX](?![a-z])&quot;</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a><span class="n">TOWNSHIP</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="n">TOWNSHIP_STANDARD</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">TOWNSHIP_ALTERNATE</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a><span class="n">UNNAMED</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;((?:</span><span class="si">{</span><span class="n">TOWNSHIP</span><span class="si">}</span><span class="s2">)(?:</span><span class="si">{</span><span class="n">FUZZY</span><span class="si">}{</span><span class="n">RANGE</span><span class="si">}</span><span class="s2">)?(?:</span><span class="si">{</span><span class="n">FUZZY</span><span class="si">}{</span><span class="n">REGION</span><span class="si">}</span><span class="s2">)</span><span class="se">{{</span><span class="s2">0,2</span><span class="se">}}</span><span class="s2">)&quot;</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a><span class="n">UNNAMED_ELEMENTS</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">TOWNSHIP</span><span class="p">,</span><span class="w"> </span><span class="n">RANGE</span><span class="p">,</span><span class="w"> </span><span class="n">REGION</span><span class="p">])</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a>
+</span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a><span class="c1"># Patterns</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a><span class="n">UNNAMED_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">UNNAMED</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a><span class="n">UNNAMED_ELEMENTS_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">UNNAMED_ELEMENTS</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a><span class="n">LAST_REGION_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">REGION</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a>
+</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a>
+</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a><span class="c1">## Result parsing</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a><span class="c1"># Building blocks</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a><span class="n">LEADING_ZERO</span> <span class="o">=</span> <span class="s1">&#39;(?&lt;=[^</span><span class="se">\\</span><span class="s1">d])0(?=</span><span class="se">\\</span><span class="s1">d)&#39;</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a><span class="n">NOT_REPORTING</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;(?!AND|&amp;)&#39;</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a><span class="n">PARENTHETICAL</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">(</span><span class="si">{</span><span class="n">NOT_REPORTING</span><span class="si">}</span><span class="s1">[^</span><span class="se">\\</span><span class="s1">(]+</span><span class="se">\\</span><span class="s1">)&#39;</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a><span class="n">PRECEDES_DASH</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;^[^-]+--&#39;</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a><span class="n">STANDARD_DELIMITER</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a><span class="n">NONSTANDARD_DELIMITERS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&amp;&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;(AND &quot;</span><span class="p">]</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a><span class="n">DROP_CHARACTERS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;~&quot;</span><span class="p">]</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a><span class="n">MEANINGFUL_CHARACTERS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;(&quot;</span><span class="p">,</span> <span class="s2">&quot;)&quot;</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">]</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a>
+</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a><span class="c1"># Patterns</span>
+</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a><span class="n">REGISTRATION_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">PARENTHETICAL</span><span class="si">}</span><span class="s1">|</span><span class="si">{</span><span class="n">PRECEDES_DASH</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a><span class="n">CLEAN_TOWNSHIP_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[^</span><span class="se">\\</span><span class="s2">w]|</span><span class="si">{</span><span class="n">LEADING_ZERO</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a><span class="n">NON_ALIAS_CHARACTERS_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;(?i)</span><span class="si">{</span><span class="n">UNNAMED</span><span class="si">}</span><span class="s1">|[^</span><span class="se">\\</span><span class="s1">w]|twps?&#39;</span><span class="p">)</span>
+</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a><span class="n">NON_ALIAS_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;(?i)</span><span class="si">{</span><span class="n">UNNAMED</span><span class="si">}</span><span class="s1">(?: twp)?|</span><span class="si">{</span><span class="n">PUNCTUATION</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a><span class="n">DROP_CHARACTERS_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">,</span> <span class="n">DROP_CHARACTERS</span><span class="p">)))</span>
+</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a><span class="n">MEANINGFUL_CHARACTERS_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">,</span> <span class="n">MEANINGFUL_CHARACTERS</span><span class="p">)))</span>
+</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a><span class="n">NONSTANDARD_DELIMITER_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">,</span> <span class="n">NONSTANDARD_DELIMITERS</span><span class="p">)),</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a><span class="n">ORPHAN_PARENTHESIS_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;^(?P&lt;result&gt;[^(]+)(?P&lt;orphan_parenthesis&gt;[)])$&#39;</span><span class="p">)</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a>
+</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a><span class="c1">## Name standardization</span>
+</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a><span class="c1"># Constants</span>
+</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a><span class="n">GNIS_GEOTYPES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CITY&quot;</span><span class="p">,</span> <span class="s2">&quot;PLANTATION&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWN&quot;</span><span class="p">]</span>
+</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a><span class="n">ABBREVIATIONS</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>    <span class="s2">&quot;PLANTATION&quot;</span><span class="p">:</span> <span class="s2">&quot;PLT&quot;</span><span class="p">,</span>
+</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>    <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">:</span> <span class="s2">&quot;TWP&quot;</span><span class="p">,</span>
+</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>    <span class="s2">&quot;VOTING DISTRICT&quot;</span><span class="p">:</span> <span class="s2">&quot;VOTING DIST&quot;</span><span class="p">,</span>
+</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>    <span class="s2">&quot;RESERVATION&quot;</span><span class="p">:</span> <span class="s2">&quot;RES&quot;</span>
+</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a><span class="p">}</span>
+</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a><span class="n">JUNIOR_SUFFIXES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GORE&#39;</span><span class="p">,</span> <span class="s1">&#39;GRANT&#39;</span><span class="p">,</span> <span class="s1">&#39;ISLAND&#39;</span><span class="p">]</span>
+</span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a><span class="n">DIRECTIONS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NORTH&#39;</span><span class="p">,</span> <span class="s1">&#39;SOUTH&#39;</span><span class="p">,</span> <span class="s1">&#39;EAST&#39;</span><span class="p">,</span> <span class="s1">&#39;WEST&#39;</span><span class="p">]</span>
+</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a><span class="n">CONTAINS_FALSE_SUFFIX</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;INDIAN TOWNSHIP&#39;</span><span class="p">]</span>
+</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a>
+</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a><span class="c1"># Factory functions</span>
+</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a><span class="k">def</span><span class="w"> </span><span class="nf">generate_valid_punctuation_regex</span><span class="p">(</span><span class="n">char</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span><span class="n">Template</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a>    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;(?P&lt;leading&gt;</span><span class="se">\\</span><span class="s1">w+ ?)(?P&lt;char&gt;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s1">)(?P&lt;trailing&gt; ?</span><span class="se">\\</span><span class="s1">w+)&#39;</span><span class="p">)</span>
+</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a>    <span class="n">valid_contexts</span> <span class="o">=</span> <span class="p">[</span><span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">town</span><span class="p">)</span> <span class="k">for</span> <span class="n">town</span> <span class="ow">in</span> <span class="n">TOWNSHIPS</span><span class="o">.</span><span class="n">town</span><span class="p">]</span>
+</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>    <span class="k">return</span> <span class="p">[</span>
+</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>        <span class="n">template</span><span class="o">.</span><span class="n">substitute</span><span class="p">(</span>
+</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>            <span class="n">leading</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;leading&#39;</span><span class="p">),</span> <span class="n">char</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;char&#39;</span><span class="p">),</span> <span class="n">trailing</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;trailing&#39;</span><span class="p">)</span>
+</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a>        <span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">valid_contexts</span>
+</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>        <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a>    <span class="p">]</span>
+</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>
+</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a><span class="k">def</span><span class="w"> </span><span class="nf">generate_false_suffix_regex</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a>    <span class="n">leading</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">ALL_SUFFIXES</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="n">CONTAINS_FALSE_SUFFIX</span><span class="p">)</span>
+</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a>    <span class="k">return</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span> <span class="n">leading</span><span class="p">))</span>
+</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a>
+</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a><span class="c1"># Templates</span>
+</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a><span class="n">VALID_AMPERSANDS_TEMPLATE</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s1">&#39;(?:(?&lt;=$leading)($char)(?=$trailing))&#39;</span><span class="p">)</span>
+</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a><span class="n">VALID_HYPHENS_TEMPLATE</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s1">&#39;$leading$char(?=$trailing)&#39;</span><span class="p">)</span>
+</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>
+</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a><span class="c1"># Building blocks</span>
+</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a><span class="n">GNIS_NAME</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?i)(?P&lt;geotype&gt;</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GNIS_GEOTYPES</span><span class="p">)</span><span class="si">}</span><span class="s2">) of (?P&lt;town&gt;.+)&quot;</span>
+</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a><span class="n">SUFFIX_REPLACEMENTS</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a>    <span class="sa">f</span><span class="s1">&#39;(?i)(?&lt;![A-Z])</span><span class="si">{</span><span class="n">full</span><span class="si">}</span><span class="s1">(?=S?$)&#39;</span><span class="p">:</span> <span class="n">abbr</span>
+</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>    <span class="k">for</span> <span class="n">full</span><span class="p">,</span> <span class="n">abbr</span> <span class="ow">in</span> <span class="n">ABBREVIATIONS</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a><span class="p">}</span>
+</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a><span class="n">VALID_AMPERSANDS</span> <span class="o">=</span> <span class="n">generate_valid_punctuation_regex</span><span class="p">(</span><span class="s1">&#39;&amp;&#39;</span><span class="p">,</span> <span class="n">VALID_AMPERSANDS_TEMPLATE</span><span class="p">)</span>
+</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a><span class="n">VALID_HYPHENS</span> <span class="o">=</span> <span class="n">generate_valid_punctuation_regex</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">VALID_HYPHENS_TEMPLATE</span><span class="p">)</span>
+</span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a><span class="n">ALL_SUFFIXES</span> <span class="o">=</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="o">*</span><span class="n">ABBREVIATIONS</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="o">*</span><span class="n">ABBREVIATIONS</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+</span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a><span class="n">PRECEDES_FALSE_SUFFIX</span> <span class="o">=</span> <span class="n">generate_false_suffix_regex</span><span class="p">()</span>
+</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a><span class="n">JUNIOR_SUFFIX</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">b(</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">JUNIOR_SUFFIXES</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a>
+</span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a><span class="c1"># Patterns</span>
+</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a><span class="n">GNIS_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">GNIS_NAME</span><span class="p">)</span>
+</span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a><span class="n">SUFFIX_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(?i)(?&lt;!</span><span class="si">{</span><span class="n">PRECEDES_FALSE_SUFFIX</span><span class="si">}</span><span class="s2">) (</span><span class="si">{</span><span class="n">ALL_SUFFIXES</span><span class="si">}</span><span class="s2">)S?$&quot;</span><span class="p">)</span>
+</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a><span class="n">VALID_AMPERSANDS_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;(?i)&#39;</span> <span class="o">+</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">VALID_AMPERSANDS</span><span class="p">))</span>
+</span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a><span class="n">INVALID_PUNCTUATION_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(?i)</span><span class="si">{</span><span class="n">PUNCTUATION</span><span class="si">}</span><span class="s2">(?&lt;!</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">VALID_HYPHENS</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a><span class="n">ENDSWITH_JUNIOR_SUFFIX_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(?i).+</span><span class="si">{</span><span class="n">JUNIOR_SUFFIX</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">)</span>
+</span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a><span class="n">CONTAINS_JUNIOR_SUFFIX_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(?i).+</span><span class="si">{</span><span class="n">JUNIOR_SUFFIX</span><span class="si">}</span><span class="s2"> TWP$&quot;</span><span class="p">)</span>
+</span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a>
+</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a>
+</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a><span class="c1">## Unspecified groups</span>
+</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a><span class="c1"># Constants</span>
+</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a><span class="n">UNSPECIFIED_FLAG</span> <span class="o">=</span> <span class="s1">&#39;TWPS&#39;</span>
+</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a><span class="n">STANDARD_FLAG</span> <span class="o">=</span> <span class="s1">&#39;UNSPECIFIED&#39;</span>
+</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a><span class="n">MULTI_COUNTY_REGISTRATION_TOWNS</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;MILLINOCKET&#39;</span><span class="p">])</span>
+</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a>
+</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a><span class="c1"># Building blocks</span>
+</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a><span class="n">PLURAL</span> <span class="o">=</span> <span class="n">UNSPECIFIED_FLAG</span>
+</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a><span class="n">SINGULAR</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;S</span><span class="se">\\</span><span class="s1">b&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">UNSPECIFIED_FLAG</span><span class="p">)</span>
+</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a><span class="n">UNSPECIFIED_REGTOWN</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?P&lt;regtown&gt;</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">MULTI_COUNTY_REGISTRATION_TOWNS</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a><span class="n">UNSPECIFIED_COUNTY</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?P&lt;cty&gt;</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">COUNTIES</span><span class="o">.</span><span class="n">sos_county</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a><span class="n">SOS_FLAG</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?P&lt;sos_flag&gt;</span><span class="si">{</span><span class="n">UNSPECIFIED_FLAG</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a>
+</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a><span class="c1"># Patterns</span>
+</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a><span class="n">PLURAL_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">b</span><span class="si">{</span><span class="n">PLURAL</span><span class="si">}</span><span class="se">\\</span><span class="s1">b&#39;</span><span class="p">)</span>
+</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a><span class="n">SINGULAR_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">b</span><span class="si">{</span><span class="n">SINGULAR</span><span class="si">}</span><span class="se">\\</span><span class="s1">b&#39;</span><span class="p">)</span>
+</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a><span class="n">MULTI_COUNTY_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(?i)</span><span class="si">{</span><span class="n">UNSPECIFIED_REGTOWN</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">UNSPECIFIED_COUNTY</span><span class="si">}</span><span class="se">\\</span><span class="s2">w* </span><span class="si">{</span><span class="n">SOS_FLAG</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a><span class="n">MULTI_COUNTY_FORMAT</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\g&lt;regtown&gt; \g&lt;sos_flag&gt; [\g&lt;cty&gt;]&quot;</span>
+</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a><span class="n">FORMATTED_GROUP_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">STANDARD_FLAG</span><span class="si">}</span><span class="s1"> (?P&lt;regtown&gt;</span><span class="se">\\</span><span class="s1">w+.*) </span><span class="si">{</span><span class="n">UNSPECIFIED_FLAG</span><span class="si">}</span><span class="s1">( </span><span class="se">\\</span><span class="s1">[</span><span class="si">{</span><span class="n">UNSPECIFIED_COUNTY</span><span class="si">}</span><span class="se">\\</span><span class="s1">])?&#39;</span><span class="p">)</span>
+</span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a>
+</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>
+</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a><span class="c1">## Other</span>
+</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a><span class="c1"># Known typos in election result files (excluding name variants)</span>
+</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a><span class="n">KNOWN_TYPOS</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a>    <span class="s1">&#39;MARIONTWP&#39;</span> <span class="p">:</span> <span class="s1">&#39;MARION TWP&#39;</span><span class="p">,</span>
+</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a>    <span class="s1">&#39;PISCATAQUS&#39;</span><span class="p">:</span> <span class="s1">&#39;PISCATAQUIS&#39;</span><span class="p">,</span>
+</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>    <span class="s1">&#39;ORNVEILLE&#39;</span><span class="p">:</span> <span class="s1">&#39;ORNEVILLE&#39;</span><span class="p">,</span>
+</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>    <span class="s1">&#39;EDUMUNDS&#39;</span><span class="p">:</span> <span class="s1">&#39;EDMUNDS&#39;</span><span class="p">,</span>
+</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a>    <span class="s1">&#39;SILIVER RIDGE&#39;</span><span class="p">:</span> <span class="s1">&#39;SILVER RIDGE&#39;</span><span class="p">,</span>
+</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a>    <span class="s1">&#39;CONNER TWP&#39;</span><span class="p">:</span> <span class="s1">&#39;CONNOR TWP&#39;</span><span class="p">,</span>
+</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a>    <span class="s1">&#39;DAYBLOCK&#39;</span><span class="p">:</span> <span class="s1">&#39;DAY BLOCK&#39;</span><span class="p">,</span>
+</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a>    <span class="s1">&#39;FRANKLIN/T9 T10 SD&#39;</span><span class="p">:</span> <span class="s1">&#39;FRANKLIN/T9 SD/T10 SD&#39;</span><span class="p">,</span>
+</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a>    <span class="s1">&#39;PLEASANT POINT VOTING DISTRICT RICT&#39;</span><span class="p">:</span> <span class="s1">&#39;PLEASANT POINT VOTING DISTRICT&#39;</span>
+</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a><span class="p">}</span>
+</span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a>
+</span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a><span class="n">AMBIGUOUS_GROUP_NAMES</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a>    <span class="s1">&#39;^PENOBSCOT TWPS$&#39;</span><span class="p">:</span> <span class="s1">&#39;MILLINOCKET PENOBSCOT TWPS&#39;</span><span class="p">,</span>
+</span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a>    <span class="s1">&#39;^PISCATAQUIS TWPS$&#39;</span><span class="p">:</span> <span class="s1">&#39;MILLINOCKET PISCATAQUIS TWPS&#39;</span><span class="p">,</span>
+</span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a>    <span class="s1">&#39;PEN(?:OBSCOT)? TWP$&#39;</span><span class="p">:</span> <span class="s1">&#39;PENOBSCOT TWPS&#39;</span><span class="p">,</span>
+</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a>    <span class="s1">&#39;PIS(?:CATAQUIS)? TWP$&#39;</span><span class="p">:</span> <span class="s1">&#39;PISCATAQUIS TWPS&#39;</span><span class="p">,</span>
+</span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a><span class="p">}</span>
 </span></pre></div>
 
 
             </section>
-                <section id="ALPHA">
-                    <div class="attr variable">
-            <span class="name">ALPHA</span>        =
-<span class="default_value">&#39;A-Za-z&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#ALPHA"></a>
-    
-    
-
-                </section>
-                <section id="ALNUM">
-                    <div class="attr variable">
-            <span class="name">ALNUM</span>        =
-<span class="default_value">&#39;A-Za-z0-9&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#ALNUM"></a>
-    
-    
-
-                </section>
-                <section id="FUZZY">
-                    <div class="attr variable">
-            <span class="name">FUZZY</span>        =
-<span class="default_value">&#39;[^A-Za-z0-9,]{0,3}&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#FUZZY"></a>
-    
-    
-
-                </section>
                 <section id="REGIONS">
                     <div class="attr variable">
-            <span class="name">REGIONS</span>        =
+            <span class="name">REGIONS</span><span class="annotation">: List[str]</span>        =
 <span class="default_value">[&#39;ED&#39;, &#39;MD&#39;, &#39;ND&#39;, &#39;SD&#39;, &#39;TS&#39;, &#39;BKP&#39;, &#39;BPP&#39;, &#39;EKR&#39;, &#39;NWP&#39;, &#39;WKR&#39;, &#39;NBKP&#39;, &#39;NBPP&#39;, &#39;WBKP&#39;, &#39;WELS&#39;]</span>
 
         
     </div>
     <a class="headerlink" href="#REGIONS"></a>
-    
-    
-
-                </section>
-                <section id="REGION">
-                    <div class="attr variable">
-            <span class="name">REGION</span>        =
-<span class="default_value">&#39;(?:ED|MD|ND|SD|TS|BKP|BPP|EKR|NWP|WKR|NBKP|NBPP|WBKP|WELS)&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#REGION"></a>
-    
-    
-
-                </section>
-                <section id="RANGE">
-                    <div class="attr variable">
-            <span class="name">RANGE</span>        =
-<span class="default_value">&#39;(?:R.?[\\d]{1,2})&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#RANGE"></a>
-    
-    
-
-                </section>
-                <section id="TOWNSHIP_STANDARD">
-                    <div class="attr variable">
-            <span class="name">TOWNSHIP_STANDARD</span>        =
-<span class="default_value">&#39;T.?[\\d]{1,2}&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#TOWNSHIP_STANDARD"></a>
-    
-    
-
-                </section>
-                <section id="TOWNSHIP_ALTERNATE">
-                    <div class="attr variable">
-            <span class="name">TOWNSHIP_ALTERNATE</span>        =
-<span class="default_value">&#39;(?&lt;![A-Za-z0-9])T[ABCDX](?![A-Za-z])&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#TOWNSHIP_ALTERNATE"></a>
-    
-    
-
-                </section>
-                <section id="TOWNSHIP">
-                    <div class="attr variable">
-            <span class="name">TOWNSHIP</span>        =
-<span class="default_value">&#39;(?:T.?[\\d]{1,2}|(?&lt;![A-Za-z0-9])T[ABCDX](?![A-Za-z]))&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#TOWNSHIP"></a>
-    
-    
-
-                </section>
-                <section id="UNNAMED">
-                    <div class="attr variable">
-            <span class="name">UNNAMED</span>        =
-<input id="UNNAMED-view-value" class="view-value-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-            <label class="view-value-button pdoc-button" for="UNNAMED-view-value"></label><span class="default_value">&#39;((?:(?:T.?[\\d]{1,2}|(?&lt;![A-Za-z0-9])T[ABCDX](?![A-Za-z])))(?:[^A-Za-z0-9,]{0,3}(?:R.?[\\d]{1,2}))?(?:[^A-Za-z0-9,]{0,3}(?:ED|MD|ND|SD|TS|BKP|BPP|EKR|NWP|WKR|NBKP|NBPP|WBKP|WELS)){0,2})&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#UNNAMED"></a>
-    
-    
-
-                </section>
-                <section id="UNNAMED_PATTERN">
-                    <div class="attr variable">
-            <span class="name">UNNAMED_PATTERN</span>        =
-<input id="UNNAMED_PATTERN-view-value" class="view-value-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-            <label class="view-value-button pdoc-button" for="UNNAMED_PATTERN-view-value"></label><span class="default_value">re.compile(&#39;((?:(?:T.?[\\d]{1,2}|(?&lt;![A-Za-z0-9])T[ABCDX](?![A-Za-z])))(?:[^A-Za-z0-9,]{0,3}(?:R.?[\\d]{1,2}))?(?:[^A-Za-z0-9,]{0,3}(?:ED|MD|ND|SD|TS|BKP|BPP|EKR|NWP|WKR|NBKP|NBPP|WBKP|WELS)){0,2})&#39;)</span>
-
-        
-    </div>
-    <a class="headerlink" href="#UNNAMED_PATTERN"></a>
-    
-    
-
-                </section>
-                <section id="UNNAMED_ELEMENTS">
-                    <div class="attr variable">
-            <span class="name">UNNAMED_ELEMENTS</span>        =
-<input id="UNNAMED_ELEMENTS-view-value" class="view-value-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-            <label class="view-value-button pdoc-button" for="UNNAMED_ELEMENTS-view-value"></label><span class="default_value">&#39;(?:(?:T.?[\\d]{1,2}|(?&lt;![A-Za-z0-9])T[ABCDX](?![A-Za-z]))|(?:R.?[\\d]{1,2})|(?:ED|MD|ND|SD|TS|BKP|BPP|EKR|NWP|WKR|NBKP|NBPP|WBKP|WELS))&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#UNNAMED_ELEMENTS"></a>
-    
-    
-
-                </section>
-                <section id="UNNAMED_ELEMENTS_PATTERN">
-                    <div class="attr variable">
-            <span class="name">UNNAMED_ELEMENTS_PATTERN</span>        =
-<input id="UNNAMED_ELEMENTS_PATTERN-view-value" class="view-value-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-            <label class="view-value-button pdoc-button" for="UNNAMED_ELEMENTS_PATTERN-view-value"></label><span class="default_value">re.compile(&#39;(?:(?:T.?[\\d]{1,2}|(?&lt;![A-Za-z0-9])T[ABCDX](?![A-Za-z]))|(?:R.?[\\d]{1,2})|(?:ED|MD|ND|SD|TS|BKP|BPP|EKR|NWP|WKR|NBKP|NBPP|WBKP|WELS))&#39;)</span>
-
-        
-    </div>
-    <a class="headerlink" href="#UNNAMED_ELEMENTS_PATTERN"></a>
-    
-    
-
-                </section>
-                <section id="LEADING_ZERO">
-                    <div class="attr variable">
-            <span class="name">LEADING_ZERO</span>        =
-<span class="default_value">&#39;(?&lt;=[^\\d])0(?=\\d)&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#LEADING_ZERO"></a>
-    
-    
-
-                </section>
-                <section id="NOT_REPORTING">
-                    <div class="attr variable">
-            <span class="name">NOT_REPORTING</span>        =
-<span class="default_value">&#39;(?!AND|&amp;)&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#NOT_REPORTING"></a>
-    
-    
-
-                </section>
-                <section id="PARENTHETICAL">
-                    <div class="attr variable">
-            <span class="name">PARENTHETICAL</span>        =
-<span class="default_value">&#39;\\((?!AND|&amp;)[^\\(]+\\)&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#PARENTHETICAL"></a>
-    
-    
-
-                </section>
-                <section id="PRECEDES_DASH">
-                    <div class="attr variable">
-            <span class="name">PRECEDES_DASH</span>        =
-<span class="default_value">&#39;^[^-]+--&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#PRECEDES_DASH"></a>
-    
-    
-
-                </section>
-                <section id="STANDARD_DELIMITER">
-                    <div class="attr variable">
-            <span class="name">STANDARD_DELIMITER</span>        =
-<span class="default_value">&#39;,&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#STANDARD_DELIMITER"></a>
-    
-    
-
-                </section>
-                <section id="NONSTANDARD_DELIMITERS">
-                    <div class="attr variable">
-            <span class="name">NONSTANDARD_DELIMITERS</span>        =
-<span class="default_value">[&#39;&amp;&#39;, &#39;/&#39;, &#39;(AND &#39;]</span>
-
-        
-    </div>
-    <a class="headerlink" href="#NONSTANDARD_DELIMITERS"></a>
-    
-    
-
-                </section>
-                <section id="DROP_CHARACTERS">
-                    <div class="attr variable">
-            <span class="name">DROP_CHARACTERS</span>        =
-<span class="default_value">[&#39;.&#39;, &#39;=&#39;, &#39;*&#39;, &#34;&#39;&#34;, &#39;~&#39;]</span>
-
-        
-    </div>
-    <a class="headerlink" href="#DROP_CHARACTERS"></a>
-    
-    
-
-                </section>
-                <section id="MEANINGFUL_CHARACTERS">
-                    <div class="attr variable">
-            <span class="name">MEANINGFUL_CHARACTERS</span>        =
-<span class="default_value">[&#39;(&#39;, &#39;)&#39;, &#39;--&#39;]</span>
-
-        
-    </div>
-    <a class="headerlink" href="#MEANINGFUL_CHARACTERS"></a>
-    
-    
-
-                </section>
-                <section id="ABBREVIATIONS">
-                    <div class="attr variable">
-            <span class="name">ABBREVIATIONS</span>        =
-<span class="default_value">{&#39;PLANTATION&#39;: &#39;PLT&#39;, &#39;TOWNSHIP&#39;: &#39;TWP&#39;, &#39;RESERVATION&#39;: &#39;RES&#39;, &#39;VOTING DISTRICT&#39;: &#39;VOTING DIST&#39;}</span>
-
-        
-    </div>
-    <a class="headerlink" href="#ABBREVIATIONS"></a>
     
     
 
@@ -507,153 +240,6 @@
         
     </div>
     <a class="headerlink" href="#GNIS_GEOTYPES"></a>
-    
-    
-
-                </section>
-                <section id="GNIS_NAME">
-                    <div class="attr variable">
-            <span class="name">GNIS_NAME</span>        =
-<span class="default_value">&#39;(?i)(?P&lt;geotype&gt;CITY|PLANTATION|TOWNSHIP|TOWN) of (?P&lt;town&gt;.+)&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#GNIS_NAME"></a>
-    
-    
-
-                </section>
-                <section id="SUFFIX">
-                    <div class="attr variable">
-            <span class="name">SUFFIX</span>        =
-<span class="default_value">&#39;(?i) (PLT|TWP|RES|VOTING DIST)$&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#SUFFIX"></a>
-    
-    
-
-                </section>
-                <section id="REGISTRATION_PATTERN">
-                    <div class="attr variable">
-            <span class="name">REGISTRATION_PATTERN</span>        =
-<span class="default_value">re.compile(&#39;\\((?!AND|&amp;)[^\\(]+\\)|^[^-]+--&#39;)</span>
-
-        
-    </div>
-    <a class="headerlink" href="#REGISTRATION_PATTERN"></a>
-    
-    
-
-                </section>
-                <section id="CLEAN_TOWNSHIP_PATTERN">
-                    <div class="attr variable">
-            <span class="name">CLEAN_TOWNSHIP_PATTERN</span>        =
-<span class="default_value">re.compile(&#39;[^A-Za-z0-9]|(?&lt;=[^\\d])0(?=\\d)&#39;)</span>
-
-        
-    </div>
-    <a class="headerlink" href="#CLEAN_TOWNSHIP_PATTERN"></a>
-    
-    
-
-                </section>
-                <section id="NON_ALIAS_CHARACTERS_PATTERN">
-                    <div class="attr variable">
-            <span class="name">NON_ALIAS_CHARACTERS_PATTERN</span>        =
-<input id="NON_ALIAS_CHARACTERS_PATTERN-view-value" class="view-value-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-            <label class="view-value-button pdoc-button" for="NON_ALIAS_CHARACTERS_PATTERN-view-value"></label><span class="default_value">re.compile(&#39;(?i)((?:(?:T.?[\\d]{1,2}|(?&lt;![A-Za-z0-9])T[ABCDX](?![A-Za-z])))(?:[^A-Za-z0-9,]{0,3}(?:R.?[\\d]{1,2}))?(?:[^A-Za-z0-9,]{0,3}(?:ED|MD|ND|SD|TS|BKP|BPP|EKR|NWP|WKR|NBKP|NBPP|WBKP|WELS)){0,2})|[^A-Za-z0, re.IGNORECASE)</span>
-
-        
-    </div>
-    <a class="headerlink" href="#NON_ALIAS_CHARACTERS_PATTERN"></a>
-    
-    
-
-                </section>
-                <section id="NON_ALIAS_PATTERN">
-                    <div class="attr variable">
-            <span class="name">NON_ALIAS_PATTERN</span>        =
-<input id="NON_ALIAS_PATTERN-view-value" class="view-value-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-            <label class="view-value-button pdoc-button" for="NON_ALIAS_PATTERN-view-value"></label><span class="default_value">re.compile(&#39;(?i)((?:(?:T.?[\\d]{1,2}|(?&lt;![A-Za-z0-9])T[ABCDX](?![A-Za-z])))(?:[^A-Za-z0-9,]{0,3}(?:R.?[\\d]{1,2}))?(?:[^A-Za-z0-9,]{0,3}(?:ED|MD|ND|SD|TS|BKP|BPP|EKR|NWP|WKR|NBKP|NBPP|WBKP|WELS)){0,2})|[^ A-Za-z, re.IGNORECASE)</span>
-
-        
-    </div>
-    <a class="headerlink" href="#NON_ALIAS_PATTERN"></a>
-    
-    
-
-                </section>
-                <section id="DROP_CHARACTERS_PATTERN">
-                    <div class="attr variable">
-            <span class="name">DROP_CHARACTERS_PATTERN</span>        =
-<span class="default_value">re.compile(&#34;\\.|=|\\*|&#39;|\\~&#34;)</span>
-
-        
-    </div>
-    <a class="headerlink" href="#DROP_CHARACTERS_PATTERN"></a>
-    
-    
-
-                </section>
-                <section id="MEANINGFUL_CHARACTERS_PATTERN">
-                    <div class="attr variable">
-            <span class="name">MEANINGFUL_CHARACTERS_PATTERN</span>        =
-<span class="default_value">re.compile(&#39;\\(|\\)|\\-\\-&#39;)</span>
-
-        
-    </div>
-    <a class="headerlink" href="#MEANINGFUL_CHARACTERS_PATTERN"></a>
-    
-    
-
-                </section>
-                <section id="NONSTANDARD_DELIMITER_PATTERN">
-                    <div class="attr variable">
-            <span class="name">NONSTANDARD_DELIMITER_PATTERN</span>        =
-<span class="default_value">re.compile(&#39;\\&amp;|/|\\(AND\\ &#39;, re.IGNORECASE)</span>
-
-        
-    </div>
-    <a class="headerlink" href="#NONSTANDARD_DELIMITER_PATTERN"></a>
-    
-    
-
-                </section>
-                <section id="GNIS_PATTERN">
-                    <div class="attr variable">
-            <span class="name">GNIS_PATTERN</span>        =
-<span class="default_value">re.compile(&#39;(?i)(?P&lt;geotype&gt;CITY|PLANTATION|TOWNSHIP|TOWN) of (?P&lt;town&gt;.+)&#39;, re.IGNORECASE)</span>
-
-        
-    </div>
-    <a class="headerlink" href="#GNIS_PATTERN"></a>
-    
-    
-
-                </section>
-                <section id="SUFFIX_PATTERN">
-                    <div class="attr variable">
-            <span class="name">SUFFIX_PATTERN</span>        =
-<span class="default_value">re.compile(&#39;(?i) (PLT|TWP|RES|VOTING DIST)$&#39;, re.IGNORECASE)</span>
-
-        
-    </div>
-    <a class="headerlink" href="#SUFFIX_PATTERN"></a>
-    
-    
-
-                </section>
-                <section id="KNOWN_TYPOS">
-                    <div class="attr variable">
-            <span class="name">KNOWN_TYPOS</span>        =
-<input id="KNOWN_TYPOS-view-value" class="view-value-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-            <label class="view-value-button pdoc-button" for="KNOWN_TYPOS-view-value"></label><span class="default_value">{&#39;MARIONTWP&#39;: &#39;MARION TWP&#39;, &#39;CONNER&#39;: &#39;CONNOR&#39;, &#39;EDUMUNDS&#39;: &#39;EDMUNDS&#39;, &#39;ELLIOTSVILLE&#39;: &#39;ELLIOTTSVILLE&#39;, &#39;ORNVEILLE&#39;: &#39;ORNEVILLE&#39;, &#39;SILIVER RIDGE TWP&#39;: &#39;SILVER RIDGE TWP&#39;, &#39;FRANKLIN/T9 T10 SD&#39;: &#39;FRANKLIN/T9 SD/T10 SD&#39;, &#39;PISCATAQUS&#39;: &#39;PISCATAQUIS&#39;, &#39;^PENOBSCOT TWPS$&#39;: &#39;MILLINOCKET PENOBSCOT TWPS&#39;, &#39;^PISCATAQUIS TWPS$&#39;: &#39;MILLINOCKET PISCATAQUIS TWPS&#39;, &#39;PLEASANT POINT VOTING DISTRICT RICT&#39;: &#39;PLEASANT POINT VOTING DISTRICT&#39;}</span>
-
-        
-    </div>
-    <a class="headerlink" href="#KNOWN_TYPOS"></a>
     
     
 
