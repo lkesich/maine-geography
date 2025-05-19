@@ -1,20 +1,23 @@
 import pandas as pd
-from importlib import resources
-from functools import cache, cached_property
+from functools import cached_property
+from keyword import iskeyword
+from mainegeo.connections import CountyDataSource, TownshipDataSource
 
-def cached_class_attr(f):
-    return classmethod(property(cache(f)))
+class TownshipData(TownshipDataSource):
+    def __init__(self):
+        with self.json_path.open('r') as f:
+            data = pd.read_json(f)
+            for column in data.columns:
+                if not iskeyword(column):
+                    setattr(self, column, data[column])
 
-class CountyData:
-    @cached_class_attr
-    def csv_path(cls):
-        return resources.files('mainegeo.data').joinpath('counties.csv')
-
+class CountyData(CountyDataSource):
     def __init__(self):
         with self.csv_path.open('r') as f:
             data = pd.read_csv(f)
             for column in data.columns:
-                setattr(self, column, data[column])
+                if not iskeyword(column):
+                    setattr(self, column, data[column])
             
     @cached_property
     def code_to_fips(self):
@@ -39,15 +42,3 @@ class CountyData:
     @cached_property
     def fips_to_name(self):
         return dict(zip(self.county_fips, self.county_name))
-
-class TownshipData:
-    @cached_class_attr
-    def json_path(cls):
-        """ Unprocessed data """
-        return resources.files('mainegeo.data').joinpath('townships.json')
-
-    def __init__(self):
-        with self.json_path.open('r') as f:
-            data = pd.read_json(f)
-            for column in data.columns:
-                setattr(self, column, data[column])

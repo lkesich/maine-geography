@@ -3,122 +3,294 @@
 
 __docformat__ = 'google'
 
-__all__ = [
-    'REGIONS',
-    'GNIS_GEOTYPES'
-]
-
 import re
 from mainegeo.lookups import CountyData, TownshipData
-from string import Template
-from typing import List
+from typing import List, Dict
 
 # Lazy loading lookup tables
-COUNTIES = CountyData()
-TOWNSHIPS = TownshipData()
+COUNTIES: CountyData = CountyData()
+TOWNSHIPS: TownshipData = TownshipData()
 
 # Base character sets for patterns
 FUZZY = f"[^,\\w]{{0,3}}"
-PUNCTUATION = f'[^ \\w]'
+"""@private"""
+
+PUNCTUATION = f'[^\\s\\w]'
+"""@private"""
+
+## Other
+KNOWN_TYPOS: Dict[str, str] = {
+    'MARIONTWP' : 'MARION TWP',
+    'PISCATAQUS': 'PISCATAQUIS',
+    'ORNVEILLE': 'ORNEVILLE',
+    'EDUMUNDS': 'EDMUNDS',
+    'SILIVER RIDGE': 'SILVER RIDGE',
+    'FRANKLIN/T9 T10 SD': 'FRANKLIN/T9 SD/T10 SD',
+    'PLEASANT POINT VOTING DISTRICT RICT': 'PLEASANT POINT VOTING DISTRICT'
+}
+"""Errors and replacements for known typos in election results files.
+
+These errors represent one-off typos rather than confusion about how the
+town name should be spelled. Misspellings that are the result of confusion
+and might reoccur in the future are logged as aliases in 
+`mainegeo.matching.TownDatabase`.
+
+Used in `mainegeo.elections.ResultString.normalized_string`.
+"""
+
+AMBIGUOUS_GROUP_NAMES: Dict[str, str] = {
+    '^PENOBSCOT TWPS$': 'MILLINOCKET PENOBSCOT TWPS',
+    '^PISCATAQUIS TWPS$': 'MILLINOCKET PISCATAQUIS TWPS',
+    'PEN(?:OBSCOT)? TWP$': 'PENOBSCOT TWPS',
+    'PIS(?:CATAQUIS)? TWP$': 'PISCATAQUIS TWPS',
+}
+"""Errors and replacements for ambiguously-named unspecified groups.
+
+These typos follow patterns, but it simplifies unspecified group name 
+detection significantly if they are corrected early in processing.
+
+Corrections in this dictionary include:
+    * SoS staff sometimes omit the registration town name for Millinocket
+    groups. Groups of Penobscot or Piscataquis townships with no other
+    label are safely assumed to register at Millinocket.
+
+    * On one occasion, SoS staff did not pluralize the group name (e.g. 
+    'MILLINOCKET -- PENOBSCOT TWP'). The intent in this case is clear.
+    
+Used in `mainegeo.elections.ResultString.normalized_string`."""
+
 
 ## Townships
 # Constants
 REGIONS: List[str] = ["ED","MD","ND","SD","TS","BKP","BPP","EKR","NWP","WKR","NBKP","NBPP","WBKP","WELS"]
+"""Valid region codes that can appear in township names.
+    
+These are two- to four-letter codes like 'WELS' (West of the
+Easterly Line of the State) or 'BPP' (Bingham's Penobscot Purchase).
+
+Township names can contain zero, one, or two regions."""
 
 # Building blocks
-REGION = f"(?:{'|'.join(REGIONS)})"
-RANGE = f"(?:R.?[\\d]{{1,2}})"
-TOWNSHIP_STANDARD = "(?:T.?\\d{1,2})"
-TOWNSHIP_ALTERNATE = f"(?<!\\w)T[ABCDX](?![a-z])"
-TOWNSHIP = f"(?:{TOWNSHIP_STANDARD}|{TOWNSHIP_ALTERNATE})"
-UNNAMED = f"((?:{TOWNSHIP})(?:{FUZZY}{RANGE})?(?:{FUZZY}{REGION}){{0,2}})"
-UNNAMED_ELEMENTS = f"(?:{'|'.join([TOWNSHIP, RANGE, REGION])})"
+REGION: str = f"(?:{'|'.join(REGIONS)})"
+""" Regex building block representing a region designator."""
+
+RANGE: str = f"(?:R.?[\\d]{{1,2}})"
+""" Regex building block representing a range designator.
+
+Ranges are counted from the easterly line toward the west,
+numbered 1-19 (e.g., R1, R19)."""
+
+TOWNSHIP_STANDARD: str = "(?:T.?\\d{1,2})"
+TOWNSHIP_ALTERNATE: str = f"(?<!\\w)T[ABCDX](?![a-z])"
+TOWNSHIP: str = f"(?:{TOWNSHIP_STANDARD}|{TOWNSHIP_ALTERNATE})"
+""" Regex building block representing a township designator.
+
+Townships are designated by:
+    - Numbers 1-19 from south to north (e.g., T1, T19)
+    - Occasional letter designations (TA, TB, TC, TD, TX)"""
+
+UNNAMED: str = f"((?:{TOWNSHIP})(?:{FUZZY}{RANGE})?(?:{FUZZY}{REGION}){{0,2}})"
+UNNAMED_ELEMENTS: str = f"(?:{'|'.join([TOWNSHIP, RANGE, REGION])})"
 
 # Patterns
-UNNAMED_PATTERN = re.compile(UNNAMED, re.I)
-UNNAMED_ELEMENTS_PATTERN = re.compile(UNNAMED_ELEMENTS, re.I)
-LAST_REGION_PATTERN = re.compile(f" {REGION}$", re.I)
+UNNAMED_PATTERN: re.Pattern = re.compile(UNNAMED, re.I)
+"""Matches a full unnamed township name, with tolerance for formatting variation.
 
+Used in `mainegeo.townships.is_unnamed_township` and `mainegeo.townships.clean_codes`."""
+
+UNNAMED_ELEMENTS_PATTERN: re.Pattern = re.compile(UNNAMED_ELEMENTS, re.I)
+"""Matches any township name element.
+
+Used in `mainegeo.townships.clean_code`."""
+
+LAST_REGION_PATTERN: re.Pattern = re.compile(f" {REGION}$", re.I)
+"""Matches the last region code in an unnamed township name.
+
+Used in `mainegeo.townships.strip_region`."""
 
 ## Result parsing
 # Building blocks
-LEADING_ZERO = '(?<=[^\\d])0(?=\\d)'
-NOT_REPORTING = f'(?!AND|&)'
-PARENTHETICAL = f'\\({NOT_REPORTING}[^\\(]+\\)'
-PRECEDES_DASH = f'^[^-]+--'
-STANDARD_DELIMITER = ","
-NONSTANDARD_DELIMITERS = ["&", "/", "(AND "]
-DROP_CHARACTERS = [".", "=", "*", "'", "~"]
-MEANINGFUL_CHARACTERS = ["(", ")", "--"]
+LEADING_ZERO: str = '(?<=[^\\d])0(?=\\d)'
+NOT_REPORTING: str = f'(?!AND|&)'
+PARENTHETICAL: str = f'\\({NOT_REPORTING}[^\\(]+\\)'
+PRECEDES_DASH: str = f'^[^-]+--'
+STANDARD_DELIMITER: str = ","
+NONSTANDARD_DELIMITERS: str = ["&", "/", "(AND "]
+DROP_CHARACTERS: List[str] = [".", "=", "*", "'", "~"]
+MEANINGFUL_CHARACTERS: List[str] = ["(", ")", "--"]
 
 # Patterns
-REGISTRATION_PATTERN = re.compile(f'{PARENTHETICAL}|{PRECEDES_DASH}')
-CLEAN_TOWNSHIP_PATTERN = re.compile(f"[^\\w]|{LEADING_ZERO}")
-NON_ALIAS_CHARACTERS_PATTERN = re.compile(f'(?i){UNNAMED}|[^\\w]|twps?')
-NON_ALIAS_PATTERN = re.compile(f'(?i){UNNAMED}(?: twp)?|{PUNCTUATION}')
-DROP_CHARACTERS_PATTERN = re.compile('|'.join(map(re.escape, DROP_CHARACTERS)))
-MEANINGFUL_CHARACTERS_PATTERN = re.compile('|'.join(map(re.escape, MEANINGFUL_CHARACTERS)))
-NONSTANDARD_DELIMITER_PATTERN = re.compile('|'.join(map(re.escape, NONSTANDARD_DELIMITERS)), re.I)
-ORPHAN_PARENTHESIS_PATTERN = re.compile(f'^(?P<result>[^(]+)(?P<orphan_parenthesis>[)])$')
+REGISTRATION_PATTERN: re.Pattern = re.compile(f'{PARENTHETICAL}|{PRECEDES_DASH}', re.I)
+"""Matches substrings representing non-reporting registration towns.
+
+Used in `mainegeo.elections.ResultString`.
+"""
+
+CLEAN_TOWNSHIP_PATTERN: re.Pattern = re.compile(f"[^\\w]|{LEADING_ZERO}")
+"""Add docstring
+
+Used in `mainegeo.townships.clean_code`."""
+
+NON_ALIAS_CHARACTERS_PATTERN: re.Pattern = re.compile(
+    f'{UNNAMED}|[^\\w]|twps?',
+    re.I
+    )
+"""Add docstring
+
+Used in `mainegeo.townships.has_alias`."""
+
+NON_ALIAS_PATTERN: re.Pattern = re.compile(
+    f'{UNNAMED}(?: twp)?|{PUNCTUATION}',
+    re.I
+    )
+"""Add docstring
+
+Used in `mainegeo.townships.extract_alias`."""
+
+DROP_CHARACTERS_PATTERN: re.Pattern = re.compile(
+    '|'.join(map(re.escape, DROP_CHARACTERS))
+    )
+"""Add docstring"""
+
+MEANINGFUL_CHARACTERS_PATTERN: re.Pattern = re.compile(
+    '|'.join(map(re.escape, MEANINGFUL_CHARACTERS))
+    )
+"""Add docstring"""
+
+NONSTANDARD_DELIMITER_PATTERN: re.Pattern = re.compile(
+    '|'.join(map(re.escape, NONSTANDARD_DELIMITERS)),
+    re.I
+    )
+"""Add docstring
+
+Used in `mainegeo.elections.ResultString`."""
+
+ORPHAN_PARENTHESIS_PATTERN: re.Pattern = re.compile(
+    f'^(?P<result>[^(]+)(?P<orphan_parenthesis>[)])$'
+    )
+"""Matches the orphaned closing parenthesis left behind after delimiter normalization.
+
+Match groups:
+    * result
+    * orphan_parenthesis
+
+Used in `mainegeo.elections.ResultString`."""
 
 ## Name standardization
 # Constants
-GNIS_GEOTYPES = ["CITY", "PLANTATION", "TOWNSHIP", "TOWN"]
-ABBREVIATIONS = {
+GNIS_GEOTYPES: List[str] = ["CITY", "PLANTATION", "TOWNSHIP", "TOWN"]
+"""Geotypes used by the Geographic Names Information System (GNIS)."""
+
+ABBREVIATIONS: Dict[str, str] = {
     "PLANTATION": "PLT",
     "TOWNSHIP": "TWP",
     "VOTING DISTRICT": "VOTING DIST",
     "RESERVATION": "RES"
 }
-JUNIOR_SUFFIXES = ['GORE', 'GRANT', 'ISLAND']
-DIRECTIONS = ['NORTH', 'SOUTH', 'EAST', 'WEST']
-CONTAINS_FALSE_SUFFIX = ['INDIAN TOWNSHIP']
+"""Geotype suffixes used by the Maine SoS and their abbreviations."""
+
+JUNIOR_SUFFIXES: List[str] = ['GORE', 'GRANT', 'ISLAND']
+"""Geotypes which may precede another geotype suffix or be used alone.
+
+For example, Moxie Gore and Moxie Gore Twp have subtly different meanings,
+but refer to the same place and are often used interchangeably by the SoS."""
+
+DIRECTIONS: List[str] = ['NORTH', 'SOUTH', 'EAST', 'WEST']
+"""Direction words which may modify place names."""
+
+CONTAINS_FALSE_SUFFIX: List[str] = ['INDIAN TOWNSHIP']
+"""Canonical place names that contain a word that is normally a suffix.
+
+For example: Indian Township is the name of a town, not a township.
+These false suffixes should be treated differently than true 
+suffixes during processing."""
 
 # Factory functions
-def generate_valid_punctuation_regex(char:str, template:Template) -> List[str]:
-    pattern = re.compile(f'(?P<leading>\\w+ ?)(?P<char>{char})(?P<trailing> ?\\w+)')
-    valid_contexts = [pattern.match(town) for town in TOWNSHIPS.town]
-    return [
-        template.substitute(
-            leading=m.group('leading'), char=m.group('char'), trailing=m.group('trailing')
-        ) for m in valid_contexts
-        if m is not None
-    ]
+def generate_valid_punctuation(char: str, template: str) -> str:
+    pattern = re.compile(f'(?P<leading>\\w+ ?){char}(?P<trailing> ?\\w+)')
+    matches = map(pattern.match, TOWNSHIPS.town)
+    valid_contexts = [match.expand(template) for match in matches if match]
+    return '|'.join(valid_contexts)
 
-def generate_false_suffix_regex() -> str:
+def generate_false_suffix() -> str:
     leading = map(lambda x: re.sub(ALL_SUFFIXES, '', x), CONTAINS_FALSE_SUFFIX)
     return '|'.join(map(str.strip, leading))
 
 # Templates
-VALID_AMPERSANDS_TEMPLATE = Template('(?:(?<=$leading)($char)(?=$trailing))')
-VALID_HYPHENS_TEMPLATE = Template('$leading$char(?=$trailing)')
+AMPERSANDS_TEMPLATE: str = '(?:(?<=\g<leading>)&(?=\g<trailing>))'
+HYPHENS_TEMPLATE: str = '\g<leading>-(?=\g<trailing>)'
 
 # Building blocks
-GNIS_NAME = f"(?i)(?P<geotype>{'|'.join(GNIS_GEOTYPES)}) of (?P<town>.+)"
-SUFFIX_REPLACEMENTS = {
-    f'(?i)(?<![A-Z]){full}(?=S?$)': abbr
-    for full, abbr in ABBREVIATIONS.items()
+GNIS_NAME = f"(?P<geotype>{'|'.join(GNIS_GEOTYPES)}) of (?P<town>.+)"
+SUFFIX_REPLACEMENTS: Dict[str, str] = {
+    f'(?i)(?<![A-Z]){full}(?=S?$)': abbr for full, abbr in ABBREVIATIONS.items()
 }
-VALID_AMPERSANDS = generate_valid_punctuation_regex('&', VALID_AMPERSANDS_TEMPLATE)
-VALID_HYPHENS = generate_valid_punctuation_regex('-', VALID_HYPHENS_TEMPLATE)
-ALL_SUFFIXES = '|'.join([*ABBREVIATIONS.keys(), *ABBREVIATIONS.values()])
-PRECEDES_FALSE_SUFFIX = generate_false_suffix_regex()
-JUNIOR_SUFFIX = f"\\b({'|'.join(JUNIOR_SUFFIXES)})"
+ALL_SUFFIXES: str = '|'.join([*ABBREVIATIONS.keys(), *ABBREVIATIONS.values()])
+PRECEDES_FALSE_SUFFIX = generate_false_suffix()
+JUNIOR_SUFFIX: str = f"\\b({'|'.join(JUNIOR_SUFFIXES)})"
+VALID_AMPERSANDS: str = generate_valid_punctuation('&', AMPERSANDS_TEMPLATE)
+VALID_HYPHENS: str = generate_valid_punctuation('-', HYPHENS_TEMPLATE)
 
 # Patterns
-GNIS_PATTERN = re.compile(GNIS_NAME)
-SUFFIX_PATTERN = re.compile(f"(?i)(?<!{PRECEDES_FALSE_SUFFIX}) ({ALL_SUFFIXES})S?$")
-VALID_AMPERSANDS_PATTERN = re.compile('(?i)' +'|'.join(VALID_AMPERSANDS))
-INVALID_PUNCTUATION_PATTERN = re.compile(f"(?i){PUNCTUATION}(?<!{'|'.join(VALID_HYPHENS)})")
-ENDSWITH_JUNIOR_SUFFIX_PATTERN = re.compile(f"(?i).+{JUNIOR_SUFFIX}$")
-CONTAINS_JUNIOR_SUFFIX_PATTERN = re.compile(f"(?i).+{JUNIOR_SUFFIX} TWP$")
+GNIS_PATTERN: re.Pattern = re.compile(GNIS_NAME, re.I)
+"""Matches place names with Geographic Names Information System (GNIS) formatting.
+
+Match groups:
+    * geotype
+    * town
+
+Used in `mainegeo.townships.normalize_suffix`."""
+
+SUFFIX_PATTERN: re.Pattern = re.compile(
+    f"(?<!{PRECEDES_FALSE_SUFFIX}) ({ALL_SUFFIXES})S?$", re.I
+    )
+"""Add docstring
+
+Used in `mainegeo.townships.strip_suffix`."""
+
+VALID_AMPERSANDS_PATTERN: re.Pattern = re.compile(VALID_AMPERSANDS, re.I)
+"""Add docstring
+
+Used in `mainegeo.townships.strip_town` (a helper for `mainegeo.townships.clean_town`)."""
+
+INVALID_PUNCTUATION_PATTERN: re.Pattern = re.compile(
+    f"{PUNCTUATION}(?<!{VALID_HYPHENS})", re.I
+    )
+"""Add docstring
+
+Used in `mainegeo.townships.strip_town` (a helper for `mainegeo.townships.clean_town`)."""
+
+ENDSWITH_JUNIOR_SUFFIX_PATTERN: re.Pattern = re.compile(f".+{JUNIOR_SUFFIX}$", re.I)
+"""Add docstring
+
+Used in `mainegeo.townships.toggle_suffix`."""
+
+CONTAINS_JUNIOR_SUFFIX_PATTERN: re.Pattern = re.compile(f".+{JUNIOR_SUFFIX} TWP$", re.I)
+"""Add docstring
+
+Used in `mainegeo.townships.toggle_suffix`."""
 
 
 ## Unspecified groups
 # Constants
-UNSPECIFIED_FLAG = 'TWPS'
-STANDARD_FLAG = 'UNSPECIFIED'
-MULTI_COUNTY_REGISTRATION_TOWNS = set(['MILLINOCKET'])
+UNSPECIFIED_FLAG: str = 'TWPS'
+"""Substring that indicates an unspecified group may be present in a raw election result.
+
+Used in multiple functions in `mainegeo.elections`. Most important use is in
+`mainegeo.elections.ReportingUnit.has_unspecified_group`, which uses it in 
+combination with other context clues by to detect unspecified groups."""
+
+STANDARD_FLAG: str = 'UNSPECIFIED'
+"""Substring that will be applied to unspecified groups during formatting.
+
+Chosen to avoid overlap with words that may occur naturally in election 
+result strings."""
+
+MULTI_COUNTY_REGISTRATION_TOWNS: List[str] = ['MILLINOCKET']
+"""Towns that host unspecified township groups from multiple counties.
+
+As of 2025, the only town that is typically reported this way is Millinocket,
+e.g. Millinocket Penobscot Twps and Millinocket Piscataquis Twps."""
 
 # Building blocks
 PLURAL = UNSPECIFIED_FLAG
@@ -128,30 +300,28 @@ UNSPECIFIED_COUNTY = f"(?P<cty>{'|'.join(COUNTIES.sos_county)})"
 SOS_FLAG = f"(?P<sos_flag>{UNSPECIFIED_FLAG})"
 
 # Patterns
-PLURAL_PATTERN = re.compile(f'\\b{PLURAL}\\b')
-SINGULAR_PATTERN = re.compile(f'\\b{SINGULAR}\\b')
-MULTI_COUNTY_PATTERN = re.compile(f"(?i){UNSPECIFIED_REGTOWN} {UNSPECIFIED_COUNTY}\\w* {SOS_FLAG}")
-MULTI_COUNTY_FORMAT = r"\g<regtown> \g<sos_flag> [\g<cty>]"
-FORMATTED_GROUP_PATTERN = re.compile(f'{STANDARD_FLAG} (?P<regtown>\\w+.*) {UNSPECIFIED_FLAG}( \\[{UNSPECIFIED_COUNTY}\\])?')
+PLURAL_PATTERN: re.Pattern = re.compile(f'\\b{PLURAL}\\b')
+"""Add docstring"""
 
+SINGULAR_PATTERN: re.Pattern = re.compile(f'\\b{SINGULAR}\\b')
+"""Add docstring"""
 
-## Other
-# Known typos in election result files (excluding name variants)
-KNOWN_TYPOS = {
-    'MARIONTWP' : 'MARION TWP',
-    'PISCATAQUS': 'PISCATAQUIS',
-    'ORNVEILLE': 'ORNEVILLE',
-    'EDUMUNDS': 'EDMUNDS',
-    'SILIVER RIDGE': 'SILVER RIDGE',
-    'CONNER TWP': 'CONNOR TWP',
-    'DAYBLOCK': 'DAY BLOCK',
-    'FRANKLIN/T9 T10 SD': 'FRANKLIN/T9 SD/T10 SD',
-    'PLEASANT POINT VOTING DISTRICT RICT': 'PLEASANT POINT VOTING DISTRICT'
-}
+MULTI_COUNTY_PATTERN: re.Pattern = re.compile(
+    f"(?i){UNSPECIFIED_REGTOWN} {UNSPECIFIED_COUNTY}\\w* {SOS_FLAG}", re.I
+)
+"""Matches raw, unformatted unspecified groups that contain a county.
 
-AMBIGUOUS_GROUP_NAMES = {
-    '^PENOBSCOT TWPS$': 'MILLINOCKET PENOBSCOT TWPS',
-    '^PISCATAQUIS TWPS$': 'MILLINOCKET PISCATAQUIS TWPS',
-    'PEN(?:OBSCOT)? TWP$': 'PENOBSCOT TWPS',
-    'PIS(?:CATAQUIS)? TWP$': 'PISCATAQUIS TWPS',
-}
+Match groups:
+    * regtown
+    * cty
+    * sos_flag
+"""
+
+MULTI_COUNTY_FORMAT: str = r"\g<regtown> \g<sos_flag> [\g<cty>]"
+"""Standardized format to apply to all multi-county unspecified groups."""
+
+FORMATTED_GROUP_PATTERN: re.Pattern = re.compile(
+    f'{STANDARD_FLAG} (?P<regtown>.+) {UNSPECIFIED_FLAG}( \\[{UNSPECIFIED_COUNTY}\\])?',
+    re.I
+)
+"""Matches all formatted unspecified groups, including multi-county groups."""

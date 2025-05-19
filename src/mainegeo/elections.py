@@ -73,7 +73,8 @@ class ResultString:
         """
         Result string with capitalization, whitespace and delimiters normalized.
 
-        Typos found in the KNOWN_TYPOS and AMBIGUOUS_GROUP_NAMES dicts are also fixed.
+        Typos found in the `mainegeo.patterns.KNOWN_TYPOS` and 
+        `mainegeo.patterns.AMBIGUOUS_GROUP_NAMES` dicts are also fixed.
 
         Example:
             >>> result = ResultString('FORT KENT/BIG TWENTY TWP/   T15 R15 WELS')
@@ -485,7 +486,7 @@ class ReportingUnit:
     def _format_unspecified_group(group_name: str) -> str:
         """
         Apply special format to unspecified groups that include a county.
-        """  
+        """
         return MULTI_COUNTY_PATTERN.sub(MULTI_COUNTY_FORMAT, group_name)
     
     @staticmethod

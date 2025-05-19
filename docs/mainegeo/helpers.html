@@ -31,34 +31,46 @@
             <h2>API Documentation</h2>
                 <ul class="memberlist">
             <li>
-                    <a class="class" href="#Helpers1">Helpers1</a>
+                    <a class="class" href="#Constants">Constants</a>
                             <ul class="memberlist">
                         <li>
-                                <a class="variable" href="#Helpers1.COUNTIES">COUNTIES</a>
+                                <a class="variable" href="#Constants.REGIONS">REGIONS</a>
                         </li>
                         <li>
-                                <a class="variable" href="#Helpers1.TOWNSHIPS">TOWNSHIPS</a>
+                                <a class="variable" href="#Constants.GNIS_GEOTYPES">GNIS_GEOTYPES</a>
                         </li>
                         <li>
-                                <a class="variable" href="#Helpers1.REGIONS">REGIONS</a>
+                                <a class="variable" href="#Constants.ABBREVIATIONS">ABBREVIATIONS</a>
                         </li>
                         <li>
-                                <a class="variable" href="#Helpers1.GNIS_GEOTYPES">GNIS_GEOTYPES</a>
-                        </li>
-                </ul>
-
-            </li>
-            <li>
-                    <a class="class" href="#Helpers2">Helpers2</a>
-                            <ul class="memberlist">
-                        <li>
-                                <a class="variable" href="#Helpers2.REGIONS">REGIONS</a>
+                                <a class="variable" href="#Constants.VALID_HYPHEN_CONTEXTS">VALID_HYPHEN_CONTEXTS</a>
                         </li>
                         <li>
-                                <a class="variable" href="#Helpers2.GNIS_GEOTYPES">GNIS_GEOTYPES</a>
+                                <a class="variable" href="#Constants.VALID_AMPERSAND_CONTEXTS">VALID_AMPERSAND_CONTEXTS</a>
                         </li>
                         <li>
-                                <a class="variable" href="#Helpers2.ABBREVIATIONS">ABBREVIATIONS</a>
+                                <a class="variable" href="#Constants.JUNIOR_SUFFIXES">JUNIOR_SUFFIXES</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#Constants.DIRECTIONS">DIRECTIONS</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#Constants.CONTAINS_FALSE_SUFFIX">CONTAINS_FALSE_SUFFIX</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#Constants.UNSPECIFIED_FLAG">UNSPECIFIED_FLAG</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#Constants.STANDARD_FLAG">STANDARD_FLAG</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#Constants.MULTI_COUNTY_REGISTRATION_TOWNS">MULTI_COUNTY_REGISTRATION_TOWNS</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#Constants.KNOWN_TYPOS">KNOWN_TYPOS</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#Constants.AMBIGUOUS_GROUP_NAMES">AMBIGUOUS_GROUP_NAMES</a>
                         </li>
                 </ul>
 
@@ -76,12 +88,6 @@
                                 <a class="variable" href="#TownshipPatterns.RANGE">RANGE</a>
                         </li>
                         <li>
-                                <a class="variable" href="#TownshipPatterns.FUZZY">FUZZY</a>
-                        </li>
-                        <li>
-                                <a class="variable" href="#TownshipPatterns.PUNCTUATION">PUNCTUATION</a>
-                        </li>
-                        <li>
                                 <a class="variable" href="#TownshipPatterns.TOWNSHIP_STANDARD">TOWNSHIP_STANDARD</a>
                         </li>
                         <li>
@@ -89,6 +95,9 @@
                         </li>
                         <li>
                                 <a class="variable" href="#TownshipPatterns.TOWNSHIP">TOWNSHIP</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#TownshipPatterns.FUZZY">FUZZY</a>
                         </li>
                         <li>
                                 <a class="variable" href="#TownshipPatterns.UNNAMED">UNNAMED</a>
@@ -142,187 +151,250 @@ aliases, and provides a function for matching.</p>
 </span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a><span class="n">__docformat__</span> <span class="o">=</span> <span class="s1">&#39;google&#39;</span>
 </span><span id="L-6"><a href="#L-6"><span class="linenos">  6</span></a>
 </span><span id="L-7"><a href="#L-7"><span class="linenos">  7</span></a><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a>    <span class="s1">&#39;Helpers1&#39;</span><span class="p">,</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a>    <span class="s1">&#39;Helpers2&#39;</span><span class="p">,</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a>    <span class="s1">&#39;TownshipPatterns&#39;</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a><span class="p">]</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a>
-</span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">importlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">resources</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cache</span><span class="p">,</span> <span class="n">cached_property</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">mainegeo.lookups</span><span class="w"> </span><span class="kn">import</span> <span class="n">CountyData</span><span class="p">,</span> <span class="n">TownshipData</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">string</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a>
-</span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a><span class="k">def</span><span class="w"> </span><span class="nf">cached_class_attr</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a>    <span class="k">return</span> <span class="nb">classmethod</span><span class="p">(</span><span class="nb">property</span><span class="p">(</span><span class="n">cache</span><span class="p">(</span><span class="n">f</span><span class="p">)))</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a>
-</span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Helpers1</span><span class="p">:</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constants and patterns for township name parsing.</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a><span class="sd">    </span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a><span class="sd">    This class provides documentation and organization for township-related</span>
-</span><span id="L-28"><a href="#L-28"><span class="linenos"> 28</span></a><span class="sd">    constants without creating instances. All attributes are class-level.</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos"> 29</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a>    <span class="nd">@cached_property</span>
-</span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">COUNTIES</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CountyData</span><span class="p">:</span>
-</span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a>        <span class="k">return</span> <span class="n">CountyData</span><span class="p">()</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a>    
-</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a>    <span class="nd">@cached_property</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">TOWNSHIPS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TownshipData</span><span class="p">:</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a>        <span class="k">return</span> <span class="n">TownshipData</span><span class="p">()</span>
-</span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a>
-</span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a>    <span class="nd">@cached_property</span>
-</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">REGIONS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Valid region codes that can appear in township names.</span>
-</span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a><span class="sd">        </span>
-</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a><span class="sd">        These are two- to four-letter codes like &#39;WELS&#39; (West of the </span>
-</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a><span class="sd">        Easterly Line of the State) or &#39;BPP&#39; (Bingham&#39;s Penobscot Purchase).</span>
-</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a>        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;ED&quot;</span><span class="p">,</span><span class="s2">&quot;MD&quot;</span><span class="p">,</span><span class="s2">&quot;ND&quot;</span><span class="p">,</span><span class="s2">&quot;SD&quot;</span><span class="p">,</span><span class="s2">&quot;TS&quot;</span><span class="p">,</span><span class="s2">&quot;BKP&quot;</span><span class="p">,</span><span class="s2">&quot;BPP&quot;</span><span class="p">,</span><span class="s2">&quot;EKR&quot;</span><span class="p">,</span><span class="s2">&quot;NWP&quot;</span><span class="p">,</span><span class="s2">&quot;WKR&quot;</span><span class="p">,</span><span class="s2">&quot;NBKP&quot;</span><span class="p">,</span><span class="s2">&quot;NBPP&quot;</span><span class="p">,</span><span class="s2">&quot;WBKP&quot;</span><span class="p">,</span><span class="s2">&quot;WELS&quot;</span><span class="p">]</span>
-</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a>    
-</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a>    <span class="nd">@cached_property</span>
-</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">GNIS_GEOTYPES</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Geographic Names Information System (GNIS) &quot;&quot;&quot;</span>
-</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a>        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;CITY&quot;</span><span class="p">,</span> <span class="s2">&quot;PLANTATION&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWN&quot;</span><span class="p">]</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a>    <span class="s1">&#39;Constants&#39;</span><span class="p">,</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a>    <span class="s1">&#39;TownshipPatterns&#39;</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a><span class="p">]</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a>
+</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">importlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">resources</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cache</span><span class="p">,</span> <span class="n">cached_property</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">mainegeo.lookups</span><span class="w"> </span><span class="kn">import</span> <span class="n">CountyData</span><span class="p">,</span> <span class="n">TownshipData</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">string</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a>
+</span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a><span class="k">def</span><span class="w"> </span><span class="nf">cached_class_attr</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a>    <span class="k">return</span> <span class="nb">classmethod</span><span class="p">(</span><span class="nb">property</span><span class="p">(</span><span class="n">cache</span><span class="p">(</span><span class="n">f</span><span class="p">)))</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a>
+</span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Constants</span><span class="p">:</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constants and patterns for township name parsing.</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a><span class="sd">    </span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a><span class="sd">    This class provides documentation and organization for township-related</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a><span class="sd">    constants without creating instances. All attributes are class-level.</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos"> 28</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos"> 29</span></a>    <span class="c1"># Townships</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a>    <span class="n">REGIONS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ED&quot;</span><span class="p">,</span><span class="s2">&quot;MD&quot;</span><span class="p">,</span><span class="s2">&quot;ND&quot;</span><span class="p">,</span><span class="s2">&quot;SD&quot;</span><span class="p">,</span><span class="s2">&quot;TS&quot;</span><span class="p">,</span><span class="s2">&quot;BKP&quot;</span><span class="p">,</span><span class="s2">&quot;BPP&quot;</span><span class="p">,</span><span class="s2">&quot;EKR&quot;</span><span class="p">,</span><span class="s2">&quot;NWP&quot;</span><span class="p">,</span><span class="s2">&quot;WKR&quot;</span><span class="p">,</span><span class="s2">&quot;NBKP&quot;</span><span class="p">,</span><span class="s2">&quot;NBPP&quot;</span><span class="p">,</span><span class="s2">&quot;WBKP&quot;</span><span class="p">,</span><span class="s2">&quot;WELS&quot;</span><span class="p">]</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Valid region codes that can appear in township names.</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a><span class="sd">    </span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a><span class="sd">    These are two- to four-letter codes like &#39;WELS&#39; (West of the</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a><span class="sd">    Easterly Line of the State) or &#39;BPP&#39; (Bingham&#39;s Penobscot Purchase).&quot;&quot;&quot;</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a>    
+</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a>    <span class="c1"># Name Parsing</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a>    <span class="n">GNIS_GEOTYPES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CITY&quot;</span><span class="p">,</span> <span class="s2">&quot;PLANTATION&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWN&quot;</span><span class="p">]</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a><span class="sd">    Geographic Names Information System (GNIS)&quot;&quot;&quot;</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a>
+</span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a>    <span class="n">ABBREVIATIONS</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a>        <span class="s2">&quot;PLANTATION&quot;</span><span class="p">:</span> <span class="s2">&quot;PLT&quot;</span><span class="p">,</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a>        <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">:</span> <span class="s2">&quot;TWP&quot;</span><span class="p">,</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a>        <span class="s2">&quot;VOTING DISTRICT&quot;</span><span class="p">:</span> <span class="s2">&quot;VOTING DIST&quot;</span><span class="p">,</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a>        <span class="s2">&quot;RESERVATION&quot;</span><span class="p">:</span> <span class="s2">&quot;RES&quot;</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a>    <span class="p">}</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a>
+</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a>    <span class="n">VALID_HYPHEN_CONTEXTS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DOVER-FOXCROFT&#39;</span><span class="p">]</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
 </span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a>
-</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Helpers2</span><span class="p">:</span>
-</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constants and patterns for township name parsing.</span>
-</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a><span class="sd">    </span>
-</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a><span class="sd">    This class provides documentation and organization for township-related</span>
-</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a><span class="sd">    constants without creating instances. All attributes are class-level.</span>
-</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a>    
-</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a>    <span class="n">REGIONS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ED&quot;</span><span class="p">,</span><span class="s2">&quot;MD&quot;</span><span class="p">,</span><span class="s2">&quot;ND&quot;</span><span class="p">,</span><span class="s2">&quot;SD&quot;</span><span class="p">,</span><span class="s2">&quot;TS&quot;</span><span class="p">,</span><span class="s2">&quot;BKP&quot;</span><span class="p">,</span><span class="s2">&quot;BPP&quot;</span><span class="p">,</span><span class="s2">&quot;EKR&quot;</span><span class="p">,</span><span class="s2">&quot;NWP&quot;</span><span class="p">,</span><span class="s2">&quot;WKR&quot;</span><span class="p">,</span><span class="s2">&quot;NBKP&quot;</span><span class="p">,</span><span class="s2">&quot;NBPP&quot;</span><span class="p">,</span><span class="s2">&quot;WBKP&quot;</span><span class="p">,</span><span class="s2">&quot;WELS&quot;</span><span class="p">]</span>
-</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Valid region codes that can appear in township names.</span>
-</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a><span class="sd">    </span>
-</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a><span class="sd">    These are two- to four-letter codes like &#39;WELS&#39; (West of the</span>
-</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a><span class="sd">    Easterly Line of the State) or &#39;BPP&#39; (Bingham&#39;s Penobscot Purchase).&quot;&quot;&quot;</span>
-</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a>    
-</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>    <span class="n">GNIS_GEOTYPES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CITY&quot;</span><span class="p">,</span> <span class="s2">&quot;PLANTATION&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWN&quot;</span><span class="p">]</span>
-</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Geographic Names Information System (GNIS)&quot;&quot;&quot;</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a>    <span class="n">VALID_AMPERSAND_CONTEXTS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;KING &amp; BARTLETT&#39;</span><span class="p">,</span> <span class="s1">&#39;TAUNTON &amp; RAYNHAM&#39;</span><span class="p">]</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a>
+</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a>    <span class="n">JUNIOR_SUFFIXES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GORE&#39;</span><span class="p">,</span> <span class="s1">&#39;GRANT&#39;</span><span class="p">,</span> <span class="s1">&#39;ISLAND&#39;</span><span class="p">]</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a>
+</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a>    <span class="n">DIRECTIONS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NORTH&#39;</span><span class="p">,</span> <span class="s1">&#39;SOUTH&#39;</span><span class="p">,</span> <span class="s1">&#39;EAST&#39;</span><span class="p">,</span> <span class="s1">&#39;WEST&#39;</span><span class="p">]</span>
+</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a>    
+</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a>    <span class="n">CONTAINS_FALSE_SUFFIX</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;INDIAN TOWNSHIP&#39;</span><span class="p">]</span>
+</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a>
+</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a>    <span class="c1"># Unspecified Groups</span>
+</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>    <span class="n">UNSPECIFIED_FLAG</span> <span class="o">=</span> <span class="s1">&#39;TWPS&#39;</span>
+</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
 </span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a>
-</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>    <span class="n">ABBREVIATIONS</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>        <span class="s2">&quot;PLANTATION&quot;</span><span class="p">:</span> <span class="s2">&quot;PLT&quot;</span><span class="p">,</span>
-</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>        <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">:</span> <span class="s2">&quot;TWP&quot;</span><span class="p">,</span>
-</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>        <span class="s2">&quot;VOTING DISTRICT&quot;</span><span class="p">:</span> <span class="s2">&quot;VOTING DIST&quot;</span><span class="p">,</span>
-</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a>        <span class="s2">&quot;RESERVATION&quot;</span><span class="p">:</span> <span class="s2">&quot;RES&quot;</span>
-</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a>    <span class="p">}</span>
-</span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
-</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a>
-</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a><span class="k">class</span><span class="w"> </span><span class="nc">TownshipPatterns</span><span class="p">:</span>
-</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constants and patterns for township name parsing.</span>
-</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a><span class="sd">    </span>
-</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a><span class="sd">    This class provides documentation and organization for township-related</span>
-</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a><span class="sd">    constants without creating instances. All attributes are class-level.</span>
-</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>    
-</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>    <span class="n">REGIONS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ED&quot;</span><span class="p">,</span><span class="s2">&quot;MD&quot;</span><span class="p">,</span><span class="s2">&quot;ND&quot;</span><span class="p">,</span><span class="s2">&quot;SD&quot;</span><span class="p">,</span><span class="s2">&quot;TS&quot;</span><span class="p">,</span><span class="s2">&quot;BKP&quot;</span><span class="p">,</span><span class="s2">&quot;BPP&quot;</span><span class="p">,</span><span class="s2">&quot;EKR&quot;</span><span class="p">,</span><span class="s2">&quot;NWP&quot;</span><span class="p">,</span><span class="s2">&quot;WKR&quot;</span><span class="p">,</span><span class="s2">&quot;NBKP&quot;</span><span class="p">,</span><span class="s2">&quot;NBPP&quot;</span><span class="p">,</span><span class="s2">&quot;WBKP&quot;</span><span class="p">,</span><span class="s2">&quot;WELS&quot;</span><span class="p">]</span>
-</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Valid region codes that can appear in township names.</span>
-</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a><span class="sd">    </span>
-</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a><span class="sd">    These are two- to four-letter codes like &#39;WELS&#39; (West of the</span>
-</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a><span class="sd">    Easterly Line of the State) or &#39;BPP&#39; (Bingham&#39;s Penobscot Purchase).&quot;&quot;&quot;</span>
-</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a>
-</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a>    <span class="n">REGION</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">REGIONS</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
-</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Regex building block representing a region designator.</span>
-</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a><span class="sd">    </span>
-</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a><span class="sd">    Township names can contain zero, one, or two regions.</span>
-</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>
-</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>    <span class="n">RANGE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:R.?[</span><span class="se">\\</span><span class="s2">d]</span><span class="se">{{</span><span class="s2">1,2</span><span class="se">}}</span><span class="s2">)&quot;</span>
-</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Regex building block representing a range designator.</span>
-</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a>
-</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a><span class="sd">    Ranges are counted from the easterly line toward the west,</span>
-</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a><span class="sd">    numbered 1-19 (e.g., R1, R19).</span>
-</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a>
-</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a>    <span class="n">FUZZY</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[^,</span><span class="se">\\</span><span class="s2">w]</span><span class="se">{{</span><span class="s2">0,3</span><span class="se">}}</span><span class="s2">&quot;</span>
-</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a>    <span class="n">PUNCTUATION</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;[^ </span><span class="se">\\</span><span class="s1">w]&#39;</span>
-</span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a>
-</span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a>    <span class="n">TOWNSHIP_STANDARD</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;(?:T.?</span><span class="se">\\</span><span class="s2">d{1,2})&quot;</span>
-</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a>    <span class="n">TOWNSHIP_ALTERNATE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?&lt;!</span><span class="se">\\</span><span class="s2">w)T[ABCDX](?![a-z])&quot;</span>
-</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a>    <span class="n">TOWNSHIP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="n">TOWNSHIP_STANDARD</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">TOWNSHIP_ALTERNATE</span><span class="si">}</span><span class="s2">)&quot;</span>
-</span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Regex building block representing a township designator.</span>
-</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a><span class="sd">    </span>
-</span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a><span class="sd">    Townships are designated by:</span>
-</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a><span class="sd">        - Numbers 1-19 from south to north (e.g., T1, T19)</span>
-</span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a><span class="sd">        - Occasional letter designations (TA, TB, TC, TD, TX)</span>
+</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>    <span class="n">STANDARD_FLAG</span> <span class="o">=</span> <span class="s1">&#39;UNSPECIFIED&#39;</span>
+</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>
+</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>    <span class="n">MULTI_COUNTY_REGISTRATION_TOWNS</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;MILLINOCKET&#39;</span><span class="p">])</span>
+</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a>
+</span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a>    <span class="c1"># Other</span>
+</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a>    <span class="n">KNOWN_TYPOS</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a>        <span class="s1">&#39;MARIONTWP&#39;</span> <span class="p">:</span> <span class="s1">&#39;MARION TWP&#39;</span><span class="p">,</span>
+</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a>        <span class="s1">&#39;PISCATAQUS&#39;</span><span class="p">:</span> <span class="s1">&#39;PISCATAQUIS&#39;</span><span class="p">,</span>
+</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a>        <span class="s1">&#39;ORNVEILLE&#39;</span><span class="p">:</span> <span class="s1">&#39;ORNEVILLE&#39;</span><span class="p">,</span>
+</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a>        <span class="s1">&#39;EDUMUNDS&#39;</span><span class="p">:</span> <span class="s1">&#39;EDMUNDS&#39;</span><span class="p">,</span>
+</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a>        <span class="s1">&#39;SILIVER RIDGE&#39;</span><span class="p">:</span> <span class="s1">&#39;SILVER RIDGE&#39;</span><span class="p">,</span>
+</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>        <span class="s1">&#39;CONNER TWP&#39;</span><span class="p">:</span> <span class="s1">&#39;CONNOR TWP&#39;</span><span class="p">,</span>
+</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>        <span class="s1">&#39;DAYBLOCK&#39;</span><span class="p">:</span> <span class="s1">&#39;DAY BLOCK&#39;</span><span class="p">,</span>
+</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>        <span class="s1">&#39;FRANKLIN/T9 T10 SD&#39;</span><span class="p">:</span> <span class="s1">&#39;FRANKLIN/T9 SD/T10 SD&#39;</span><span class="p">,</span>
+</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a>        <span class="s1">&#39;PLEASANT POINT VOTING DISTRICT RICT&#39;</span><span class="p">:</span> <span class="s1">&#39;PLEASANT POINT VOTING DISTRICT&#39;</span>
+</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>    <span class="p">}</span>
+</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>
+</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a>    <span class="n">AMBIGUOUS_GROUP_NAMES</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a>        <span class="s1">&#39;^PENOBSCOT TWPS$&#39;</span><span class="p">:</span> <span class="s1">&#39;MILLINOCKET PENOBSCOT TWPS&#39;</span><span class="p">,</span>
+</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a>        <span class="s1">&#39;^PISCATAQUIS TWPS$&#39;</span><span class="p">:</span> <span class="s1">&#39;MILLINOCKET PISCATAQUIS TWPS&#39;</span><span class="p">,</span>
+</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a>        <span class="s1">&#39;PEN(?:OBSCOT)? TWP$&#39;</span><span class="p">:</span> <span class="s1">&#39;PENOBSCOT TWPS&#39;</span><span class="p">,</span>
+</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a>        <span class="s1">&#39;PIS(?:CATAQUIS)? TWP$&#39;</span><span class="p">:</span> <span class="s1">&#39;PISCATAQUIS TWPS&#39;</span><span class="p">,</span>
+</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>    <span class="p">}</span>
+</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>
+</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a><span class="k">class</span><span class="w"> </span><span class="nc">TownshipPatterns</span><span class="p">:</span>
+</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constants and patterns for township name parsing.</span>
+</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a><span class="sd">    </span>
+</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a><span class="sd">    This class provides documentation and organization for township-related</span>
+</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a><span class="sd">    constants without creating instances. All attributes are class-level.</span>
+</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a>    
+</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a>    <span class="n">REGIONS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ED&quot;</span><span class="p">,</span><span class="s2">&quot;MD&quot;</span><span class="p">,</span><span class="s2">&quot;ND&quot;</span><span class="p">,</span><span class="s2">&quot;SD&quot;</span><span class="p">,</span><span class="s2">&quot;TS&quot;</span><span class="p">,</span><span class="s2">&quot;BKP&quot;</span><span class="p">,</span><span class="s2">&quot;BPP&quot;</span><span class="p">,</span><span class="s2">&quot;EKR&quot;</span><span class="p">,</span><span class="s2">&quot;NWP&quot;</span><span class="p">,</span><span class="s2">&quot;WKR&quot;</span><span class="p">,</span><span class="s2">&quot;NBKP&quot;</span><span class="p">,</span><span class="s2">&quot;NBPP&quot;</span><span class="p">,</span><span class="s2">&quot;WBKP&quot;</span><span class="p">,</span><span class="s2">&quot;WELS&quot;</span><span class="p">]</span>
+</span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Valid region codes that can appear in township names.</span>
+</span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a><span class="sd">    </span>
+</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a><span class="sd">    These are two- to four-letter codes like &#39;WELS&#39; (West of the</span>
+</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a><span class="sd">    Easterly Line of the State) or &#39;BPP&#39; (Bingham&#39;s Penobscot Purchase).&quot;&quot;&quot;</span>
+</span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a>
+</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a>    <span class="n">REGION</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">REGIONS</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Regex building block representing a region designator.</span>
+</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a><span class="sd">    </span>
+</span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a><span class="sd">    Township names can contain zero, one, or two regions.</span>
 </span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a>
-</span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a>    <span class="n">UNNAMED</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;((?:</span><span class="si">{</span><span class="n">TOWNSHIP</span><span class="si">}</span><span class="s2">)(?:</span><span class="si">{</span><span class="n">FUZZY</span><span class="si">}{</span><span class="n">RANGE</span><span class="si">}</span><span class="s2">)?(?:</span><span class="si">{</span><span class="n">FUZZY</span><span class="si">}{</span><span class="n">REGION</span><span class="si">}</span><span class="s2">)</span><span class="se">{{</span><span class="s2">0,2</span><span class="se">}}</span><span class="s2">)&quot;</span>
-</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Uncompiled string representing a full unnamed township name.&quot;&quot;&quot;</span>
+</span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a>    <span class="n">RANGE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:R.?[</span><span class="se">\\</span><span class="s2">d]</span><span class="se">{{</span><span class="s2">1,2</span><span class="se">}}</span><span class="s2">)&quot;</span>
+</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Regex building block representing a range designator.</span>
 </span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a>
-</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a>    <span class="n">UNNAMED_ELEMENTS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">TOWNSHIP</span><span class="p">,</span><span class="w"> </span><span class="n">RANGE</span><span class="p">,</span><span class="w"> </span><span class="n">REGION</span><span class="p">])</span><span class="si">}</span><span class="s2">)&quot;</span>
-</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
-</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a>
-</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a>    <span class="n">UNNAMED_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">UNNAMED</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring</span>
-</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a><span class="sd">    </span>
-</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a><span class="sd">    Used in `mainegeo.townships.is_unnamed_township` and `mainegeo.townships.clean_codes`.&quot;&quot;&quot;</span>
-</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a>
-</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a>    <span class="n">UNNAMED_ELEMENTS_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">UNNAMED_ELEMENTS</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Pattern for finding unnamed township name elements regardless of formatting.</span>
-</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a><span class="sd">    </span>
-</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a><span class="sd">    Used in `mainegeo.townships.clean_code`.&quot;&quot;&quot;</span>
-</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a>
-</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a>    <span class="n">LAST_REGION_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">REGION</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring</span>
-</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a><span class="sd">    </span>
-</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a><span class="sd">    Used in `mainegeo.townships.strip_region`.&quot;&quot;&quot;</span>
-</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a>    
-</span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a>    <span class="nd">@cached_property</span>
-</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">TOWNSHIP_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; Regex building block representing a township designator.</span>
-</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a><span class="sd">    </span>
-</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a><span class="sd">        Townships are designated by:</span>
-</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a><span class="sd">            - Numbers 1-19 from south to north (e.g., T1, T19)</span>
-</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a><span class="sd">            - Occasional letter designations (TA, TB, TC, TD, TX)</span>
-</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>        <span class="n">TOWNSHIP_STANDARD</span> <span class="o">=</span> <span class="s2">&quot;(?:T.?</span><span class="se">\\</span><span class="s2">d{1,2})&quot;</span>
-</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a>        <span class="n">TOWNSHIP_ALTERNATE</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?&lt;!</span><span class="se">\\</span><span class="s2">w)T[ABCDX](?![a-z])&quot;</span>
-</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="n">TOWNSHIP_STANDARD</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">TOWNSHIP_ALTERNATE</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a><span class="sd">    Ranges are counted from the easterly line toward the west,</span>
+</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a><span class="sd">    numbered 1-19 (e.g., R1, R19).</span>
+</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a>
+</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a>    <span class="n">TOWNSHIP_STANDARD</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;(?:T.?</span><span class="se">\\</span><span class="s2">d{1,2})&quot;</span>
+</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a>    <span class="n">TOWNSHIP_ALTERNATE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?&lt;!</span><span class="se">\\</span><span class="s2">w)T[ABCDX](?![a-z])&quot;</span>
+</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a>    <span class="n">TOWNSHIP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="n">TOWNSHIP_STANDARD</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">TOWNSHIP_ALTERNATE</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Regex building block representing a township designator.</span>
+</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a><span class="sd">    </span>
+</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a><span class="sd">    Townships are designated by:</span>
+</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a><span class="sd">        - Numbers 1-19 from south to north (e.g., T1, T19)</span>
+</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a><span class="sd">        - Occasional letter designations (TA, TB, TC, TD, TX)</span>
+</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a>
+</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a>    <span class="n">FUZZY</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[^,</span><span class="se">\\</span><span class="s2">w]</span><span class="se">{{</span><span class="s2">0,3</span><span class="se">}}</span><span class="s2">&quot;</span>
+</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a>    <span class="n">UNNAMED</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;((?:</span><span class="si">{</span><span class="n">TOWNSHIP</span><span class="si">}</span><span class="s2">)(?:</span><span class="si">{</span><span class="n">FUZZY</span><span class="si">}{</span><span class="n">RANGE</span><span class="si">}</span><span class="s2">)?(?:</span><span class="si">{</span><span class="n">FUZZY</span><span class="si">}{</span><span class="n">REGION</span><span class="si">}</span><span class="s2">)</span><span class="se">{{</span><span class="s2">0,2</span><span class="se">}}</span><span class="s2">)&quot;</span>
+</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Uncompiled string representing a full unnamed township name.&quot;&quot;&quot;</span>
+</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a>
+</span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a>    <span class="n">UNNAMED_ELEMENTS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">TOWNSHIP</span><span class="p">,</span><span class="w"> </span><span class="n">RANGE</span><span class="p">,</span><span class="w"> </span><span class="n">REGION</span><span class="p">])</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a>
+</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a>    <span class="n">UNNAMED_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">UNNAMED</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring</span>
+</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a><span class="sd">    </span>
+</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a><span class="sd">    Used in `mainegeo.townships.is_unnamed_township` and `mainegeo.townships.clean_codes`.&quot;&quot;&quot;</span>
+</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>
+</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>    <span class="n">UNNAMED_ELEMENTS_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">UNNAMED_ELEMENTS</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Pattern for finding unnamed township name elements regardless of formatting.</span>
+</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a><span class="sd">    </span>
+</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a><span class="sd">    Used in `mainegeo.townships.clean_code`.&quot;&quot;&quot;</span>
+</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a>
+</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a>    <span class="n">LAST_REGION_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">REGION</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring</span>
+</span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a><span class="sd">    </span>
+</span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a><span class="sd">    Used in `mainegeo.townships.strip_region`.&quot;&quot;&quot;</span>
+</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a>    
+</span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a>    <span class="nd">@cached_property</span>
+</span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">TOWNSHIP_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; Regex building block representing a township designator.</span>
+</span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a><span class="sd">    </span>
+</span><span id="L-158"><a href="#L-158"><span class="linenos">158</span></a><span class="sd">        Townships are designated by:</span>
+</span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a><span class="sd">            - Numbers 1-19 from south to north (e.g., T1, T19)</span>
+</span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a><span class="sd">            - Occasional letter designations (TA, TB, TC, TD, TX)</span>
+</span><span id="L-161"><a href="#L-161"><span class="linenos">161</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a>        <span class="n">TOWNSHIP_STANDARD</span> <span class="o">=</span> <span class="s2">&quot;(?:T.?</span><span class="se">\\</span><span class="s2">d{1,2})&quot;</span>
+</span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a>        <span class="n">TOWNSHIP_ALTERNATE</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?&lt;!</span><span class="se">\\</span><span class="s2">w)T[ABCDX](?![a-z])&quot;</span>
+</span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="n">TOWNSHIP_STANDARD</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">TOWNSHIP_ALTERNATE</span><span class="si">}</span><span class="s2">)&quot;</span>
 </span></pre></div>
 
 
             </section>
-                <section id="Helpers1">
-                            <input id="Helpers1-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+                <section id="Constants">
+                            <input id="Constants-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr class">
             
     <span class="def">class</span>
-    <span class="name">Helpers1</span>:
+    <span class="name">Constants</span>:
 
-                <label class="view-source-button" for="Helpers1-view-source"><span>View Source</span></label>
+                <label class="view-source-button" for="Constants-view-source"><span>View Source</span></label>
 
     </div>
-    <a class="headerlink" href="#Helpers1"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Helpers1-25"><a href="#Helpers1-25"><span class="linenos">25</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Helpers1</span><span class="p">:</span>
-</span><span id="Helpers1-26"><a href="#Helpers1-26"><span class="linenos">26</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constants and patterns for township name parsing.</span>
-</span><span id="Helpers1-27"><a href="#Helpers1-27"><span class="linenos">27</span></a><span class="sd">    </span>
-</span><span id="Helpers1-28"><a href="#Helpers1-28"><span class="linenos">28</span></a><span class="sd">    This class provides documentation and organization for township-related</span>
-</span><span id="Helpers1-29"><a href="#Helpers1-29"><span class="linenos">29</span></a><span class="sd">    constants without creating instances. All attributes are class-level.</span>
-</span><span id="Helpers1-30"><a href="#Helpers1-30"><span class="linenos">30</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="Helpers1-31"><a href="#Helpers1-31"><span class="linenos">31</span></a>    <span class="nd">@cached_property</span>
-</span><span id="Helpers1-32"><a href="#Helpers1-32"><span class="linenos">32</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">COUNTIES</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CountyData</span><span class="p">:</span>
-</span><span id="Helpers1-33"><a href="#Helpers1-33"><span class="linenos">33</span></a>        <span class="k">return</span> <span class="n">CountyData</span><span class="p">()</span>
-</span><span id="Helpers1-34"><a href="#Helpers1-34"><span class="linenos">34</span></a>    
-</span><span id="Helpers1-35"><a href="#Helpers1-35"><span class="linenos">35</span></a>    <span class="nd">@cached_property</span>
-</span><span id="Helpers1-36"><a href="#Helpers1-36"><span class="linenos">36</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">TOWNSHIPS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TownshipData</span><span class="p">:</span>
-</span><span id="Helpers1-37"><a href="#Helpers1-37"><span class="linenos">37</span></a>        <span class="k">return</span> <span class="n">TownshipData</span><span class="p">()</span>
-</span><span id="Helpers1-38"><a href="#Helpers1-38"><span class="linenos">38</span></a>
-</span><span id="Helpers1-39"><a href="#Helpers1-39"><span class="linenos">39</span></a>    <span class="nd">@cached_property</span>
-</span><span id="Helpers1-40"><a href="#Helpers1-40"><span class="linenos">40</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">REGIONS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span id="Helpers1-41"><a href="#Helpers1-41"><span class="linenos">41</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Valid region codes that can appear in township names.</span>
-</span><span id="Helpers1-42"><a href="#Helpers1-42"><span class="linenos">42</span></a><span class="sd">        </span>
-</span><span id="Helpers1-43"><a href="#Helpers1-43"><span class="linenos">43</span></a><span class="sd">        These are two- to four-letter codes like &#39;WELS&#39; (West of the </span>
-</span><span id="Helpers1-44"><a href="#Helpers1-44"><span class="linenos">44</span></a><span class="sd">        Easterly Line of the State) or &#39;BPP&#39; (Bingham&#39;s Penobscot Purchase).</span>
-</span><span id="Helpers1-45"><a href="#Helpers1-45"><span class="linenos">45</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Helpers1-46"><a href="#Helpers1-46"><span class="linenos">46</span></a>        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;ED&quot;</span><span class="p">,</span><span class="s2">&quot;MD&quot;</span><span class="p">,</span><span class="s2">&quot;ND&quot;</span><span class="p">,</span><span class="s2">&quot;SD&quot;</span><span class="p">,</span><span class="s2">&quot;TS&quot;</span><span class="p">,</span><span class="s2">&quot;BKP&quot;</span><span class="p">,</span><span class="s2">&quot;BPP&quot;</span><span class="p">,</span><span class="s2">&quot;EKR&quot;</span><span class="p">,</span><span class="s2">&quot;NWP&quot;</span><span class="p">,</span><span class="s2">&quot;WKR&quot;</span><span class="p">,</span><span class="s2">&quot;NBKP&quot;</span><span class="p">,</span><span class="s2">&quot;NBPP&quot;</span><span class="p">,</span><span class="s2">&quot;WBKP&quot;</span><span class="p">,</span><span class="s2">&quot;WELS&quot;</span><span class="p">]</span>
-</span><span id="Helpers1-47"><a href="#Helpers1-47"><span class="linenos">47</span></a>    
-</span><span id="Helpers1-48"><a href="#Helpers1-48"><span class="linenos">48</span></a>    <span class="nd">@cached_property</span>
-</span><span id="Helpers1-49"><a href="#Helpers1-49"><span class="linenos">49</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">GNIS_GEOTYPES</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span id="Helpers1-50"><a href="#Helpers1-50"><span class="linenos">50</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Geographic Names Information System (GNIS) &quot;&quot;&quot;</span>
-</span><span id="Helpers1-51"><a href="#Helpers1-51"><span class="linenos">51</span></a>        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;CITY&quot;</span><span class="p">,</span> <span class="s2">&quot;PLANTATION&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWN&quot;</span><span class="p">]</span>
+    <a class="headerlink" href="#Constants"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Constants-24"><a href="#Constants-24"><span class="linenos">24</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Constants</span><span class="p">:</span>
+</span><span id="Constants-25"><a href="#Constants-25"><span class="linenos">25</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constants and patterns for township name parsing.</span>
+</span><span id="Constants-26"><a href="#Constants-26"><span class="linenos">26</span></a><span class="sd">    </span>
+</span><span id="Constants-27"><a href="#Constants-27"><span class="linenos">27</span></a><span class="sd">    This class provides documentation and organization for township-related</span>
+</span><span id="Constants-28"><a href="#Constants-28"><span class="linenos">28</span></a><span class="sd">    constants without creating instances. All attributes are class-level.</span>
+</span><span id="Constants-29"><a href="#Constants-29"><span class="linenos">29</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="Constants-30"><a href="#Constants-30"><span class="linenos">30</span></a>    <span class="c1"># Townships</span>
+</span><span id="Constants-31"><a href="#Constants-31"><span class="linenos">31</span></a>    <span class="n">REGIONS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ED&quot;</span><span class="p">,</span><span class="s2">&quot;MD&quot;</span><span class="p">,</span><span class="s2">&quot;ND&quot;</span><span class="p">,</span><span class="s2">&quot;SD&quot;</span><span class="p">,</span><span class="s2">&quot;TS&quot;</span><span class="p">,</span><span class="s2">&quot;BKP&quot;</span><span class="p">,</span><span class="s2">&quot;BPP&quot;</span><span class="p">,</span><span class="s2">&quot;EKR&quot;</span><span class="p">,</span><span class="s2">&quot;NWP&quot;</span><span class="p">,</span><span class="s2">&quot;WKR&quot;</span><span class="p">,</span><span class="s2">&quot;NBKP&quot;</span><span class="p">,</span><span class="s2">&quot;NBPP&quot;</span><span class="p">,</span><span class="s2">&quot;WBKP&quot;</span><span class="p">,</span><span class="s2">&quot;WELS&quot;</span><span class="p">]</span>
+</span><span id="Constants-32"><a href="#Constants-32"><span class="linenos">32</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Valid region codes that can appear in township names.</span>
+</span><span id="Constants-33"><a href="#Constants-33"><span class="linenos">33</span></a><span class="sd">    </span>
+</span><span id="Constants-34"><a href="#Constants-34"><span class="linenos">34</span></a><span class="sd">    These are two- to four-letter codes like &#39;WELS&#39; (West of the</span>
+</span><span id="Constants-35"><a href="#Constants-35"><span class="linenos">35</span></a><span class="sd">    Easterly Line of the State) or &#39;BPP&#39; (Bingham&#39;s Penobscot Purchase).&quot;&quot;&quot;</span>
+</span><span id="Constants-36"><a href="#Constants-36"><span class="linenos">36</span></a>    
+</span><span id="Constants-37"><a href="#Constants-37"><span class="linenos">37</span></a>    <span class="c1"># Name Parsing</span>
+</span><span id="Constants-38"><a href="#Constants-38"><span class="linenos">38</span></a>    <span class="n">GNIS_GEOTYPES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CITY&quot;</span><span class="p">,</span> <span class="s2">&quot;PLANTATION&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWN&quot;</span><span class="p">]</span>
+</span><span id="Constants-39"><a href="#Constants-39"><span class="linenos">39</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring</span>
+</span><span id="Constants-40"><a href="#Constants-40"><span class="linenos">40</span></a><span class="sd">    Geographic Names Information System (GNIS)&quot;&quot;&quot;</span>
+</span><span id="Constants-41"><a href="#Constants-41"><span class="linenos">41</span></a>
+</span><span id="Constants-42"><a href="#Constants-42"><span class="linenos">42</span></a>    <span class="n">ABBREVIATIONS</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="Constants-43"><a href="#Constants-43"><span class="linenos">43</span></a>        <span class="s2">&quot;PLANTATION&quot;</span><span class="p">:</span> <span class="s2">&quot;PLT&quot;</span><span class="p">,</span>
+</span><span id="Constants-44"><a href="#Constants-44"><span class="linenos">44</span></a>        <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">:</span> <span class="s2">&quot;TWP&quot;</span><span class="p">,</span>
+</span><span id="Constants-45"><a href="#Constants-45"><span class="linenos">45</span></a>        <span class="s2">&quot;VOTING DISTRICT&quot;</span><span class="p">:</span> <span class="s2">&quot;VOTING DIST&quot;</span><span class="p">,</span>
+</span><span id="Constants-46"><a href="#Constants-46"><span class="linenos">46</span></a>        <span class="s2">&quot;RESERVATION&quot;</span><span class="p">:</span> <span class="s2">&quot;RES&quot;</span>
+</span><span id="Constants-47"><a href="#Constants-47"><span class="linenos">47</span></a>    <span class="p">}</span>
+</span><span id="Constants-48"><a href="#Constants-48"><span class="linenos">48</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="Constants-49"><a href="#Constants-49"><span class="linenos">49</span></a>
+</span><span id="Constants-50"><a href="#Constants-50"><span class="linenos">50</span></a>    <span class="n">VALID_HYPHEN_CONTEXTS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DOVER-FOXCROFT&#39;</span><span class="p">]</span>
+</span><span id="Constants-51"><a href="#Constants-51"><span class="linenos">51</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="Constants-52"><a href="#Constants-52"><span class="linenos">52</span></a>
+</span><span id="Constants-53"><a href="#Constants-53"><span class="linenos">53</span></a>    <span class="n">VALID_AMPERSAND_CONTEXTS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;KING &amp; BARTLETT&#39;</span><span class="p">,</span> <span class="s1">&#39;TAUNTON &amp; RAYNHAM&#39;</span><span class="p">]</span>
+</span><span id="Constants-54"><a href="#Constants-54"><span class="linenos">54</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="Constants-55"><a href="#Constants-55"><span class="linenos">55</span></a>
+</span><span id="Constants-56"><a href="#Constants-56"><span class="linenos">56</span></a>    <span class="n">JUNIOR_SUFFIXES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GORE&#39;</span><span class="p">,</span> <span class="s1">&#39;GRANT&#39;</span><span class="p">,</span> <span class="s1">&#39;ISLAND&#39;</span><span class="p">]</span>
+</span><span id="Constants-57"><a href="#Constants-57"><span class="linenos">57</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="Constants-58"><a href="#Constants-58"><span class="linenos">58</span></a>
+</span><span id="Constants-59"><a href="#Constants-59"><span class="linenos">59</span></a>    <span class="n">DIRECTIONS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NORTH&#39;</span><span class="p">,</span> <span class="s1">&#39;SOUTH&#39;</span><span class="p">,</span> <span class="s1">&#39;EAST&#39;</span><span class="p">,</span> <span class="s1">&#39;WEST&#39;</span><span class="p">]</span>
+</span><span id="Constants-60"><a href="#Constants-60"><span class="linenos">60</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="Constants-61"><a href="#Constants-61"><span class="linenos">61</span></a>    
+</span><span id="Constants-62"><a href="#Constants-62"><span class="linenos">62</span></a>    <span class="n">CONTAINS_FALSE_SUFFIX</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;INDIAN TOWNSHIP&#39;</span><span class="p">]</span>
+</span><span id="Constants-63"><a href="#Constants-63"><span class="linenos">63</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="Constants-64"><a href="#Constants-64"><span class="linenos">64</span></a>
+</span><span id="Constants-65"><a href="#Constants-65"><span class="linenos">65</span></a>    <span class="c1"># Unspecified Groups</span>
+</span><span id="Constants-66"><a href="#Constants-66"><span class="linenos">66</span></a>    <span class="n">UNSPECIFIED_FLAG</span> <span class="o">=</span> <span class="s1">&#39;TWPS&#39;</span>
+</span><span id="Constants-67"><a href="#Constants-67"><span class="linenos">67</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="Constants-68"><a href="#Constants-68"><span class="linenos">68</span></a>
+</span><span id="Constants-69"><a href="#Constants-69"><span class="linenos">69</span></a>    <span class="n">STANDARD_FLAG</span> <span class="o">=</span> <span class="s1">&#39;UNSPECIFIED&#39;</span>
+</span><span id="Constants-70"><a href="#Constants-70"><span class="linenos">70</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="Constants-71"><a href="#Constants-71"><span class="linenos">71</span></a>
+</span><span id="Constants-72"><a href="#Constants-72"><span class="linenos">72</span></a>    <span class="n">MULTI_COUNTY_REGISTRATION_TOWNS</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;MILLINOCKET&#39;</span><span class="p">])</span>
+</span><span id="Constants-73"><a href="#Constants-73"><span class="linenos">73</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="Constants-74"><a href="#Constants-74"><span class="linenos">74</span></a>
+</span><span id="Constants-75"><a href="#Constants-75"><span class="linenos">75</span></a>    <span class="c1"># Other</span>
+</span><span id="Constants-76"><a href="#Constants-76"><span class="linenos">76</span></a>    <span class="n">KNOWN_TYPOS</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="Constants-77"><a href="#Constants-77"><span class="linenos">77</span></a>        <span class="s1">&#39;MARIONTWP&#39;</span> <span class="p">:</span> <span class="s1">&#39;MARION TWP&#39;</span><span class="p">,</span>
+</span><span id="Constants-78"><a href="#Constants-78"><span class="linenos">78</span></a>        <span class="s1">&#39;PISCATAQUS&#39;</span><span class="p">:</span> <span class="s1">&#39;PISCATAQUIS&#39;</span><span class="p">,</span>
+</span><span id="Constants-79"><a href="#Constants-79"><span class="linenos">79</span></a>        <span class="s1">&#39;ORNVEILLE&#39;</span><span class="p">:</span> <span class="s1">&#39;ORNEVILLE&#39;</span><span class="p">,</span>
+</span><span id="Constants-80"><a href="#Constants-80"><span class="linenos">80</span></a>        <span class="s1">&#39;EDUMUNDS&#39;</span><span class="p">:</span> <span class="s1">&#39;EDMUNDS&#39;</span><span class="p">,</span>
+</span><span id="Constants-81"><a href="#Constants-81"><span class="linenos">81</span></a>        <span class="s1">&#39;SILIVER RIDGE&#39;</span><span class="p">:</span> <span class="s1">&#39;SILVER RIDGE&#39;</span><span class="p">,</span>
+</span><span id="Constants-82"><a href="#Constants-82"><span class="linenos">82</span></a>        <span class="s1">&#39;CONNER TWP&#39;</span><span class="p">:</span> <span class="s1">&#39;CONNOR TWP&#39;</span><span class="p">,</span>
+</span><span id="Constants-83"><a href="#Constants-83"><span class="linenos">83</span></a>        <span class="s1">&#39;DAYBLOCK&#39;</span><span class="p">:</span> <span class="s1">&#39;DAY BLOCK&#39;</span><span class="p">,</span>
+</span><span id="Constants-84"><a href="#Constants-84"><span class="linenos">84</span></a>        <span class="s1">&#39;FRANKLIN/T9 T10 SD&#39;</span><span class="p">:</span> <span class="s1">&#39;FRANKLIN/T9 SD/T10 SD&#39;</span><span class="p">,</span>
+</span><span id="Constants-85"><a href="#Constants-85"><span class="linenos">85</span></a>        <span class="s1">&#39;PLEASANT POINT VOTING DISTRICT RICT&#39;</span><span class="p">:</span> <span class="s1">&#39;PLEASANT POINT VOTING DISTRICT&#39;</span>
+</span><span id="Constants-86"><a href="#Constants-86"><span class="linenos">86</span></a>    <span class="p">}</span>
+</span><span id="Constants-87"><a href="#Constants-87"><span class="linenos">87</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="Constants-88"><a href="#Constants-88"><span class="linenos">88</span></a>
+</span><span id="Constants-89"><a href="#Constants-89"><span class="linenos">89</span></a>    <span class="n">AMBIGUOUS_GROUP_NAMES</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="Constants-90"><a href="#Constants-90"><span class="linenos">90</span></a>        <span class="s1">&#39;^PENOBSCOT TWPS$&#39;</span><span class="p">:</span> <span class="s1">&#39;MILLINOCKET PENOBSCOT TWPS&#39;</span><span class="p">,</span>
+</span><span id="Constants-91"><a href="#Constants-91"><span class="linenos">91</span></a>        <span class="s1">&#39;^PISCATAQUIS TWPS$&#39;</span><span class="p">:</span> <span class="s1">&#39;MILLINOCKET PISCATAQUIS TWPS&#39;</span><span class="p">,</span>
+</span><span id="Constants-92"><a href="#Constants-92"><span class="linenos">92</span></a>        <span class="s1">&#39;PEN(?:OBSCOT)? TWP$&#39;</span><span class="p">:</span> <span class="s1">&#39;PENOBSCOT TWPS&#39;</span><span class="p">,</span>
+</span><span id="Constants-93"><a href="#Constants-93"><span class="linenos">93</span></a>        <span class="s1">&#39;PIS(?:CATAQUIS)? TWP$&#39;</span><span class="p">:</span> <span class="s1">&#39;PISCATAQUIS TWPS&#39;</span><span class="p">,</span>
+</span><span id="Constants-94"><a href="#Constants-94"><span class="linenos">94</span></a>    <span class="p">}</span>
+</span><span id="Constants-95"><a href="#Constants-95"><span class="linenos">95</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
 </span></pre></div>
 
 
@@ -333,144 +405,14 @@ constants without creating instances. All attributes are class-level.</p>
 </div>
 
 
-                            <div id="Helpers1.COUNTIES" class="classattr">
-                                        <input id="Helpers1.COUNTIES-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr variable">
-            <span class="name">COUNTIES</span><span class="annotation">: mainegeo.lookups.CountyData</span>
-
-                <label class="view-source-button" for="Helpers1.COUNTIES-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#Helpers1.COUNTIES"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Helpers1.COUNTIES-31"><a href="#Helpers1.COUNTIES-31"><span class="linenos">31</span></a>    <span class="nd">@cached_property</span>
-</span><span id="Helpers1.COUNTIES-32"><a href="#Helpers1.COUNTIES-32"><span class="linenos">32</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">COUNTIES</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CountyData</span><span class="p">:</span>
-</span><span id="Helpers1.COUNTIES-33"><a href="#Helpers1.COUNTIES-33"><span class="linenos">33</span></a>        <span class="k">return</span> <span class="n">CountyData</span><span class="p">()</span>
-</span></pre></div>
-
-
-    
-
-                            </div>
-                            <div id="Helpers1.TOWNSHIPS" class="classattr">
-                                        <input id="Helpers1.TOWNSHIPS-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr variable">
-            <span class="name">TOWNSHIPS</span><span class="annotation">: mainegeo.lookups.TownshipData</span>
-
-                <label class="view-source-button" for="Helpers1.TOWNSHIPS-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#Helpers1.TOWNSHIPS"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Helpers1.TOWNSHIPS-35"><a href="#Helpers1.TOWNSHIPS-35"><span class="linenos">35</span></a>    <span class="nd">@cached_property</span>
-</span><span id="Helpers1.TOWNSHIPS-36"><a href="#Helpers1.TOWNSHIPS-36"><span class="linenos">36</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">TOWNSHIPS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TownshipData</span><span class="p">:</span>
-</span><span id="Helpers1.TOWNSHIPS-37"><a href="#Helpers1.TOWNSHIPS-37"><span class="linenos">37</span></a>        <span class="k">return</span> <span class="n">TownshipData</span><span class="p">()</span>
-</span></pre></div>
-
-
-    
-
-                            </div>
-                            <div id="Helpers1.REGIONS" class="classattr">
-                                        <input id="Helpers1.REGIONS-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr variable">
-            <span class="name">REGIONS</span><span class="annotation">: List[str]</span>
-
-                <label class="view-source-button" for="Helpers1.REGIONS-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#Helpers1.REGIONS"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Helpers1.REGIONS-39"><a href="#Helpers1.REGIONS-39"><span class="linenos">39</span></a>    <span class="nd">@cached_property</span>
-</span><span id="Helpers1.REGIONS-40"><a href="#Helpers1.REGIONS-40"><span class="linenos">40</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">REGIONS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span id="Helpers1.REGIONS-41"><a href="#Helpers1.REGIONS-41"><span class="linenos">41</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Valid region codes that can appear in township names.</span>
-</span><span id="Helpers1.REGIONS-42"><a href="#Helpers1.REGIONS-42"><span class="linenos">42</span></a><span class="sd">        </span>
-</span><span id="Helpers1.REGIONS-43"><a href="#Helpers1.REGIONS-43"><span class="linenos">43</span></a><span class="sd">        These are two- to four-letter codes like &#39;WELS&#39; (West of the </span>
-</span><span id="Helpers1.REGIONS-44"><a href="#Helpers1.REGIONS-44"><span class="linenos">44</span></a><span class="sd">        Easterly Line of the State) or &#39;BPP&#39; (Bingham&#39;s Penobscot Purchase).</span>
-</span><span id="Helpers1.REGIONS-45"><a href="#Helpers1.REGIONS-45"><span class="linenos">45</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Helpers1.REGIONS-46"><a href="#Helpers1.REGIONS-46"><span class="linenos">46</span></a>        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;ED&quot;</span><span class="p">,</span><span class="s2">&quot;MD&quot;</span><span class="p">,</span><span class="s2">&quot;ND&quot;</span><span class="p">,</span><span class="s2">&quot;SD&quot;</span><span class="p">,</span><span class="s2">&quot;TS&quot;</span><span class="p">,</span><span class="s2">&quot;BKP&quot;</span><span class="p">,</span><span class="s2">&quot;BPP&quot;</span><span class="p">,</span><span class="s2">&quot;EKR&quot;</span><span class="p">,</span><span class="s2">&quot;NWP&quot;</span><span class="p">,</span><span class="s2">&quot;WKR&quot;</span><span class="p">,</span><span class="s2">&quot;NBKP&quot;</span><span class="p">,</span><span class="s2">&quot;NBPP&quot;</span><span class="p">,</span><span class="s2">&quot;WBKP&quot;</span><span class="p">,</span><span class="s2">&quot;WELS&quot;</span><span class="p">]</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Valid region codes that can appear in township names.</p>
-
-<p>These are two- to four-letter codes like 'WELS' (West of the 
-Easterly Line of the State) or 'BPP' (Bingham's Penobscot Purchase).</p>
-</div>
-
-
-                            </div>
-                            <div id="Helpers1.GNIS_GEOTYPES" class="classattr">
-                                        <input id="Helpers1.GNIS_GEOTYPES-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr variable">
-            <span class="name">GNIS_GEOTYPES</span><span class="annotation">: List[str]</span>
-
-                <label class="view-source-button" for="Helpers1.GNIS_GEOTYPES-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#Helpers1.GNIS_GEOTYPES"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Helpers1.GNIS_GEOTYPES-48"><a href="#Helpers1.GNIS_GEOTYPES-48"><span class="linenos">48</span></a>    <span class="nd">@cached_property</span>
-</span><span id="Helpers1.GNIS_GEOTYPES-49"><a href="#Helpers1.GNIS_GEOTYPES-49"><span class="linenos">49</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">GNIS_GEOTYPES</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span id="Helpers1.GNIS_GEOTYPES-50"><a href="#Helpers1.GNIS_GEOTYPES-50"><span class="linenos">50</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Geographic Names Information System (GNIS) &quot;&quot;&quot;</span>
-</span><span id="Helpers1.GNIS_GEOTYPES-51"><a href="#Helpers1.GNIS_GEOTYPES-51"><span class="linenos">51</span></a>        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;CITY&quot;</span><span class="p">,</span> <span class="s2">&quot;PLANTATION&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWN&quot;</span><span class="p">]</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Geographic Names Information System (GNIS)</p>
-</div>
-
-
-                            </div>
-                </section>
-                <section id="Helpers2">
-                            <input id="Helpers2-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr class">
-            
-    <span class="def">class</span>
-    <span class="name">Helpers2</span>:
-
-                <label class="view-source-button" for="Helpers2-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#Helpers2"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Helpers2-53"><a href="#Helpers2-53"><span class="linenos">53</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Helpers2</span><span class="p">:</span>
-</span><span id="Helpers2-54"><a href="#Helpers2-54"><span class="linenos">54</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constants and patterns for township name parsing.</span>
-</span><span id="Helpers2-55"><a href="#Helpers2-55"><span class="linenos">55</span></a><span class="sd">    </span>
-</span><span id="Helpers2-56"><a href="#Helpers2-56"><span class="linenos">56</span></a><span class="sd">    This class provides documentation and organization for township-related</span>
-</span><span id="Helpers2-57"><a href="#Helpers2-57"><span class="linenos">57</span></a><span class="sd">    constants without creating instances. All attributes are class-level.</span>
-</span><span id="Helpers2-58"><a href="#Helpers2-58"><span class="linenos">58</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="Helpers2-59"><a href="#Helpers2-59"><span class="linenos">59</span></a>    
-</span><span id="Helpers2-60"><a href="#Helpers2-60"><span class="linenos">60</span></a>    <span class="n">REGIONS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ED&quot;</span><span class="p">,</span><span class="s2">&quot;MD&quot;</span><span class="p">,</span><span class="s2">&quot;ND&quot;</span><span class="p">,</span><span class="s2">&quot;SD&quot;</span><span class="p">,</span><span class="s2">&quot;TS&quot;</span><span class="p">,</span><span class="s2">&quot;BKP&quot;</span><span class="p">,</span><span class="s2">&quot;BPP&quot;</span><span class="p">,</span><span class="s2">&quot;EKR&quot;</span><span class="p">,</span><span class="s2">&quot;NWP&quot;</span><span class="p">,</span><span class="s2">&quot;WKR&quot;</span><span class="p">,</span><span class="s2">&quot;NBKP&quot;</span><span class="p">,</span><span class="s2">&quot;NBPP&quot;</span><span class="p">,</span><span class="s2">&quot;WBKP&quot;</span><span class="p">,</span><span class="s2">&quot;WELS&quot;</span><span class="p">]</span>
-</span><span id="Helpers2-61"><a href="#Helpers2-61"><span class="linenos">61</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Valid region codes that can appear in township names.</span>
-</span><span id="Helpers2-62"><a href="#Helpers2-62"><span class="linenos">62</span></a><span class="sd">    </span>
-</span><span id="Helpers2-63"><a href="#Helpers2-63"><span class="linenos">63</span></a><span class="sd">    These are two- to four-letter codes like &#39;WELS&#39; (West of the</span>
-</span><span id="Helpers2-64"><a href="#Helpers2-64"><span class="linenos">64</span></a><span class="sd">    Easterly Line of the State) or &#39;BPP&#39; (Bingham&#39;s Penobscot Purchase).&quot;&quot;&quot;</span>
-</span><span id="Helpers2-65"><a href="#Helpers2-65"><span class="linenos">65</span></a>    
-</span><span id="Helpers2-66"><a href="#Helpers2-66"><span class="linenos">66</span></a>    <span class="n">GNIS_GEOTYPES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CITY&quot;</span><span class="p">,</span> <span class="s2">&quot;PLANTATION&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWN&quot;</span><span class="p">]</span>
-</span><span id="Helpers2-67"><a href="#Helpers2-67"><span class="linenos">67</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Geographic Names Information System (GNIS)&quot;&quot;&quot;</span>
-</span><span id="Helpers2-68"><a href="#Helpers2-68"><span class="linenos">68</span></a>
-</span><span id="Helpers2-69"><a href="#Helpers2-69"><span class="linenos">69</span></a>    <span class="n">ABBREVIATIONS</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="Helpers2-70"><a href="#Helpers2-70"><span class="linenos">70</span></a>        <span class="s2">&quot;PLANTATION&quot;</span><span class="p">:</span> <span class="s2">&quot;PLT&quot;</span><span class="p">,</span>
-</span><span id="Helpers2-71"><a href="#Helpers2-71"><span class="linenos">71</span></a>        <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">:</span> <span class="s2">&quot;TWP&quot;</span><span class="p">,</span>
-</span><span id="Helpers2-72"><a href="#Helpers2-72"><span class="linenos">72</span></a>        <span class="s2">&quot;VOTING DISTRICT&quot;</span><span class="p">:</span> <span class="s2">&quot;VOTING DIST&quot;</span><span class="p">,</span>
-</span><span id="Helpers2-73"><a href="#Helpers2-73"><span class="linenos">73</span></a>        <span class="s2">&quot;RESERVATION&quot;</span><span class="p">:</span> <span class="s2">&quot;RES&quot;</span>
-</span><span id="Helpers2-74"><a href="#Helpers2-74"><span class="linenos">74</span></a>    <span class="p">}</span>
-</span><span id="Helpers2-75"><a href="#Helpers2-75"><span class="linenos">75</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Constants and patterns for township name parsing.</p>
-
-<p>This class provides documentation and organization for township-related
-constants without creating instances. All attributes are class-level.</p>
-</div>
-
-
-                            <div id="Helpers2.REGIONS" class="classattr">
+                            <div id="Constants.REGIONS" class="classattr">
                                 <div class="attr variable">
             <span class="name">REGIONS</span>        =
 <span class="default_value">[&#39;ED&#39;, &#39;MD&#39;, &#39;ND&#39;, &#39;SD&#39;, &#39;TS&#39;, &#39;BKP&#39;, &#39;BPP&#39;, &#39;EKR&#39;, &#39;NWP&#39;, &#39;WKR&#39;, &#39;NBKP&#39;, &#39;NBPP&#39;, &#39;WBKP&#39;, &#39;WELS&#39;]</span>
 
         
     </div>
-    <a class="headerlink" href="#Helpers2.REGIONS"></a>
+    <a class="headerlink" href="#Constants.REGIONS"></a>
     
             <div class="docstring"><p>Valid region codes that can appear in township names.</p>
 
@@ -480,28 +422,171 @@ Easterly Line of the State) or 'BPP' (Bingham's Penobscot Purchase).</p>
 
 
                             </div>
-                            <div id="Helpers2.GNIS_GEOTYPES" class="classattr">
+                            <div id="Constants.GNIS_GEOTYPES" class="classattr">
                                 <div class="attr variable">
             <span class="name">GNIS_GEOTYPES</span>        =
 <span class="default_value">[&#39;CITY&#39;, &#39;PLANTATION&#39;, &#39;TOWNSHIP&#39;, &#39;TOWN&#39;]</span>
 
         
     </div>
-    <a class="headerlink" href="#Helpers2.GNIS_GEOTYPES"></a>
+    <a class="headerlink" href="#Constants.GNIS_GEOTYPES"></a>
     
-            <div class="docstring"><p>Geographic Names Information System (GNIS)</p>
+            <div class="docstring"><p>Add docstring
+Geographic Names Information System (GNIS)</p>
 </div>
 
 
                             </div>
-                            <div id="Helpers2.ABBREVIATIONS" class="classattr">
+                            <div id="Constants.ABBREVIATIONS" class="classattr">
                                 <div class="attr variable">
             <span class="name">ABBREVIATIONS</span>        =
 <span class="default_value">{&#39;PLANTATION&#39;: &#39;PLT&#39;, &#39;TOWNSHIP&#39;: &#39;TWP&#39;, &#39;VOTING DISTRICT&#39;: &#39;VOTING DIST&#39;, &#39;RESERVATION&#39;: &#39;RES&#39;}</span>
 
         
     </div>
-    <a class="headerlink" href="#Helpers2.ABBREVIATIONS"></a>
+    <a class="headerlink" href="#Constants.ABBREVIATIONS"></a>
+    
+            <div class="docstring"><p>Add docstring</p>
+</div>
+
+
+                            </div>
+                            <div id="Constants.VALID_HYPHEN_CONTEXTS" class="classattr">
+                                <div class="attr variable">
+            <span class="name">VALID_HYPHEN_CONTEXTS</span>        =
+<span class="default_value">[&#39;DOVER-FOXCROFT&#39;]</span>
+
+        
+    </div>
+    <a class="headerlink" href="#Constants.VALID_HYPHEN_CONTEXTS"></a>
+    
+            <div class="docstring"><p>Add docstring</p>
+</div>
+
+
+                            </div>
+                            <div id="Constants.VALID_AMPERSAND_CONTEXTS" class="classattr">
+                                <div class="attr variable">
+            <span class="name">VALID_AMPERSAND_CONTEXTS</span>        =
+<span class="default_value">[&#39;KING &amp; BARTLETT&#39;, &#39;TAUNTON &amp; RAYNHAM&#39;]</span>
+
+        
+    </div>
+    <a class="headerlink" href="#Constants.VALID_AMPERSAND_CONTEXTS"></a>
+    
+            <div class="docstring"><p>Add docstring</p>
+</div>
+
+
+                            </div>
+                            <div id="Constants.JUNIOR_SUFFIXES" class="classattr">
+                                <div class="attr variable">
+            <span class="name">JUNIOR_SUFFIXES</span>        =
+<span class="default_value">[&#39;GORE&#39;, &#39;GRANT&#39;, &#39;ISLAND&#39;]</span>
+
+        
+    </div>
+    <a class="headerlink" href="#Constants.JUNIOR_SUFFIXES"></a>
+    
+            <div class="docstring"><p>Add docstring</p>
+</div>
+
+
+                            </div>
+                            <div id="Constants.DIRECTIONS" class="classattr">
+                                <div class="attr variable">
+            <span class="name">DIRECTIONS</span>        =
+<span class="default_value">[&#39;NORTH&#39;, &#39;SOUTH&#39;, &#39;EAST&#39;, &#39;WEST&#39;]</span>
+
+        
+    </div>
+    <a class="headerlink" href="#Constants.DIRECTIONS"></a>
+    
+            <div class="docstring"><p>Add docstring</p>
+</div>
+
+
+                            </div>
+                            <div id="Constants.CONTAINS_FALSE_SUFFIX" class="classattr">
+                                <div class="attr variable">
+            <span class="name">CONTAINS_FALSE_SUFFIX</span>        =
+<span class="default_value">[&#39;INDIAN TOWNSHIP&#39;]</span>
+
+        
+    </div>
+    <a class="headerlink" href="#Constants.CONTAINS_FALSE_SUFFIX"></a>
+    
+            <div class="docstring"><p>Add docstring</p>
+</div>
+
+
+                            </div>
+                            <div id="Constants.UNSPECIFIED_FLAG" class="classattr">
+                                <div class="attr variable">
+            <span class="name">UNSPECIFIED_FLAG</span>        =
+<span class="default_value">&#39;TWPS&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#Constants.UNSPECIFIED_FLAG"></a>
+    
+            <div class="docstring"><p>Add docstring</p>
+</div>
+
+
+                            </div>
+                            <div id="Constants.STANDARD_FLAG" class="classattr">
+                                <div class="attr variable">
+            <span class="name">STANDARD_FLAG</span>        =
+<span class="default_value">&#39;UNSPECIFIED&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#Constants.STANDARD_FLAG"></a>
+    
+            <div class="docstring"><p>Add docstring</p>
+</div>
+
+
+                            </div>
+                            <div id="Constants.MULTI_COUNTY_REGISTRATION_TOWNS" class="classattr">
+                                <div class="attr variable">
+            <span class="name">MULTI_COUNTY_REGISTRATION_TOWNS</span>        =
+<span class="default_value">{&#39;MILLINOCKET&#39;}</span>
+
+        
+    </div>
+    <a class="headerlink" href="#Constants.MULTI_COUNTY_REGISTRATION_TOWNS"></a>
+    
+            <div class="docstring"><p>Add docstring</p>
+</div>
+
+
+                            </div>
+                            <div id="Constants.KNOWN_TYPOS" class="classattr">
+                                <div class="attr variable">
+            <span class="name">KNOWN_TYPOS</span>        =
+<input id="Constants.KNOWN_TYPOS-view-value" class="view-value-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+            <label class="view-value-button pdoc-button" for="Constants.KNOWN_TYPOS-view-value"></label><span class="default_value">{&#39;MARIONTWP&#39;: &#39;MARION TWP&#39;, &#39;PISCATAQUS&#39;: &#39;PISCATAQUIS&#39;, &#39;ORNVEILLE&#39;: &#39;ORNEVILLE&#39;, &#39;EDUMUNDS&#39;: &#39;EDMUNDS&#39;, &#39;SILIVER RIDGE&#39;: &#39;SILVER RIDGE&#39;, &#39;CONNER TWP&#39;: &#39;CONNOR TWP&#39;, &#39;DAYBLOCK&#39;: &#39;DAY BLOCK&#39;, &#39;FRANKLIN/T9 T10 SD&#39;: &#39;FRANKLIN/T9 SD/T10 SD&#39;, &#39;PLEASANT POINT VOTING DISTRICT RICT&#39;: &#39;PLEASANT POINT VOTING DISTRICT&#39;}</span>
+
+        
+    </div>
+    <a class="headerlink" href="#Constants.KNOWN_TYPOS"></a>
+    
+            <div class="docstring"><p>Add docstring</p>
+</div>
+
+
+                            </div>
+                            <div id="Constants.AMBIGUOUS_GROUP_NAMES" class="classattr">
+                                <div class="attr variable">
+            <span class="name">AMBIGUOUS_GROUP_NAMES</span>        =
+<input id="Constants.AMBIGUOUS_GROUP_NAMES-view-value" class="view-value-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+            <label class="view-value-button pdoc-button" for="Constants.AMBIGUOUS_GROUP_NAMES-view-value"></label><span class="default_value">{&#39;^PENOBSCOT TWPS$&#39;: &#39;MILLINOCKET PENOBSCOT TWPS&#39;, &#39;^PISCATAQUIS TWPS$&#39;: &#39;MILLINOCKET PISCATAQUIS TWPS&#39;, &#39;PEN(?:OBSCOT)? TWP$&#39;: &#39;PENOBSCOT TWPS&#39;, &#39;PIS(?:CATAQUIS)? TWP$&#39;: &#39;PISCATAQUIS TWPS&#39;}</span>
+
+        
+    </div>
+    <a class="headerlink" href="#Constants.AMBIGUOUS_GROUP_NAMES"></a>
     
             <div class="docstring"><p>Add docstring</p>
 </div>
@@ -520,77 +605,75 @@ Easterly Line of the State) or 'BPP' (Bingham's Penobscot Purchase).</p>
 
     </div>
     <a class="headerlink" href="#TownshipPatterns"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="TownshipPatterns-77"><a href="#TownshipPatterns-77"><span class="linenos"> 77</span></a><span class="k">class</span><span class="w"> </span><span class="nc">TownshipPatterns</span><span class="p">:</span>
-</span><span id="TownshipPatterns-78"><a href="#TownshipPatterns-78"><span class="linenos"> 78</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constants and patterns for township name parsing.</span>
-</span><span id="TownshipPatterns-79"><a href="#TownshipPatterns-79"><span class="linenos"> 79</span></a><span class="sd">    </span>
-</span><span id="TownshipPatterns-80"><a href="#TownshipPatterns-80"><span class="linenos"> 80</span></a><span class="sd">    This class provides documentation and organization for township-related</span>
-</span><span id="TownshipPatterns-81"><a href="#TownshipPatterns-81"><span class="linenos"> 81</span></a><span class="sd">    constants without creating instances. All attributes are class-level.</span>
-</span><span id="TownshipPatterns-82"><a href="#TownshipPatterns-82"><span class="linenos"> 82</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="TownshipPatterns-83"><a href="#TownshipPatterns-83"><span class="linenos"> 83</span></a>    
-</span><span id="TownshipPatterns-84"><a href="#TownshipPatterns-84"><span class="linenos"> 84</span></a>    <span class="n">REGIONS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ED&quot;</span><span class="p">,</span><span class="s2">&quot;MD&quot;</span><span class="p">,</span><span class="s2">&quot;ND&quot;</span><span class="p">,</span><span class="s2">&quot;SD&quot;</span><span class="p">,</span><span class="s2">&quot;TS&quot;</span><span class="p">,</span><span class="s2">&quot;BKP&quot;</span><span class="p">,</span><span class="s2">&quot;BPP&quot;</span><span class="p">,</span><span class="s2">&quot;EKR&quot;</span><span class="p">,</span><span class="s2">&quot;NWP&quot;</span><span class="p">,</span><span class="s2">&quot;WKR&quot;</span><span class="p">,</span><span class="s2">&quot;NBKP&quot;</span><span class="p">,</span><span class="s2">&quot;NBPP&quot;</span><span class="p">,</span><span class="s2">&quot;WBKP&quot;</span><span class="p">,</span><span class="s2">&quot;WELS&quot;</span><span class="p">]</span>
-</span><span id="TownshipPatterns-85"><a href="#TownshipPatterns-85"><span class="linenos"> 85</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Valid region codes that can appear in township names.</span>
-</span><span id="TownshipPatterns-86"><a href="#TownshipPatterns-86"><span class="linenos"> 86</span></a><span class="sd">    </span>
-</span><span id="TownshipPatterns-87"><a href="#TownshipPatterns-87"><span class="linenos"> 87</span></a><span class="sd">    These are two- to four-letter codes like &#39;WELS&#39; (West of the</span>
-</span><span id="TownshipPatterns-88"><a href="#TownshipPatterns-88"><span class="linenos"> 88</span></a><span class="sd">    Easterly Line of the State) or &#39;BPP&#39; (Bingham&#39;s Penobscot Purchase).&quot;&quot;&quot;</span>
-</span><span id="TownshipPatterns-89"><a href="#TownshipPatterns-89"><span class="linenos"> 89</span></a>
-</span><span id="TownshipPatterns-90"><a href="#TownshipPatterns-90"><span class="linenos"> 90</span></a>    <span class="n">REGION</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">REGIONS</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
-</span><span id="TownshipPatterns-91"><a href="#TownshipPatterns-91"><span class="linenos"> 91</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Regex building block representing a region designator.</span>
-</span><span id="TownshipPatterns-92"><a href="#TownshipPatterns-92"><span class="linenos"> 92</span></a><span class="sd">    </span>
-</span><span id="TownshipPatterns-93"><a href="#TownshipPatterns-93"><span class="linenos"> 93</span></a><span class="sd">    Township names can contain zero, one, or two regions.</span>
-</span><span id="TownshipPatterns-94"><a href="#TownshipPatterns-94"><span class="linenos"> 94</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="TownshipPatterns-95"><a href="#TownshipPatterns-95"><span class="linenos"> 95</span></a>
-</span><span id="TownshipPatterns-96"><a href="#TownshipPatterns-96"><span class="linenos"> 96</span></a>    <span class="n">RANGE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:R.?[</span><span class="se">\\</span><span class="s2">d]</span><span class="se">{{</span><span class="s2">1,2</span><span class="se">}}</span><span class="s2">)&quot;</span>
-</span><span id="TownshipPatterns-97"><a href="#TownshipPatterns-97"><span class="linenos"> 97</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Regex building block representing a range designator.</span>
-</span><span id="TownshipPatterns-98"><a href="#TownshipPatterns-98"><span class="linenos"> 98</span></a>
-</span><span id="TownshipPatterns-99"><a href="#TownshipPatterns-99"><span class="linenos"> 99</span></a><span class="sd">    Ranges are counted from the easterly line toward the west,</span>
-</span><span id="TownshipPatterns-100"><a href="#TownshipPatterns-100"><span class="linenos">100</span></a><span class="sd">    numbered 1-19 (e.g., R1, R19).</span>
-</span><span id="TownshipPatterns-101"><a href="#TownshipPatterns-101"><span class="linenos">101</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="TownshipPatterns-102"><a href="#TownshipPatterns-102"><span class="linenos">102</span></a>
-</span><span id="TownshipPatterns-103"><a href="#TownshipPatterns-103"><span class="linenos">103</span></a>    <span class="n">FUZZY</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[^,</span><span class="se">\\</span><span class="s2">w]</span><span class="se">{{</span><span class="s2">0,3</span><span class="se">}}</span><span class="s2">&quot;</span>
-</span><span id="TownshipPatterns-104"><a href="#TownshipPatterns-104"><span class="linenos">104</span></a>    <span class="n">PUNCTUATION</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;[^ </span><span class="se">\\</span><span class="s1">w]&#39;</span>
-</span><span id="TownshipPatterns-105"><a href="#TownshipPatterns-105"><span class="linenos">105</span></a>
-</span><span id="TownshipPatterns-106"><a href="#TownshipPatterns-106"><span class="linenos">106</span></a>    <span class="n">TOWNSHIP_STANDARD</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;(?:T.?</span><span class="se">\\</span><span class="s2">d{1,2})&quot;</span>
-</span><span id="TownshipPatterns-107"><a href="#TownshipPatterns-107"><span class="linenos">107</span></a>    <span class="n">TOWNSHIP_ALTERNATE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?&lt;!</span><span class="se">\\</span><span class="s2">w)T[ABCDX](?![a-z])&quot;</span>
-</span><span id="TownshipPatterns-108"><a href="#TownshipPatterns-108"><span class="linenos">108</span></a>    <span class="n">TOWNSHIP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="n">TOWNSHIP_STANDARD</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">TOWNSHIP_ALTERNATE</span><span class="si">}</span><span class="s2">)&quot;</span>
-</span><span id="TownshipPatterns-109"><a href="#TownshipPatterns-109"><span class="linenos">109</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Regex building block representing a township designator.</span>
-</span><span id="TownshipPatterns-110"><a href="#TownshipPatterns-110"><span class="linenos">110</span></a><span class="sd">    </span>
-</span><span id="TownshipPatterns-111"><a href="#TownshipPatterns-111"><span class="linenos">111</span></a><span class="sd">    Townships are designated by:</span>
-</span><span id="TownshipPatterns-112"><a href="#TownshipPatterns-112"><span class="linenos">112</span></a><span class="sd">        - Numbers 1-19 from south to north (e.g., T1, T19)</span>
-</span><span id="TownshipPatterns-113"><a href="#TownshipPatterns-113"><span class="linenos">113</span></a><span class="sd">        - Occasional letter designations (TA, TB, TC, TD, TX)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="TownshipPatterns-97"><a href="#TownshipPatterns-97"><span class="linenos"> 97</span></a><span class="k">class</span><span class="w"> </span><span class="nc">TownshipPatterns</span><span class="p">:</span>
+</span><span id="TownshipPatterns-98"><a href="#TownshipPatterns-98"><span class="linenos"> 98</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constants and patterns for township name parsing.</span>
+</span><span id="TownshipPatterns-99"><a href="#TownshipPatterns-99"><span class="linenos"> 99</span></a><span class="sd">    </span>
+</span><span id="TownshipPatterns-100"><a href="#TownshipPatterns-100"><span class="linenos">100</span></a><span class="sd">    This class provides documentation and organization for township-related</span>
+</span><span id="TownshipPatterns-101"><a href="#TownshipPatterns-101"><span class="linenos">101</span></a><span class="sd">    constants without creating instances. All attributes are class-level.</span>
+</span><span id="TownshipPatterns-102"><a href="#TownshipPatterns-102"><span class="linenos">102</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="TownshipPatterns-103"><a href="#TownshipPatterns-103"><span class="linenos">103</span></a>    
+</span><span id="TownshipPatterns-104"><a href="#TownshipPatterns-104"><span class="linenos">104</span></a>    <span class="n">REGIONS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ED&quot;</span><span class="p">,</span><span class="s2">&quot;MD&quot;</span><span class="p">,</span><span class="s2">&quot;ND&quot;</span><span class="p">,</span><span class="s2">&quot;SD&quot;</span><span class="p">,</span><span class="s2">&quot;TS&quot;</span><span class="p">,</span><span class="s2">&quot;BKP&quot;</span><span class="p">,</span><span class="s2">&quot;BPP&quot;</span><span class="p">,</span><span class="s2">&quot;EKR&quot;</span><span class="p">,</span><span class="s2">&quot;NWP&quot;</span><span class="p">,</span><span class="s2">&quot;WKR&quot;</span><span class="p">,</span><span class="s2">&quot;NBKP&quot;</span><span class="p">,</span><span class="s2">&quot;NBPP&quot;</span><span class="p">,</span><span class="s2">&quot;WBKP&quot;</span><span class="p">,</span><span class="s2">&quot;WELS&quot;</span><span class="p">]</span>
+</span><span id="TownshipPatterns-105"><a href="#TownshipPatterns-105"><span class="linenos">105</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Valid region codes that can appear in township names.</span>
+</span><span id="TownshipPatterns-106"><a href="#TownshipPatterns-106"><span class="linenos">106</span></a><span class="sd">    </span>
+</span><span id="TownshipPatterns-107"><a href="#TownshipPatterns-107"><span class="linenos">107</span></a><span class="sd">    These are two- to four-letter codes like &#39;WELS&#39; (West of the</span>
+</span><span id="TownshipPatterns-108"><a href="#TownshipPatterns-108"><span class="linenos">108</span></a><span class="sd">    Easterly Line of the State) or &#39;BPP&#39; (Bingham&#39;s Penobscot Purchase).&quot;&quot;&quot;</span>
+</span><span id="TownshipPatterns-109"><a href="#TownshipPatterns-109"><span class="linenos">109</span></a>
+</span><span id="TownshipPatterns-110"><a href="#TownshipPatterns-110"><span class="linenos">110</span></a>    <span class="n">REGION</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">REGIONS</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="TownshipPatterns-111"><a href="#TownshipPatterns-111"><span class="linenos">111</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Regex building block representing a region designator.</span>
+</span><span id="TownshipPatterns-112"><a href="#TownshipPatterns-112"><span class="linenos">112</span></a><span class="sd">    </span>
+</span><span id="TownshipPatterns-113"><a href="#TownshipPatterns-113"><span class="linenos">113</span></a><span class="sd">    Township names can contain zero, one, or two regions.</span>
 </span><span id="TownshipPatterns-114"><a href="#TownshipPatterns-114"><span class="linenos">114</span></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="TownshipPatterns-115"><a href="#TownshipPatterns-115"><span class="linenos">115</span></a>
-</span><span id="TownshipPatterns-116"><a href="#TownshipPatterns-116"><span class="linenos">116</span></a>    <span class="n">UNNAMED</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;((?:</span><span class="si">{</span><span class="n">TOWNSHIP</span><span class="si">}</span><span class="s2">)(?:</span><span class="si">{</span><span class="n">FUZZY</span><span class="si">}{</span><span class="n">RANGE</span><span class="si">}</span><span class="s2">)?(?:</span><span class="si">{</span><span class="n">FUZZY</span><span class="si">}{</span><span class="n">REGION</span><span class="si">}</span><span class="s2">)</span><span class="se">{{</span><span class="s2">0,2</span><span class="se">}}</span><span class="s2">)&quot;</span>
-</span><span id="TownshipPatterns-117"><a href="#TownshipPatterns-117"><span class="linenos">117</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Uncompiled string representing a full unnamed township name.&quot;&quot;&quot;</span>
+</span><span id="TownshipPatterns-116"><a href="#TownshipPatterns-116"><span class="linenos">116</span></a>    <span class="n">RANGE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:R.?[</span><span class="se">\\</span><span class="s2">d]</span><span class="se">{{</span><span class="s2">1,2</span><span class="se">}}</span><span class="s2">)&quot;</span>
+</span><span id="TownshipPatterns-117"><a href="#TownshipPatterns-117"><span class="linenos">117</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Regex building block representing a range designator.</span>
 </span><span id="TownshipPatterns-118"><a href="#TownshipPatterns-118"><span class="linenos">118</span></a>
-</span><span id="TownshipPatterns-119"><a href="#TownshipPatterns-119"><span class="linenos">119</span></a>    <span class="n">UNNAMED_ELEMENTS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">TOWNSHIP</span><span class="p">,</span><span class="w"> </span><span class="n">RANGE</span><span class="p">,</span><span class="w"> </span><span class="n">REGION</span><span class="p">])</span><span class="si">}</span><span class="s2">)&quot;</span>
-</span><span id="TownshipPatterns-120"><a href="#TownshipPatterns-120"><span class="linenos">120</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
-</span><span id="TownshipPatterns-121"><a href="#TownshipPatterns-121"><span class="linenos">121</span></a>
-</span><span id="TownshipPatterns-122"><a href="#TownshipPatterns-122"><span class="linenos">122</span></a>    <span class="n">UNNAMED_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">UNNAMED</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-</span><span id="TownshipPatterns-123"><a href="#TownshipPatterns-123"><span class="linenos">123</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring</span>
-</span><span id="TownshipPatterns-124"><a href="#TownshipPatterns-124"><span class="linenos">124</span></a><span class="sd">    </span>
-</span><span id="TownshipPatterns-125"><a href="#TownshipPatterns-125"><span class="linenos">125</span></a><span class="sd">    Used in `mainegeo.townships.is_unnamed_township` and `mainegeo.townships.clean_codes`.&quot;&quot;&quot;</span>
-</span><span id="TownshipPatterns-126"><a href="#TownshipPatterns-126"><span class="linenos">126</span></a>
-</span><span id="TownshipPatterns-127"><a href="#TownshipPatterns-127"><span class="linenos">127</span></a>    <span class="n">UNNAMED_ELEMENTS_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">UNNAMED_ELEMENTS</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-</span><span id="TownshipPatterns-128"><a href="#TownshipPatterns-128"><span class="linenos">128</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Pattern for finding unnamed township name elements regardless of formatting.</span>
-</span><span id="TownshipPatterns-129"><a href="#TownshipPatterns-129"><span class="linenos">129</span></a><span class="sd">    </span>
-</span><span id="TownshipPatterns-130"><a href="#TownshipPatterns-130"><span class="linenos">130</span></a><span class="sd">    Used in `mainegeo.townships.clean_code`.&quot;&quot;&quot;</span>
-</span><span id="TownshipPatterns-131"><a href="#TownshipPatterns-131"><span class="linenos">131</span></a>
-</span><span id="TownshipPatterns-132"><a href="#TownshipPatterns-132"><span class="linenos">132</span></a>    <span class="n">LAST_REGION_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">REGION</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-</span><span id="TownshipPatterns-133"><a href="#TownshipPatterns-133"><span class="linenos">133</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring</span>
-</span><span id="TownshipPatterns-134"><a href="#TownshipPatterns-134"><span class="linenos">134</span></a><span class="sd">    </span>
-</span><span id="TownshipPatterns-135"><a href="#TownshipPatterns-135"><span class="linenos">135</span></a><span class="sd">    Used in `mainegeo.townships.strip_region`.&quot;&quot;&quot;</span>
-</span><span id="TownshipPatterns-136"><a href="#TownshipPatterns-136"><span class="linenos">136</span></a>    
-</span><span id="TownshipPatterns-137"><a href="#TownshipPatterns-137"><span class="linenos">137</span></a>    <span class="nd">@cached_property</span>
-</span><span id="TownshipPatterns-138"><a href="#TownshipPatterns-138"><span class="linenos">138</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">TOWNSHIP_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="TownshipPatterns-139"><a href="#TownshipPatterns-139"><span class="linenos">139</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; Regex building block representing a township designator.</span>
-</span><span id="TownshipPatterns-140"><a href="#TownshipPatterns-140"><span class="linenos">140</span></a><span class="sd">    </span>
-</span><span id="TownshipPatterns-141"><a href="#TownshipPatterns-141"><span class="linenos">141</span></a><span class="sd">        Townships are designated by:</span>
-</span><span id="TownshipPatterns-142"><a href="#TownshipPatterns-142"><span class="linenos">142</span></a><span class="sd">            - Numbers 1-19 from south to north (e.g., T1, T19)</span>
-</span><span id="TownshipPatterns-143"><a href="#TownshipPatterns-143"><span class="linenos">143</span></a><span class="sd">            - Occasional letter designations (TA, TB, TC, TD, TX)</span>
-</span><span id="TownshipPatterns-144"><a href="#TownshipPatterns-144"><span class="linenos">144</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="TownshipPatterns-145"><a href="#TownshipPatterns-145"><span class="linenos">145</span></a>        <span class="n">TOWNSHIP_STANDARD</span> <span class="o">=</span> <span class="s2">&quot;(?:T.?</span><span class="se">\\</span><span class="s2">d{1,2})&quot;</span>
-</span><span id="TownshipPatterns-146"><a href="#TownshipPatterns-146"><span class="linenos">146</span></a>        <span class="n">TOWNSHIP_ALTERNATE</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?&lt;!</span><span class="se">\\</span><span class="s2">w)T[ABCDX](?![a-z])&quot;</span>
-</span><span id="TownshipPatterns-147"><a href="#TownshipPatterns-147"><span class="linenos">147</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="n">TOWNSHIP_STANDARD</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">TOWNSHIP_ALTERNATE</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="TownshipPatterns-119"><a href="#TownshipPatterns-119"><span class="linenos">119</span></a><span class="sd">    Ranges are counted from the easterly line toward the west,</span>
+</span><span id="TownshipPatterns-120"><a href="#TownshipPatterns-120"><span class="linenos">120</span></a><span class="sd">    numbered 1-19 (e.g., R1, R19).</span>
+</span><span id="TownshipPatterns-121"><a href="#TownshipPatterns-121"><span class="linenos">121</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="TownshipPatterns-122"><a href="#TownshipPatterns-122"><span class="linenos">122</span></a>
+</span><span id="TownshipPatterns-123"><a href="#TownshipPatterns-123"><span class="linenos">123</span></a>    <span class="n">TOWNSHIP_STANDARD</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;(?:T.?</span><span class="se">\\</span><span class="s2">d{1,2})&quot;</span>
+</span><span id="TownshipPatterns-124"><a href="#TownshipPatterns-124"><span class="linenos">124</span></a>    <span class="n">TOWNSHIP_ALTERNATE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?&lt;!</span><span class="se">\\</span><span class="s2">w)T[ABCDX](?![a-z])&quot;</span>
+</span><span id="TownshipPatterns-125"><a href="#TownshipPatterns-125"><span class="linenos">125</span></a>    <span class="n">TOWNSHIP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="n">TOWNSHIP_STANDARD</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">TOWNSHIP_ALTERNATE</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="TownshipPatterns-126"><a href="#TownshipPatterns-126"><span class="linenos">126</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Regex building block representing a township designator.</span>
+</span><span id="TownshipPatterns-127"><a href="#TownshipPatterns-127"><span class="linenos">127</span></a><span class="sd">    </span>
+</span><span id="TownshipPatterns-128"><a href="#TownshipPatterns-128"><span class="linenos">128</span></a><span class="sd">    Townships are designated by:</span>
+</span><span id="TownshipPatterns-129"><a href="#TownshipPatterns-129"><span class="linenos">129</span></a><span class="sd">        - Numbers 1-19 from south to north (e.g., T1, T19)</span>
+</span><span id="TownshipPatterns-130"><a href="#TownshipPatterns-130"><span class="linenos">130</span></a><span class="sd">        - Occasional letter designations (TA, TB, TC, TD, TX)</span>
+</span><span id="TownshipPatterns-131"><a href="#TownshipPatterns-131"><span class="linenos">131</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="TownshipPatterns-132"><a href="#TownshipPatterns-132"><span class="linenos">132</span></a>
+</span><span id="TownshipPatterns-133"><a href="#TownshipPatterns-133"><span class="linenos">133</span></a>    <span class="n">FUZZY</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[^,</span><span class="se">\\</span><span class="s2">w]</span><span class="se">{{</span><span class="s2">0,3</span><span class="se">}}</span><span class="s2">&quot;</span>
+</span><span id="TownshipPatterns-134"><a href="#TownshipPatterns-134"><span class="linenos">134</span></a>    <span class="n">UNNAMED</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;((?:</span><span class="si">{</span><span class="n">TOWNSHIP</span><span class="si">}</span><span class="s2">)(?:</span><span class="si">{</span><span class="n">FUZZY</span><span class="si">}{</span><span class="n">RANGE</span><span class="si">}</span><span class="s2">)?(?:</span><span class="si">{</span><span class="n">FUZZY</span><span class="si">}{</span><span class="n">REGION</span><span class="si">}</span><span class="s2">)</span><span class="se">{{</span><span class="s2">0,2</span><span class="se">}}</span><span class="s2">)&quot;</span>
+</span><span id="TownshipPatterns-135"><a href="#TownshipPatterns-135"><span class="linenos">135</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; Uncompiled string representing a full unnamed township name.&quot;&quot;&quot;</span>
+</span><span id="TownshipPatterns-136"><a href="#TownshipPatterns-136"><span class="linenos">136</span></a>
+</span><span id="TownshipPatterns-137"><a href="#TownshipPatterns-137"><span class="linenos">137</span></a>    <span class="n">UNNAMED_ELEMENTS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">TOWNSHIP</span><span class="p">,</span><span class="w"> </span><span class="n">RANGE</span><span class="p">,</span><span class="w"> </span><span class="n">REGION</span><span class="p">])</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="TownshipPatterns-138"><a href="#TownshipPatterns-138"><span class="linenos">138</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="TownshipPatterns-139"><a href="#TownshipPatterns-139"><span class="linenos">139</span></a>
+</span><span id="TownshipPatterns-140"><a href="#TownshipPatterns-140"><span class="linenos">140</span></a>    <span class="n">UNNAMED_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">UNNAMED</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+</span><span id="TownshipPatterns-141"><a href="#TownshipPatterns-141"><span class="linenos">141</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring</span>
+</span><span id="TownshipPatterns-142"><a href="#TownshipPatterns-142"><span class="linenos">142</span></a><span class="sd">    </span>
+</span><span id="TownshipPatterns-143"><a href="#TownshipPatterns-143"><span class="linenos">143</span></a><span class="sd">    Used in `mainegeo.townships.is_unnamed_township` and `mainegeo.townships.clean_codes`.&quot;&quot;&quot;</span>
+</span><span id="TownshipPatterns-144"><a href="#TownshipPatterns-144"><span class="linenos">144</span></a>
+</span><span id="TownshipPatterns-145"><a href="#TownshipPatterns-145"><span class="linenos">145</span></a>    <span class="n">UNNAMED_ELEMENTS_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">UNNAMED_ELEMENTS</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+</span><span id="TownshipPatterns-146"><a href="#TownshipPatterns-146"><span class="linenos">146</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Pattern for finding unnamed township name elements regardless of formatting.</span>
+</span><span id="TownshipPatterns-147"><a href="#TownshipPatterns-147"><span class="linenos">147</span></a><span class="sd">    </span>
+</span><span id="TownshipPatterns-148"><a href="#TownshipPatterns-148"><span class="linenos">148</span></a><span class="sd">    Used in `mainegeo.townships.clean_code`.&quot;&quot;&quot;</span>
+</span><span id="TownshipPatterns-149"><a href="#TownshipPatterns-149"><span class="linenos">149</span></a>
+</span><span id="TownshipPatterns-150"><a href="#TownshipPatterns-150"><span class="linenos">150</span></a>    <span class="n">LAST_REGION_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">REGION</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+</span><span id="TownshipPatterns-151"><a href="#TownshipPatterns-151"><span class="linenos">151</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add docstring</span>
+</span><span id="TownshipPatterns-152"><a href="#TownshipPatterns-152"><span class="linenos">152</span></a><span class="sd">    </span>
+</span><span id="TownshipPatterns-153"><a href="#TownshipPatterns-153"><span class="linenos">153</span></a><span class="sd">    Used in `mainegeo.townships.strip_region`.&quot;&quot;&quot;</span>
+</span><span id="TownshipPatterns-154"><a href="#TownshipPatterns-154"><span class="linenos">154</span></a>    
+</span><span id="TownshipPatterns-155"><a href="#TownshipPatterns-155"><span class="linenos">155</span></a>    <span class="nd">@cached_property</span>
+</span><span id="TownshipPatterns-156"><a href="#TownshipPatterns-156"><span class="linenos">156</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">TOWNSHIP_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="TownshipPatterns-157"><a href="#TownshipPatterns-157"><span class="linenos">157</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; Regex building block representing a township designator.</span>
+</span><span id="TownshipPatterns-158"><a href="#TownshipPatterns-158"><span class="linenos">158</span></a><span class="sd">    </span>
+</span><span id="TownshipPatterns-159"><a href="#TownshipPatterns-159"><span class="linenos">159</span></a><span class="sd">        Townships are designated by:</span>
+</span><span id="TownshipPatterns-160"><a href="#TownshipPatterns-160"><span class="linenos">160</span></a><span class="sd">            - Numbers 1-19 from south to north (e.g., T1, T19)</span>
+</span><span id="TownshipPatterns-161"><a href="#TownshipPatterns-161"><span class="linenos">161</span></a><span class="sd">            - Occasional letter designations (TA, TB, TC, TD, TX)</span>
+</span><span id="TownshipPatterns-162"><a href="#TownshipPatterns-162"><span class="linenos">162</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="TownshipPatterns-163"><a href="#TownshipPatterns-163"><span class="linenos">163</span></a>        <span class="n">TOWNSHIP_STANDARD</span> <span class="o">=</span> <span class="s2">&quot;(?:T.?</span><span class="se">\\</span><span class="s2">d{1,2})&quot;</span>
+</span><span id="TownshipPatterns-164"><a href="#TownshipPatterns-164"><span class="linenos">164</span></a>        <span class="n">TOWNSHIP_ALTERNATE</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?&lt;!</span><span class="se">\\</span><span class="s2">w)T[ABCDX](?![a-z])&quot;</span>
+</span><span id="TownshipPatterns-165"><a href="#TownshipPatterns-165"><span class="linenos">165</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="n">TOWNSHIP_STANDARD</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">TOWNSHIP_ALTERNATE</span><span class="si">}</span><span class="s2">)&quot;</span>
 </span></pre></div>
 
 
@@ -651,30 +734,6 @@ numbered 1-19 (e.g., R1, R19).</p>
 
 
                             </div>
-                            <div id="TownshipPatterns.FUZZY" class="classattr">
-                                <div class="attr variable">
-            <span class="name">FUZZY</span><span class="annotation">: str</span>        =
-<span class="default_value">&#39;[^,\\w]{0,3}&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#TownshipPatterns.FUZZY"></a>
-    
-    
-
-                            </div>
-                            <div id="TownshipPatterns.PUNCTUATION" class="classattr">
-                                <div class="attr variable">
-            <span class="name">PUNCTUATION</span><span class="annotation">: str</span>        =
-<span class="default_value">&#39;[^ \\w]&#39;</span>
-
-        
-    </div>
-    <a class="headerlink" href="#TownshipPatterns.PUNCTUATION"></a>
-    
-    
-
-                            </div>
                             <div id="TownshipPatterns.TOWNSHIP_STANDARD" class="classattr">
                                 <div class="attr variable">
             <span class="name">TOWNSHIP_STANDARD</span><span class="annotation">: str</span>        =
@@ -720,6 +779,18 @@ numbered 1-19 (e.g., R1, R19).</p>
 </blockquote>
 </div>
 
+
+                            </div>
+                            <div id="TownshipPatterns.FUZZY" class="classattr">
+                                <div class="attr variable">
+            <span class="name">FUZZY</span><span class="annotation">: str</span>        =
+<span class="default_value">&#39;[^,\\w]{0,3}&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#TownshipPatterns.FUZZY"></a>
+    
+    
 
                             </div>
                             <div id="TownshipPatterns.UNNAMED" class="classattr">
@@ -811,17 +882,17 @@ numbered 1-19 (e.g., R1, R19).</p>
 
     </div>
     <a class="headerlink" href="#TownshipPatterns.TOWNSHIP_"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="TownshipPatterns.TOWNSHIP_-137"><a href="#TownshipPatterns.TOWNSHIP_-137"><span class="linenos">137</span></a>    <span class="nd">@cached_property</span>
-</span><span id="TownshipPatterns.TOWNSHIP_-138"><a href="#TownshipPatterns.TOWNSHIP_-138"><span class="linenos">138</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">TOWNSHIP_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="TownshipPatterns.TOWNSHIP_-139"><a href="#TownshipPatterns.TOWNSHIP_-139"><span class="linenos">139</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; Regex building block representing a township designator.</span>
-</span><span id="TownshipPatterns.TOWNSHIP_-140"><a href="#TownshipPatterns.TOWNSHIP_-140"><span class="linenos">140</span></a><span class="sd">    </span>
-</span><span id="TownshipPatterns.TOWNSHIP_-141"><a href="#TownshipPatterns.TOWNSHIP_-141"><span class="linenos">141</span></a><span class="sd">        Townships are designated by:</span>
-</span><span id="TownshipPatterns.TOWNSHIP_-142"><a href="#TownshipPatterns.TOWNSHIP_-142"><span class="linenos">142</span></a><span class="sd">            - Numbers 1-19 from south to north (e.g., T1, T19)</span>
-</span><span id="TownshipPatterns.TOWNSHIP_-143"><a href="#TownshipPatterns.TOWNSHIP_-143"><span class="linenos">143</span></a><span class="sd">            - Occasional letter designations (TA, TB, TC, TD, TX)</span>
-</span><span id="TownshipPatterns.TOWNSHIP_-144"><a href="#TownshipPatterns.TOWNSHIP_-144"><span class="linenos">144</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="TownshipPatterns.TOWNSHIP_-145"><a href="#TownshipPatterns.TOWNSHIP_-145"><span class="linenos">145</span></a>        <span class="n">TOWNSHIP_STANDARD</span> <span class="o">=</span> <span class="s2">&quot;(?:T.?</span><span class="se">\\</span><span class="s2">d{1,2})&quot;</span>
-</span><span id="TownshipPatterns.TOWNSHIP_-146"><a href="#TownshipPatterns.TOWNSHIP_-146"><span class="linenos">146</span></a>        <span class="n">TOWNSHIP_ALTERNATE</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?&lt;!</span><span class="se">\\</span><span class="s2">w)T[ABCDX](?![a-z])&quot;</span>
-</span><span id="TownshipPatterns.TOWNSHIP_-147"><a href="#TownshipPatterns.TOWNSHIP_-147"><span class="linenos">147</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="n">TOWNSHIP_STANDARD</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">TOWNSHIP_ALTERNATE</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="TownshipPatterns.TOWNSHIP_-155"><a href="#TownshipPatterns.TOWNSHIP_-155"><span class="linenos">155</span></a>    <span class="nd">@cached_property</span>
+</span><span id="TownshipPatterns.TOWNSHIP_-156"><a href="#TownshipPatterns.TOWNSHIP_-156"><span class="linenos">156</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">TOWNSHIP_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="TownshipPatterns.TOWNSHIP_-157"><a href="#TownshipPatterns.TOWNSHIP_-157"><span class="linenos">157</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; Regex building block representing a township designator.</span>
+</span><span id="TownshipPatterns.TOWNSHIP_-158"><a href="#TownshipPatterns.TOWNSHIP_-158"><span class="linenos">158</span></a><span class="sd">    </span>
+</span><span id="TownshipPatterns.TOWNSHIP_-159"><a href="#TownshipPatterns.TOWNSHIP_-159"><span class="linenos">159</span></a><span class="sd">        Townships are designated by:</span>
+</span><span id="TownshipPatterns.TOWNSHIP_-160"><a href="#TownshipPatterns.TOWNSHIP_-160"><span class="linenos">160</span></a><span class="sd">            - Numbers 1-19 from south to north (e.g., T1, T19)</span>
+</span><span id="TownshipPatterns.TOWNSHIP_-161"><a href="#TownshipPatterns.TOWNSHIP_-161"><span class="linenos">161</span></a><span class="sd">            - Occasional letter designations (TA, TB, TC, TD, TX)</span>
+</span><span id="TownshipPatterns.TOWNSHIP_-162"><a href="#TownshipPatterns.TOWNSHIP_-162"><span class="linenos">162</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="TownshipPatterns.TOWNSHIP_-163"><a href="#TownshipPatterns.TOWNSHIP_-163"><span class="linenos">163</span></a>        <span class="n">TOWNSHIP_STANDARD</span> <span class="o">=</span> <span class="s2">&quot;(?:T.?</span><span class="se">\\</span><span class="s2">d{1,2})&quot;</span>
+</span><span id="TownshipPatterns.TOWNSHIP_-164"><a href="#TownshipPatterns.TOWNSHIP_-164"><span class="linenos">164</span></a>        <span class="n">TOWNSHIP_ALTERNATE</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?&lt;!</span><span class="se">\\</span><span class="s2">w)T[ABCDX](?![a-z])&quot;</span>
+</span><span id="TownshipPatterns.TOWNSHIP_-165"><a href="#TownshipPatterns.TOWNSHIP_-165"><span class="linenos">165</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="n">TOWNSHIP_STANDARD</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">TOWNSHIP_ALTERNATE</span><span class="si">}</span><span class="s2">)&quot;</span>
 </span></pre></div>
 
 

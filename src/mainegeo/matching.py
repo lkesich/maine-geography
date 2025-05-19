@@ -15,6 +15,7 @@ from typing import List, Dict, Optional
 from importlib import resources
 from pathlib import Path
 import yaml
+from mainegeo.connections import TownshipDataSource
 from mainegeo.entities import (County, Cousub, TownType)
 from mainegeo.townships import (
     clean_code,
@@ -76,7 +77,7 @@ class TownAlias:
     county_fips: Optional[int] = None
 
 @dataclass
-class TownDatabase:
+class TownDatabase(TownshipDataSource):
     data: List[TownReference] = None
     _processed: bool = False
     
@@ -84,11 +85,6 @@ class TownDatabase:
         if self._processed is False:
             self._process_data()
             self._validate_data()
-
-    @cached_class_attr
-    def json_path(cls):
-        """ Unprocessed data """
-        return resources.files('mainegeo.data').joinpath('townships.json')
     
     @cached_class_attr
     def yaml_path(cls):
