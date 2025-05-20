@@ -153,7 +153,7 @@ NONSTANDARD_DELIMITER_PATTERN: re.Pattern = re.compile(
     '|'.join(map(re.escape, NONSTANDARD_DELIMITERS)),
     re.I
     )
-"""Add docstring
+"""Matches non-standard result string delimiters used occasionally by the SoS.
 
 Used in `mainegeo.elections.ResultString`."""
 
