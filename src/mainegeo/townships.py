@@ -26,7 +26,6 @@ __all__ = [
     'clean_town'
 ]
 
-import re
 from utils.strings import replace_all, squish, match_case, normalize_whitespace
 from utils.core import chain_operations
 from mainegeo.entities import TownType
@@ -35,7 +34,6 @@ from mainegeo.patterns import (
     UNNAMED_ELEMENTS_PATTERN,
     CLEAN_TOWNSHIP_PATTERN,
     NON_ALIAS_PATTERN,
-    NON_ALIAS_CHARACTERS_PATTERN,
     GNIS_PATTERN,
     ABBREVIATIONS,
     SUFFIX_REPLACEMENTS,
@@ -137,7 +135,7 @@ def has_alias(town: str) -> str:
     if is_unnamed_township(town) is False:
         return False
     else:
-        return len(NON_ALIAS_CHARACTERS_PATTERN.sub('', town)) > 0
+        return len(NON_ALIAS_PATTERN.sub('', town).strip()) > 0
 
 def extract_alias(town: str) -> str:
     """
@@ -154,11 +152,13 @@ def extract_alias(town: str) -> str:
         'CROSS LAKE TWP'
         >>> extract_alias('T3 Indian Purchase Twp')
         'Indian Purchase Twp'
-        >>> extract_alias('PRENTISS TWP (T7 R3 NBPP)')
+        >>> extract_alias('Rockwood Strip (T1 R1) Twp')
+        'Rockwood Strip Twp'
+        >>> extract_alias('T7 R3 NBPP (PRENTISS TWP)')
         'PRENTISS TWP'
     """
     if has_alias(town):
-        return squish(re.sub(NON_ALIAS_PATTERN, '', town))
+        return squish(NON_ALIAS_PATTERN.sub('', town))    
     
 def clean_township(town: str) -> str:
     """

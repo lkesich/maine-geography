@@ -99,7 +99,7 @@ UNNAMED_PATTERN: re.Pattern = re.compile(UNNAMED, re.I)
 Used in `mainegeo.townships.is_unnamed_township` and `mainegeo.townships.clean_codes`."""
 
 UNNAMED_ELEMENTS_PATTERN: re.Pattern = re.compile(UNNAMED_ELEMENTS, re.I)
-"""Matches any township name element.
+"""Matches any unnamed township name element.
 
 Used in `mainegeo.townships.clean_code`."""
 
@@ -127,25 +127,17 @@ Used in `mainegeo.elections.ResultString`.
 """
 
 CLEAN_TOWNSHIP_PATTERN: re.Pattern = re.compile(f"[^\\w]|{LEADING_ZERO}")
-"""Add docstring
+"""Matches non-word characters and leading zeroes.
 
 Used in `mainegeo.townships.clean_code`."""
 
-NON_ALIAS_CHARACTERS_PATTERN: re.Pattern = re.compile(
-    f'{UNNAMED}|[^\\w]|twps?',
-    re.I
-    )
-"""Add docstring
-
-Used in `mainegeo.townships.has_alias`."""
-
 NON_ALIAS_PATTERN: re.Pattern = re.compile(
-    f'{UNNAMED}(?: twp)?|{PUNCTUATION}',
+    f'{UNNAMED}(?: twps?)?|{PUNCTUATION}',
     re.I
     )
-"""Add docstring
+"""Matches parts of a string that are not an unnamed township code or punctuation.
 
-Used in `mainegeo.townships.extract_alias`."""
+Used in `mainegeo.townships.has_alias` and `mainegeo.townships.extract_alias`."""
 
 DROP_CHARACTERS_PATTERN: re.Pattern = re.compile(
     '|'.join(map(re.escape, DROP_CHARACTERS))
@@ -170,7 +162,7 @@ ORPHAN_PARENTHESIS_PATTERN: re.Pattern = re.compile(
     )
 """Matches the orphaned closing parenthesis left behind after delimiter normalization.
 
-Match groups:
+Capture groups:
     * result
     * orphan_parenthesis
 
@@ -235,7 +227,7 @@ VALID_HYPHENS: str = generate_valid_punctuation('-', HYPHENS_TEMPLATE)
 GNIS_PATTERN: re.Pattern = re.compile(GNIS_NAME, re.I)
 """Matches place names with Geographic Names Information System (GNIS) formatting.
 
-Match groups:
+Capture groups:
     * geotype
     * town
 
@@ -311,7 +303,7 @@ MULTI_COUNTY_PATTERN: re.Pattern = re.compile(
 )
 """Matches raw, unformatted unspecified groups that contain a county.
 
-Match groups:
+Capture groups:
     * regtown
     * cty
     * sos_flag
