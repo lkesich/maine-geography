@@ -7,10 +7,12 @@ from . import elections
 from . import townships
 from . import matching
 from . import patterns
+from . import entities
 
 __all__ = [
     'elections',
     'townships',
     'matching',
-    'patterns'
+    'patterns',
+    'entities'
 ]

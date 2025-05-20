@@ -4,6 +4,9 @@ from functools import cache
 from enum import Enum
 
 def cached_class_attr(f):
+    """
+    @private
+    """
     return classmethod(property(cache(f)))
 
 class NameType(Enum):
@@ -40,7 +43,7 @@ class County:
         self._assign_missing_attributes()
     
     @cached_class_attr
-    def lookup(cls):
+    def _lookup(cls):
         return lookups.CountyData()
     
     def _normalize_types(self):
@@ -49,7 +52,7 @@ class County:
     def _assign_missing_attributes(self):
         attrs = (self.name, self.code, self.fips)
         if not all(attrs):
-            l = self.lookup
+            l = self._lookup
             self.fips = self.fips or l.code_to_fips.get(self.code) or l.name_to_fips.get(self.name)
             self.code = self.code or l.fips_to_code.get(self.fips) or l.name_to_code.get(self.name)
             self.name = self.name or l.fips_to_name.get(self.fips) or l.code_to_name.get(self.code)
