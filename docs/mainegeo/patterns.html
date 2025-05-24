@@ -94,9 +94,6 @@
                     <a class="variable" href="#NONSTANDARD_DELIMITERS">NONSTANDARD_DELIMITERS</a>
             </li>
             <li>
-                    <a class="variable" href="#DROP_CHARACTERS">DROP_CHARACTERS</a>
-            </li>
-            <li>
                     <a class="variable" href="#MEANINGFUL_CHARACTERS">MEANINGFUL_CHARACTERS</a>
             </li>
             <li>
@@ -110,9 +107,6 @@
             </li>
             <li>
                     <a class="variable" href="#DROP_CHARACTERS_PATTERN">DROP_CHARACTERS_PATTERN</a>
-            </li>
-            <li>
-                    <a class="variable" href="#MEANINGFUL_CHARACTERS_PATTERN">MEANINGFUL_CHARACTERS_PATTERN</a>
             </li>
             <li>
                     <a class="variable" href="#NONSTANDARD_DELIMITER_PATTERN">NONSTANDARD_DELIMITER_PATTERN</a>
@@ -322,10 +316,10 @@
 </span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a>
 </span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a><span class="c1"># Building blocks</span>
 </span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a><span class="n">REGION</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">REGIONS</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
-</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a><span class="sd">&quot;&quot;&quot; Regex building block representing a region designator.&quot;&quot;&quot;</span>
+</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a><span class="sd">&quot;&quot;&quot; Uncompiled regex building block representing a region designator.&quot;&quot;&quot;</span>
 </span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a>
 </span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a><span class="n">RANGE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:R.?[</span><span class="se">\\</span><span class="s2">d]</span><span class="se">{{</span><span class="s2">1,2</span><span class="se">}}</span><span class="s2">)&quot;</span>
-</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a><span class="sd">&quot;&quot;&quot; Regex building block representing a range designator.</span>
+</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a><span class="sd">&quot;&quot;&quot; Uncompiled regex building block representing a range designator.</span>
 </span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a>
 </span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a><span class="sd">Ranges are counted from the easterly line toward the west,</span>
 </span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a><span class="sd">numbered 1-19 (e.g., R1, R19).&quot;&quot;&quot;</span>
@@ -333,7 +327,7 @@
 </span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a><span class="n">TOWNSHIP_STANDARD</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;(?:T.?</span><span class="se">\\</span><span class="s2">d{1,2})&quot;</span>
 </span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a><span class="n">TOWNSHIP_ALTERNATE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?&lt;!</span><span class="se">\\</span><span class="s2">w)T[ABCDX](?![a-z])&quot;</span>
 </span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a><span class="n">TOWNSHIP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?:</span><span class="si">{</span><span class="n">TOWNSHIP_STANDARD</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">TOWNSHIP_ALTERNATE</span><span class="si">}</span><span class="s2">)&quot;</span>
-</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a><span class="sd">&quot;&quot;&quot; Regex building block representing a township designator.</span>
+</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a><span class="sd">&quot;&quot;&quot; Uncompiled regex building block representing a township designator.</span>
 </span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>
 </span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a><span class="sd">Townships are designated by:</span>
 </span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a><span class="sd">    - Numbers 1-19 from south to north (e.g., T1, T19)</span>
@@ -344,17 +338,17 @@
 </span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>
 </span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a><span class="c1"># Patterns</span>
 </span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a><span class="n">UNNAMED_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">UNNAMED</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a><span class="sd">&quot;&quot;&quot;Matches a full unnamed township name, with tolerance for formatting variation.</span>
+</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a><span class="sd">&quot;&quot;&quot;Compiled regex matching a full unnamed township name, with tolerance for formatting variation.</span>
 </span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a>
 </span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a><span class="sd">Used in `mainegeo.townships.is_unnamed_township` and `mainegeo.townships.clean_codes`.&quot;&quot;&quot;</span>
 </span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>
 </span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a><span class="n">UNNAMED_ELEMENTS_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">UNNAMED_ELEMENTS</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a><span class="sd">&quot;&quot;&quot;Matches any unnamed township name element.</span>
+</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a><span class="sd">&quot;&quot;&quot;Compiled regex matching any unnamed township name element.</span>
 </span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a>
 </span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a><span class="sd">Used in `mainegeo.townships.clean_code`.&quot;&quot;&quot;</span>
 </span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a>
 </span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a><span class="n">LAST_REGION_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">REGION</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a><span class="sd">&quot;&quot;&quot;Matches the last region code in an unnamed township name.</span>
+</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a><span class="sd">&quot;&quot;&quot;Compiled regex matching the last region code in an unnamed township name.</span>
 </span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a>
 </span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a><span class="sd">Used in `mainegeo.townships.strip_region`.&quot;&quot;&quot;</span>
 </span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a>
@@ -364,209 +358,223 @@
 </span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a><span class="n">NOT_REPORTING</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;(?!AND|&amp;)&#39;</span>
 </span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a><span class="n">PARENTHETICAL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">(</span><span class="si">{</span><span class="n">NOT_REPORTING</span><span class="si">}</span><span class="s1">[^</span><span class="se">\\</span><span class="s1">(]+</span><span class="se">\\</span><span class="s1">)&#39;</span>
 </span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a><span class="n">PRECEDES_DASH</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;^[^-]+--&#39;</span>
-</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a><span class="n">STANDARD_DELIMITER</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span>
-</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a><span class="n">NONSTANDARD_DELIMITERS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&amp;&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;(AND &quot;</span><span class="p">]</span>
-</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a><span class="n">DROP_CHARACTERS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;~&quot;</span><span class="p">]</span>
-</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a><span class="n">MEANINGFUL_CHARACTERS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;(&quot;</span><span class="p">,</span> <span class="s2">&quot;)&quot;</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">]</span>
-</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a>
-</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a><span class="c1"># Patterns</span>
-</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a><span class="n">REGISTRATION_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">PARENTHETICAL</span><span class="si">}</span><span class="s1">|</span><span class="si">{</span><span class="n">PRECEDES_DASH</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a><span class="sd">&quot;&quot;&quot;Matches substrings representing non-reporting registration towns.</span>
-</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a>
-</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a><span class="sd">Used in `mainegeo.elections.ResultString`.</span>
-</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a>
-</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a><span class="n">CLEAN_TOWNSHIP_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[^</span><span class="se">\\</span><span class="s2">w]|</span><span class="si">{</span><span class="n">LEADING_ZERO</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a><span class="sd">&quot;&quot;&quot;Matches non-word characters and leading zeroes.</span>
+</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a>
+</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a><span class="n">STANDARD_DELIMITER</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span>
+</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a><span class="sd">&quot;&quot;&quot;Preferred delimiter character; all other delimiters will be replaced by this.&quot;&quot;&quot;</span>
+</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a>
+</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a><span class="n">NONSTANDARD_DELIMITERS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&amp;&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;(AND &quot;</span><span class="p">]</span>
+</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a><span class="sd">&quot;&quot;&quot;Substrings that are sometimes used by the SoS to delimit reporting towns.&quot;&quot;&quot;</span>
+</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a>
+</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a><span class="n">MEANINGFUL_CHARACTERS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;(&quot;</span><span class="p">,</span> <span class="s2">&quot;)&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">]</span>
+</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a><span class="sd">&quot;&quot;&quot;Punctuation characters used by the SoS to communicate info about a reporting unit.</span>
+</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a>
+</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a><span class="sd">Examples:</span>
+</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a><span class="sd">    * BENEDICTA/SILVER RIDGE TWPS: forward slashes delimit towns.</span>
+</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a><span class="sd">    * T15 R6 TWP (EAGLE LAKE): parentheses indicate registration town</span>
+</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a><span class="sd">    * BLAINE -- E TWP: double hyphens indicate registration town</span>
 </span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a>
-</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a><span class="sd">Used in `mainegeo.townships.clean_code`.&quot;&quot;&quot;</span>
+</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a><span class="sd">These characters should not be stripped until this info has been parsed out.&quot;&quot;&quot;</span>
 </span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a>
-</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a><span class="n">NON_ALIAS_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a>    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">UNNAMED</span><span class="si">}</span><span class="s1">(?: twps?)?|</span><span class="si">{</span><span class="n">PUNCTUATION</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-</span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a>    <span class="n">re</span><span class="o">.</span><span class="n">I</span>
-</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>    <span class="p">)</span>
-</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a><span class="sd">&quot;&quot;&quot;Matches parts of a string that are not an unnamed township code or punctuation.</span>
-</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a>
-</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a><span class="sd">Used in `mainegeo.townships.has_alias` and `mainegeo.townships.extract_alias`.&quot;&quot;&quot;</span>
-</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a>
-</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a><span class="n">DROP_CHARACTERS_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>    <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">,</span> <span class="n">DROP_CHARACTERS</span><span class="p">))</span>
-</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>    <span class="p">)</span>
-</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
-</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a>
-</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a><span class="n">MEANINGFUL_CHARACTERS_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a>    <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">,</span> <span class="n">MEANINGFUL_CHARACTERS</span><span class="p">))</span>
+</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a><span class="c1"># Patterns</span>
+</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a><span class="n">REGISTRATION_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">PARENTHETICAL</span><span class="si">}</span><span class="s1">|</span><span class="si">{</span><span class="n">PRECEDES_DASH</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+</span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a><span class="sd">&quot;&quot;&quot;Compiled regex matching a substring of non-reporting registration towns.</span>
+</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>
+</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a><span class="sd">Used in `mainegeo.elections.ResultString`.</span>
+</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a>
+</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a><span class="n">CLEAN_TOWNSHIP_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[^</span><span class="se">\\</span><span class="s2">w]|</span><span class="si">{</span><span class="n">LEADING_ZERO</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a><span class="sd">&quot;&quot;&quot;Compiled regex matching non-word characters and leading zeroes.</span>
+</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>
+</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a><span class="sd">Used in `mainegeo.townships.clean_code`.&quot;&quot;&quot;</span>
+</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a>
+</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a><span class="n">NON_ALIAS_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a>    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">UNNAMED</span><span class="si">}</span><span class="s1">(?: twps?)?|</span><span class="si">{</span><span class="n">PUNCTUATION</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a>    <span class="n">re</span><span class="o">.</span><span class="n">I</span>
 </span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a>    <span class="p">)</span>
-</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
+</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a><span class="sd">&quot;&quot;&quot;Compiled regex matching substrings that are not an unnamed township code or punctuation.</span>
 </span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a>
-</span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a><span class="n">NONSTANDARD_DELIMITER_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a>    <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">,</span> <span class="n">NONSTANDARD_DELIMITERS</span><span class="p">)),</span>
-</span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a>    <span class="n">re</span><span class="o">.</span><span class="n">I</span>
-</span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a>    <span class="p">)</span>
-</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a><span class="sd">&quot;&quot;&quot;Matches non-standard result string delimiters used occasionally by the SoS.</span>
-</span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a>
-</span><span id="L-158"><a href="#L-158"><span class="linenos">158</span></a><span class="sd">Used in `mainegeo.elections.ResultString`.&quot;&quot;&quot;</span>
-</span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a>
-</span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a><span class="n">ORPHAN_PARENTHESIS_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-</span><span id="L-161"><a href="#L-161"><span class="linenos">161</span></a>    <span class="sa">f</span><span class="s1">&#39;^(?P&lt;result&gt;[^(]+)(?P&lt;orphan_parenthesis&gt;[)])$&#39;</span>
-</span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a>    <span class="p">)</span>
-</span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a><span class="sd">&quot;&quot;&quot;Matches the orphaned closing parenthesis left behind after delimiter normalization.</span>
+</span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a><span class="sd">Used in `mainegeo.townships.has_alias` and `mainegeo.townships.extract_alias`.&quot;&quot;&quot;</span>
+</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a>
+</span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a><span class="n">DROP_CHARACTERS_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+</span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a>    <span class="sa">f</span><span class="s2">&quot;[^</span><span class="se">\\</span><span class="s2">w</span><span class="se">\\</span><span class="s2">s</span><span class="si">{</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">,</span><span class="w"> </span><span class="n">MEANINGFUL_CHARACTERS</span><span class="p">))</span><span class="si">}</span><span class="s2">]&quot;</span>
+</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a>    <span class="p">)</span>
+</span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a><span class="sd">&quot;&quot;&quot;Matches all characters except word characters, whitespace, and meaningful punctuation.</span>
+</span><span id="L-158"><a href="#L-158"><span class="linenos">158</span></a>
+</span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a><span class="sd">Meaningful punctuation characters are those used by the SoS to communicate information</span>
+</span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a><span class="sd">about a reporting unit (e.g. forward slashes to separate reporting towns). The full list</span>
+</span><span id="L-161"><a href="#L-161"><span class="linenos">161</span></a><span class="sd">of meanginful characters is defined in `mainegeo.patterns.MEANINGFUL_CHARACTERS`.</span>
+</span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a>
+</span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a><span class="sd">Used in `mainegeo.elections.ResultString._drop_non_meaningful_characters`.&quot;&quot;&quot;</span>
 </span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a>
-</span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a><span class="sd">Capture groups:</span>
-</span><span id="L-166"><a href="#L-166"><span class="linenos">166</span></a><span class="sd">    * result</span>
-</span><span id="L-167"><a href="#L-167"><span class="linenos">167</span></a><span class="sd">    * orphan_parenthesis</span>
-</span><span id="L-168"><a href="#L-168"><span class="linenos">168</span></a>
-</span><span id="L-169"><a href="#L-169"><span class="linenos">169</span></a><span class="sd">Used in `mainegeo.elections.ResultString`.&quot;&quot;&quot;</span>
+</span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a><span class="n">NONSTANDARD_DELIMITER_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+</span><span id="L-166"><a href="#L-166"><span class="linenos">166</span></a>    <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">,</span> <span class="n">NONSTANDARD_DELIMITERS</span><span class="p">)),</span>
+</span><span id="L-167"><a href="#L-167"><span class="linenos">167</span></a>    <span class="n">re</span><span class="o">.</span><span class="n">I</span>
+</span><span id="L-168"><a href="#L-168"><span class="linenos">168</span></a>    <span class="p">)</span>
+</span><span id="L-169"><a href="#L-169"><span class="linenos">169</span></a><span class="sd">&quot;&quot;&quot; Compiled regex matching non-standard result string delimiters used occasionally by the SoS.</span>
 </span><span id="L-170"><a href="#L-170"><span class="linenos">170</span></a>
-</span><span id="L-171"><a href="#L-171"><span class="linenos">171</span></a><span class="c1">## Name standardization</span>
-</span><span id="L-172"><a href="#L-172"><span class="linenos">172</span></a><span class="c1"># Constants</span>
-</span><span id="L-173"><a href="#L-173"><span class="linenos">173</span></a><span class="n">GNIS_GEOTYPES</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CITY&quot;</span><span class="p">,</span> <span class="s2">&quot;PLANTATION&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWN&quot;</span><span class="p">]</span>
-</span><span id="L-174"><a href="#L-174"><span class="linenos">174</span></a><span class="sd">&quot;&quot;&quot;Geotypes used by the Geographic Names Information System (GNIS).&quot;&quot;&quot;</span>
-</span><span id="L-175"><a href="#L-175"><span class="linenos">175</span></a>
-</span><span id="L-176"><a href="#L-176"><span class="linenos">176</span></a><span class="n">ABBREVIATIONS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="L-177"><a href="#L-177"><span class="linenos">177</span></a>    <span class="s2">&quot;PLANTATION&quot;</span><span class="p">:</span> <span class="s2">&quot;PLT&quot;</span><span class="p">,</span>
-</span><span id="L-178"><a href="#L-178"><span class="linenos">178</span></a>    <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">:</span> <span class="s2">&quot;TWP&quot;</span><span class="p">,</span>
-</span><span id="L-179"><a href="#L-179"><span class="linenos">179</span></a>    <span class="s2">&quot;VOTING DISTRICT&quot;</span><span class="p">:</span> <span class="s2">&quot;VOTING DIST&quot;</span><span class="p">,</span>
-</span><span id="L-180"><a href="#L-180"><span class="linenos">180</span></a>    <span class="s2">&quot;RESERVATION&quot;</span><span class="p">:</span> <span class="s2">&quot;RES&quot;</span>
-</span><span id="L-181"><a href="#L-181"><span class="linenos">181</span></a><span class="p">}</span>
-</span><span id="L-182"><a href="#L-182"><span class="linenos">182</span></a><span class="sd">&quot;&quot;&quot;Geotype suffixes used by the Maine SoS and their abbreviations.&quot;&quot;&quot;</span>
+</span><span id="L-171"><a href="#L-171"><span class="linenos">171</span></a><span class="sd">Used in `mainegeo.elections.ResultString`.&quot;&quot;&quot;</span>
+</span><span id="L-172"><a href="#L-172"><span class="linenos">172</span></a>
+</span><span id="L-173"><a href="#L-173"><span class="linenos">173</span></a><span class="n">ORPHAN_PARENTHESIS_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+</span><span id="L-174"><a href="#L-174"><span class="linenos">174</span></a>    <span class="sa">f</span><span class="s1">&#39;^(?P&lt;result&gt;[^(]+)(?P&lt;orphan_parenthesis&gt;[)])$&#39;</span>
+</span><span id="L-175"><a href="#L-175"><span class="linenos">175</span></a>    <span class="p">)</span>
+</span><span id="L-176"><a href="#L-176"><span class="linenos">176</span></a><span class="sd">&quot;&quot;&quot;Compiled regex matching the orphaned closing parenthesis left after delimiter normalization.</span>
+</span><span id="L-177"><a href="#L-177"><span class="linenos">177</span></a>
+</span><span id="L-178"><a href="#L-178"><span class="linenos">178</span></a><span class="sd">Capture groups:</span>
+</span><span id="L-179"><a href="#L-179"><span class="linenos">179</span></a><span class="sd">    * result</span>
+</span><span id="L-180"><a href="#L-180"><span class="linenos">180</span></a><span class="sd">    * orphan_parenthesis</span>
+</span><span id="L-181"><a href="#L-181"><span class="linenos">181</span></a>
+</span><span id="L-182"><a href="#L-182"><span class="linenos">182</span></a><span class="sd">Used in `mainegeo.elections.ResultString`.&quot;&quot;&quot;</span>
 </span><span id="L-183"><a href="#L-183"><span class="linenos">183</span></a>
-</span><span id="L-184"><a href="#L-184"><span class="linenos">184</span></a><span class="n">JUNIOR_SUFFIXES</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GORE&#39;</span><span class="p">,</span> <span class="s1">&#39;GRANT&#39;</span><span class="p">,</span> <span class="s1">&#39;ISLAND&#39;</span><span class="p">]</span>
-</span><span id="L-185"><a href="#L-185"><span class="linenos">185</span></a><span class="sd">&quot;&quot;&quot;Geotypes which may precede another geotype suffix or be used alone.</span>
-</span><span id="L-186"><a href="#L-186"><span class="linenos">186</span></a>
-</span><span id="L-187"><a href="#L-187"><span class="linenos">187</span></a><span class="sd">For example, Moxie Gore and Moxie Gore Twp have subtly different meanings,</span>
-</span><span id="L-188"><a href="#L-188"><span class="linenos">188</span></a><span class="sd">but refer to the same place and are often used interchangeably by the SoS.&quot;&quot;&quot;</span>
-</span><span id="L-189"><a href="#L-189"><span class="linenos">189</span></a>
-</span><span id="L-190"><a href="#L-190"><span class="linenos">190</span></a><span class="n">DIRECTIONS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NORTH&#39;</span><span class="p">,</span> <span class="s1">&#39;SOUTH&#39;</span><span class="p">,</span> <span class="s1">&#39;EAST&#39;</span><span class="p">,</span> <span class="s1">&#39;WEST&#39;</span><span class="p">]</span>
-</span><span id="L-191"><a href="#L-191"><span class="linenos">191</span></a><span class="sd">&quot;&quot;&quot;Direction words which may modify place names.&quot;&quot;&quot;</span>
-</span><span id="L-192"><a href="#L-192"><span class="linenos">192</span></a>
-</span><span id="L-193"><a href="#L-193"><span class="linenos">193</span></a><span class="n">CONTAINS_FALSE_SUFFIX</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;INDIAN TOWNSHIP&#39;</span><span class="p">]</span>
-</span><span id="L-194"><a href="#L-194"><span class="linenos">194</span></a><span class="sd">&quot;&quot;&quot;Canonical place names that contain a word that is normally a suffix.</span>
-</span><span id="L-195"><a href="#L-195"><span class="linenos">195</span></a>
-</span><span id="L-196"><a href="#L-196"><span class="linenos">196</span></a><span class="sd">For example: Indian Township is the name of a town, not a township.</span>
-</span><span id="L-197"><a href="#L-197"><span class="linenos">197</span></a><span class="sd">These false suffixes should be treated differently than true </span>
-</span><span id="L-198"><a href="#L-198"><span class="linenos">198</span></a><span class="sd">suffixes during processing.&quot;&quot;&quot;</span>
+</span><span id="L-184"><a href="#L-184"><span class="linenos">184</span></a><span class="c1">## Name standardization</span>
+</span><span id="L-185"><a href="#L-185"><span class="linenos">185</span></a><span class="c1"># Constants</span>
+</span><span id="L-186"><a href="#L-186"><span class="linenos">186</span></a><span class="n">GNIS_GEOTYPES</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CITY&quot;</span><span class="p">,</span> <span class="s2">&quot;PLANTATION&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">,</span> <span class="s2">&quot;TOWN&quot;</span><span class="p">]</span>
+</span><span id="L-187"><a href="#L-187"><span class="linenos">187</span></a><span class="sd">&quot;&quot;&quot;Geotypes used by the Geographic Names Information System (GNIS).&quot;&quot;&quot;</span>
+</span><span id="L-188"><a href="#L-188"><span class="linenos">188</span></a>
+</span><span id="L-189"><a href="#L-189"><span class="linenos">189</span></a><span class="n">ABBREVIATIONS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="L-190"><a href="#L-190"><span class="linenos">190</span></a>    <span class="s2">&quot;PLANTATION&quot;</span><span class="p">:</span> <span class="s2">&quot;PLT&quot;</span><span class="p">,</span>
+</span><span id="L-191"><a href="#L-191"><span class="linenos">191</span></a>    <span class="s2">&quot;TOWNSHIP&quot;</span><span class="p">:</span> <span class="s2">&quot;TWP&quot;</span><span class="p">,</span>
+</span><span id="L-192"><a href="#L-192"><span class="linenos">192</span></a>    <span class="s2">&quot;VOTING DISTRICT&quot;</span><span class="p">:</span> <span class="s2">&quot;VOTING DIST&quot;</span><span class="p">,</span>
+</span><span id="L-193"><a href="#L-193"><span class="linenos">193</span></a>    <span class="s2">&quot;RESERVATION&quot;</span><span class="p">:</span> <span class="s2">&quot;RES&quot;</span>
+</span><span id="L-194"><a href="#L-194"><span class="linenos">194</span></a><span class="p">}</span>
+</span><span id="L-195"><a href="#L-195"><span class="linenos">195</span></a><span class="sd">&quot;&quot;&quot;Geotype suffixes used by the Maine SoS and their abbreviations.&quot;&quot;&quot;</span>
+</span><span id="L-196"><a href="#L-196"><span class="linenos">196</span></a>
+</span><span id="L-197"><a href="#L-197"><span class="linenos">197</span></a><span class="n">JUNIOR_SUFFIXES</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GORE&#39;</span><span class="p">,</span> <span class="s1">&#39;GRANT&#39;</span><span class="p">,</span> <span class="s1">&#39;ISLAND&#39;</span><span class="p">]</span>
+</span><span id="L-198"><a href="#L-198"><span class="linenos">198</span></a><span class="sd">&quot;&quot;&quot;Geotypes which may precede another geotype suffix or be used alone.</span>
 </span><span id="L-199"><a href="#L-199"><span class="linenos">199</span></a>
-</span><span id="L-200"><a href="#L-200"><span class="linenos">200</span></a><span class="c1"># Factory functions</span>
-</span><span id="L-201"><a href="#L-201"><span class="linenos">201</span></a><span class="k">def</span><span class="w"> </span><span class="nf">generate_valid_punctuation</span><span class="p">(</span><span class="n">char</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="L-202"><a href="#L-202"><span class="linenos">202</span></a>    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;(?P&lt;leading&gt;</span><span class="se">\\</span><span class="s1">w+ ?)</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s1">(?P&lt;trailing&gt; ?</span><span class="se">\\</span><span class="s1">w+)&#39;</span><span class="p">)</span>
-</span><span id="L-203"><a href="#L-203"><span class="linenos">203</span></a>    <span class="n">matches</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">,</span> <span class="n">TOWNSHIPS</span><span class="o">.</span><span class="n">town</span><span class="p">)</span>
-</span><span id="L-204"><a href="#L-204"><span class="linenos">204</span></a>    <span class="n">valid_contexts</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span> <span class="k">if</span> <span class="n">match</span><span class="p">]</span>
-</span><span id="L-205"><a href="#L-205"><span class="linenos">205</span></a>    <span class="k">return</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">valid_contexts</span><span class="p">)</span>
-</span><span id="L-206"><a href="#L-206"><span class="linenos">206</span></a>
-</span><span id="L-207"><a href="#L-207"><span class="linenos">207</span></a><span class="k">def</span><span class="w"> </span><span class="nf">generate_false_suffix</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="L-208"><a href="#L-208"><span class="linenos">208</span></a>    <span class="n">leading</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">ALL_SUFFIXES</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="n">CONTAINS_FALSE_SUFFIX</span><span class="p">)</span>
-</span><span id="L-209"><a href="#L-209"><span class="linenos">209</span></a>    <span class="k">return</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span> <span class="n">leading</span><span class="p">))</span>
-</span><span id="L-210"><a href="#L-210"><span class="linenos">210</span></a>
-</span><span id="L-211"><a href="#L-211"><span class="linenos">211</span></a><span class="c1"># Templates</span>
-</span><span id="L-212"><a href="#L-212"><span class="linenos">212</span></a><span class="n">AMPERSANDS_TEMPLATE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;(?:(?&lt;=\g&lt;leading&gt;)&amp;(?=\g&lt;trailing&gt;))&#39;</span>
-</span><span id="L-213"><a href="#L-213"><span class="linenos">213</span></a><span class="n">HYPHENS_TEMPLATE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;\g&lt;leading&gt;-(?=\g&lt;trailing&gt;)&#39;</span>
-</span><span id="L-214"><a href="#L-214"><span class="linenos">214</span></a>
-</span><span id="L-215"><a href="#L-215"><span class="linenos">215</span></a><span class="c1"># Building blocks</span>
-</span><span id="L-216"><a href="#L-216"><span class="linenos">216</span></a><span class="n">GNIS_NAME</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?P&lt;geotype&gt;</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GNIS_GEOTYPES</span><span class="p">)</span><span class="si">}</span><span class="s2">) of (?P&lt;town&gt;.+)&quot;</span>
-</span><span id="L-217"><a href="#L-217"><span class="linenos">217</span></a><span class="n">SUFFIX_REPLACEMENTS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="L-218"><a href="#L-218"><span class="linenos">218</span></a>    <span class="sa">f</span><span class="s1">&#39;(?i)(?&lt;![A-Z])</span><span class="si">{</span><span class="n">full</span><span class="si">}</span><span class="s1">(?=S?$)&#39;</span><span class="p">:</span> <span class="n">abbr</span> <span class="k">for</span> <span class="n">full</span><span class="p">,</span> <span class="n">abbr</span> <span class="ow">in</span> <span class="n">ABBREVIATIONS</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-</span><span id="L-219"><a href="#L-219"><span class="linenos">219</span></a><span class="p">}</span>
-</span><span id="L-220"><a href="#L-220"><span class="linenos">220</span></a><span class="n">ALL_SUFFIXES</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="o">*</span><span class="n">ABBREVIATIONS</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="o">*</span><span class="n">ABBREVIATIONS</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
-</span><span id="L-221"><a href="#L-221"><span class="linenos">221</span></a><span class="n">PRECEDES_FALSE_SUFFIX</span> <span class="o">=</span> <span class="n">generate_false_suffix</span><span class="p">()</span>
-</span><span id="L-222"><a href="#L-222"><span class="linenos">222</span></a><span class="n">JUNIOR_SUFFIX</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">b(</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">JUNIOR_SUFFIXES</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
-</span><span id="L-223"><a href="#L-223"><span class="linenos">223</span></a><span class="n">VALID_AMPERSANDS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">generate_valid_punctuation</span><span class="p">(</span><span class="s1">&#39;&amp;&#39;</span><span class="p">,</span> <span class="n">AMPERSANDS_TEMPLATE</span><span class="p">)</span>
-</span><span id="L-224"><a href="#L-224"><span class="linenos">224</span></a><span class="n">VALID_HYPHENS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">generate_valid_punctuation</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">HYPHENS_TEMPLATE</span><span class="p">)</span>
-</span><span id="L-225"><a href="#L-225"><span class="linenos">225</span></a>
-</span><span id="L-226"><a href="#L-226"><span class="linenos">226</span></a><span class="c1"># Patterns</span>
-</span><span id="L-227"><a href="#L-227"><span class="linenos">227</span></a><span class="n">GNIS_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">GNIS_NAME</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-</span><span id="L-228"><a href="#L-228"><span class="linenos">228</span></a><span class="sd">&quot;&quot;&quot;Matches place names with Geographic Names Information System (GNIS) formatting.</span>
-</span><span id="L-229"><a href="#L-229"><span class="linenos">229</span></a>
-</span><span id="L-230"><a href="#L-230"><span class="linenos">230</span></a><span class="sd">Capture groups:</span>
-</span><span id="L-231"><a href="#L-231"><span class="linenos">231</span></a><span class="sd">    * geotype</span>
-</span><span id="L-232"><a href="#L-232"><span class="linenos">232</span></a><span class="sd">    * town</span>
-</span><span id="L-233"><a href="#L-233"><span class="linenos">233</span></a>
-</span><span id="L-234"><a href="#L-234"><span class="linenos">234</span></a><span class="sd">Used in `mainegeo.townships.normalize_suffix`.&quot;&quot;&quot;</span>
-</span><span id="L-235"><a href="#L-235"><span class="linenos">235</span></a>
-</span><span id="L-236"><a href="#L-236"><span class="linenos">236</span></a><span class="n">SUFFIX_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-</span><span id="L-237"><a href="#L-237"><span class="linenos">237</span></a>    <span class="sa">f</span><span class="s2">&quot;(?&lt;!</span><span class="si">{</span><span class="n">PRECEDES_FALSE_SUFFIX</span><span class="si">}</span><span class="s2">) (</span><span class="si">{</span><span class="n">ALL_SUFFIXES</span><span class="si">}</span><span class="s2">)S?$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span>
-</span><span id="L-238"><a href="#L-238"><span class="linenos">238</span></a>    <span class="p">)</span>
-</span><span id="L-239"><a href="#L-239"><span class="linenos">239</span></a><span class="sd">&quot;&quot;&quot;Add docstring</span>
-</span><span id="L-240"><a href="#L-240"><span class="linenos">240</span></a>
-</span><span id="L-241"><a href="#L-241"><span class="linenos">241</span></a><span class="sd">Used in `mainegeo.townships.strip_suffix`.&quot;&quot;&quot;</span>
+</span><span id="L-200"><a href="#L-200"><span class="linenos">200</span></a><span class="sd">For example, Moxie Gore and Moxie Gore Twp have subtly different meanings,</span>
+</span><span id="L-201"><a href="#L-201"><span class="linenos">201</span></a><span class="sd">but refer to the same place and are often used interchangeably by the SoS.&quot;&quot;&quot;</span>
+</span><span id="L-202"><a href="#L-202"><span class="linenos">202</span></a>
+</span><span id="L-203"><a href="#L-203"><span class="linenos">203</span></a><span class="n">DIRECTIONS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NORTH&#39;</span><span class="p">,</span> <span class="s1">&#39;SOUTH&#39;</span><span class="p">,</span> <span class="s1">&#39;EAST&#39;</span><span class="p">,</span> <span class="s1">&#39;WEST&#39;</span><span class="p">]</span>
+</span><span id="L-204"><a href="#L-204"><span class="linenos">204</span></a><span class="sd">&quot;&quot;&quot;Direction words which may modify place names.&quot;&quot;&quot;</span>
+</span><span id="L-205"><a href="#L-205"><span class="linenos">205</span></a>
+</span><span id="L-206"><a href="#L-206"><span class="linenos">206</span></a><span class="n">CONTAINS_FALSE_SUFFIX</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;INDIAN TOWNSHIP&#39;</span><span class="p">]</span>
+</span><span id="L-207"><a href="#L-207"><span class="linenos">207</span></a><span class="sd">&quot;&quot;&quot;Canonical place names that contain a word that is normally a suffix.</span>
+</span><span id="L-208"><a href="#L-208"><span class="linenos">208</span></a>
+</span><span id="L-209"><a href="#L-209"><span class="linenos">209</span></a><span class="sd">For example: Indian Township is the name of a town, not a township.</span>
+</span><span id="L-210"><a href="#L-210"><span class="linenos">210</span></a><span class="sd">These false suffixes should be treated differently than true </span>
+</span><span id="L-211"><a href="#L-211"><span class="linenos">211</span></a><span class="sd">suffixes during processing.&quot;&quot;&quot;</span>
+</span><span id="L-212"><a href="#L-212"><span class="linenos">212</span></a>
+</span><span id="L-213"><a href="#L-213"><span class="linenos">213</span></a><span class="c1"># Factory functions</span>
+</span><span id="L-214"><a href="#L-214"><span class="linenos">214</span></a><span class="k">def</span><span class="w"> </span><span class="nf">generate_valid_punctuation</span><span class="p">(</span><span class="n">char</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="L-215"><a href="#L-215"><span class="linenos">215</span></a>    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;(?P&lt;leading&gt;</span><span class="se">\\</span><span class="s1">w+ ?)</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s1">(?P&lt;trailing&gt; ?</span><span class="se">\\</span><span class="s1">w+)&#39;</span><span class="p">)</span>
+</span><span id="L-216"><a href="#L-216"><span class="linenos">216</span></a>    <span class="n">matches</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">,</span> <span class="n">TOWNSHIPS</span><span class="o">.</span><span class="n">town</span><span class="p">)</span>
+</span><span id="L-217"><a href="#L-217"><span class="linenos">217</span></a>    <span class="n">valid_contexts</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span> <span class="k">if</span> <span class="n">match</span><span class="p">]</span>
+</span><span id="L-218"><a href="#L-218"><span class="linenos">218</span></a>    <span class="k">return</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">valid_contexts</span><span class="p">)</span>
+</span><span id="L-219"><a href="#L-219"><span class="linenos">219</span></a>
+</span><span id="L-220"><a href="#L-220"><span class="linenos">220</span></a><span class="k">def</span><span class="w"> </span><span class="nf">generate_false_suffix</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="L-221"><a href="#L-221"><span class="linenos">221</span></a>    <span class="n">leading</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">ALL_SUFFIXES</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="n">CONTAINS_FALSE_SUFFIX</span><span class="p">)</span>
+</span><span id="L-222"><a href="#L-222"><span class="linenos">222</span></a>    <span class="k">return</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span> <span class="n">leading</span><span class="p">))</span>
+</span><span id="L-223"><a href="#L-223"><span class="linenos">223</span></a>
+</span><span id="L-224"><a href="#L-224"><span class="linenos">224</span></a><span class="c1"># Templates</span>
+</span><span id="L-225"><a href="#L-225"><span class="linenos">225</span></a><span class="n">AMPERSANDS_TEMPLATE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;(?:(?&lt;=\g&lt;leading&gt;)&amp;(?=\g&lt;trailing&gt;))&#39;</span>
+</span><span id="L-226"><a href="#L-226"><span class="linenos">226</span></a><span class="n">HYPHENS_TEMPLATE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;\g&lt;leading&gt;-(?=\g&lt;trailing&gt;)&#39;</span>
+</span><span id="L-227"><a href="#L-227"><span class="linenos">227</span></a>
+</span><span id="L-228"><a href="#L-228"><span class="linenos">228</span></a><span class="c1"># Building blocks</span>
+</span><span id="L-229"><a href="#L-229"><span class="linenos">229</span></a><span class="n">GNIS_NAME</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?P&lt;geotype&gt;</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GNIS_GEOTYPES</span><span class="p">)</span><span class="si">}</span><span class="s2">) of (?P&lt;town&gt;.+)&quot;</span>
+</span><span id="L-230"><a href="#L-230"><span class="linenos">230</span></a><span class="n">SUFFIX_REPLACEMENTS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="L-231"><a href="#L-231"><span class="linenos">231</span></a>    <span class="sa">f</span><span class="s1">&#39;(?i)(?&lt;![A-Z])</span><span class="si">{</span><span class="n">full</span><span class="si">}</span><span class="s1">(?=S?$)&#39;</span><span class="p">:</span> <span class="n">abbr</span> <span class="k">for</span> <span class="n">full</span><span class="p">,</span> <span class="n">abbr</span> <span class="ow">in</span> <span class="n">ABBREVIATIONS</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</span><span id="L-232"><a href="#L-232"><span class="linenos">232</span></a><span class="p">}</span>
+</span><span id="L-233"><a href="#L-233"><span class="linenos">233</span></a><span class="n">ALL_SUFFIXES</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="o">*</span><span class="n">ABBREVIATIONS</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="o">*</span><span class="n">ABBREVIATIONS</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+</span><span id="L-234"><a href="#L-234"><span class="linenos">234</span></a><span class="n">PRECEDES_FALSE_SUFFIX</span> <span class="o">=</span> <span class="n">generate_false_suffix</span><span class="p">()</span>
+</span><span id="L-235"><a href="#L-235"><span class="linenos">235</span></a><span class="n">JUNIOR_SUFFIX</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">b(</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">JUNIOR_SUFFIXES</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="L-236"><a href="#L-236"><span class="linenos">236</span></a><span class="n">VALID_AMPERSANDS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">generate_valid_punctuation</span><span class="p">(</span><span class="s1">&#39;&amp;&#39;</span><span class="p">,</span> <span class="n">AMPERSANDS_TEMPLATE</span><span class="p">)</span>
+</span><span id="L-237"><a href="#L-237"><span class="linenos">237</span></a><span class="n">VALID_HYPHENS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">generate_valid_punctuation</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">HYPHENS_TEMPLATE</span><span class="p">)</span>
+</span><span id="L-238"><a href="#L-238"><span class="linenos">238</span></a>
+</span><span id="L-239"><a href="#L-239"><span class="linenos">239</span></a><span class="c1"># Patterns</span>
+</span><span id="L-240"><a href="#L-240"><span class="linenos">240</span></a><span class="n">GNIS_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">GNIS_NAME</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+</span><span id="L-241"><a href="#L-241"><span class="linenos">241</span></a><span class="sd">&quot;&quot;&quot;Matches place names with Geographic Names Information System (GNIS) formatting.</span>
 </span><span id="L-242"><a href="#L-242"><span class="linenos">242</span></a>
-</span><span id="L-243"><a href="#L-243"><span class="linenos">243</span></a><span class="n">VALID_AMPERSANDS_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">VALID_AMPERSANDS</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-</span><span id="L-244"><a href="#L-244"><span class="linenos">244</span></a><span class="sd">&quot;&quot;&quot;Add docstring</span>
-</span><span id="L-245"><a href="#L-245"><span class="linenos">245</span></a>
-</span><span id="L-246"><a href="#L-246"><span class="linenos">246</span></a><span class="sd">Used in `mainegeo.townships.strip_town` (a helper for `mainegeo.townships.clean_town`).&quot;&quot;&quot;</span>
-</span><span id="L-247"><a href="#L-247"><span class="linenos">247</span></a>
-</span><span id="L-248"><a href="#L-248"><span class="linenos">248</span></a><span class="n">INVALID_PUNCTUATION_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-</span><span id="L-249"><a href="#L-249"><span class="linenos">249</span></a>    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PUNCTUATION</span><span class="si">}</span><span class="s2">(?&lt;!</span><span class="si">{</span><span class="n">VALID_HYPHENS</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span>
-</span><span id="L-250"><a href="#L-250"><span class="linenos">250</span></a>    <span class="p">)</span>
-</span><span id="L-251"><a href="#L-251"><span class="linenos">251</span></a><span class="sd">&quot;&quot;&quot;Add docstring</span>
-</span><span id="L-252"><a href="#L-252"><span class="linenos">252</span></a>
-</span><span id="L-253"><a href="#L-253"><span class="linenos">253</span></a><span class="sd">Used in `mainegeo.townships.strip_town` (a helper for `mainegeo.townships.clean_town`).&quot;&quot;&quot;</span>
-</span><span id="L-254"><a href="#L-254"><span class="linenos">254</span></a>
-</span><span id="L-255"><a href="#L-255"><span class="linenos">255</span></a><span class="n">ENDSWITH_JUNIOR_SUFFIX_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;.+</span><span class="si">{</span><span class="n">JUNIOR_SUFFIX</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-</span><span id="L-256"><a href="#L-256"><span class="linenos">256</span></a><span class="sd">&quot;&quot;&quot;Add docstring</span>
-</span><span id="L-257"><a href="#L-257"><span class="linenos">257</span></a>
-</span><span id="L-258"><a href="#L-258"><span class="linenos">258</span></a><span class="sd">Used in `mainegeo.townships.toggle_suffix`.&quot;&quot;&quot;</span>
+</span><span id="L-243"><a href="#L-243"><span class="linenos">243</span></a><span class="sd">Capture groups:</span>
+</span><span id="L-244"><a href="#L-244"><span class="linenos">244</span></a><span class="sd">    * geotype</span>
+</span><span id="L-245"><a href="#L-245"><span class="linenos">245</span></a><span class="sd">    * town</span>
+</span><span id="L-246"><a href="#L-246"><span class="linenos">246</span></a>
+</span><span id="L-247"><a href="#L-247"><span class="linenos">247</span></a><span class="sd">Used in `mainegeo.townships.normalize_suffix`.&quot;&quot;&quot;</span>
+</span><span id="L-248"><a href="#L-248"><span class="linenos">248</span></a>
+</span><span id="L-249"><a href="#L-249"><span class="linenos">249</span></a><span class="n">SUFFIX_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+</span><span id="L-250"><a href="#L-250"><span class="linenos">250</span></a>    <span class="sa">f</span><span class="s2">&quot;(?&lt;!</span><span class="si">{</span><span class="n">PRECEDES_FALSE_SUFFIX</span><span class="si">}</span><span class="s2">) (</span><span class="si">{</span><span class="n">ALL_SUFFIXES</span><span class="si">}</span><span class="s2">)S?$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span>
+</span><span id="L-251"><a href="#L-251"><span class="linenos">251</span></a>    <span class="p">)</span>
+</span><span id="L-252"><a href="#L-252"><span class="linenos">252</span></a><span class="sd">&quot;&quot;&quot;Matches all valid suffixes and suffix abbreviations.</span>
+</span><span id="L-253"><a href="#L-253"><span class="linenos">253</span></a>
+</span><span id="L-254"><a href="#L-254"><span class="linenos">254</span></a><span class="sd">Used in `mainegeo.townships.strip_suffix`.&quot;&quot;&quot;</span>
+</span><span id="L-255"><a href="#L-255"><span class="linenos">255</span></a>
+</span><span id="L-256"><a href="#L-256"><span class="linenos">256</span></a><span class="n">VALID_AMPERSANDS_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">VALID_AMPERSANDS</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+</span><span id="L-257"><a href="#L-257"><span class="linenos">257</span></a><span class="sd">&quot;&quot;&quot;Matches ampersands that are part of canonical town names and should</span>
+</span><span id="L-258"><a href="#L-258"><span class="linenos">258</span></a><span class="sd">not be interpreted as SoS result string formatting.</span>
 </span><span id="L-259"><a href="#L-259"><span class="linenos">259</span></a>
-</span><span id="L-260"><a href="#L-260"><span class="linenos">260</span></a><span class="n">CONTAINS_JUNIOR_SUFFIX_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;.+</span><span class="si">{</span><span class="n">JUNIOR_SUFFIX</span><span class="si">}</span><span class="s2"> TWP$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-</span><span id="L-261"><a href="#L-261"><span class="linenos">261</span></a><span class="sd">&quot;&quot;&quot;Add docstring</span>
-</span><span id="L-262"><a href="#L-262"><span class="linenos">262</span></a>
-</span><span id="L-263"><a href="#L-263"><span class="linenos">263</span></a><span class="sd">Used in `mainegeo.townships.toggle_suffix`.&quot;&quot;&quot;</span>
-</span><span id="L-264"><a href="#L-264"><span class="linenos">264</span></a>
-</span><span id="L-265"><a href="#L-265"><span class="linenos">265</span></a>
-</span><span id="L-266"><a href="#L-266"><span class="linenos">266</span></a><span class="c1">## Unspecified groups</span>
-</span><span id="L-267"><a href="#L-267"><span class="linenos">267</span></a><span class="c1"># Constants</span>
-</span><span id="L-268"><a href="#L-268"><span class="linenos">268</span></a><span class="n">UNSPECIFIED_FLAG</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;TWPS&#39;</span>
-</span><span id="L-269"><a href="#L-269"><span class="linenos">269</span></a><span class="sd">&quot;&quot;&quot;Substring that indicates an unspecified group may be present in a raw election result.</span>
-</span><span id="L-270"><a href="#L-270"><span class="linenos">270</span></a>
-</span><span id="L-271"><a href="#L-271"><span class="linenos">271</span></a><span class="sd">Used in multiple functions in `mainegeo.elections`. Most important use is in</span>
-</span><span id="L-272"><a href="#L-272"><span class="linenos">272</span></a><span class="sd">`mainegeo.elections.ReportingUnit.has_unspecified_group`, which uses it in </span>
-</span><span id="L-273"><a href="#L-273"><span class="linenos">273</span></a><span class="sd">combination with other context clues by to detect unspecified groups.&quot;&quot;&quot;</span>
-</span><span id="L-274"><a href="#L-274"><span class="linenos">274</span></a>
-</span><span id="L-275"><a href="#L-275"><span class="linenos">275</span></a><span class="n">STANDARD_FLAG</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;UNSPECIFIED&#39;</span>
-</span><span id="L-276"><a href="#L-276"><span class="linenos">276</span></a><span class="sd">&quot;&quot;&quot;Substring that will be applied to unspecified groups during formatting.</span>
-</span><span id="L-277"><a href="#L-277"><span class="linenos">277</span></a>
-</span><span id="L-278"><a href="#L-278"><span class="linenos">278</span></a><span class="sd">Chosen to avoid overlap with words that may occur naturally in election </span>
-</span><span id="L-279"><a href="#L-279"><span class="linenos">279</span></a><span class="sd">result strings.&quot;&quot;&quot;</span>
+</span><span id="L-260"><a href="#L-260"><span class="linenos">260</span></a><span class="sd">Used in `mainegeo.townships.strip_town` (a helper for `mainegeo.townships.clean_town`).&quot;&quot;&quot;</span>
+</span><span id="L-261"><a href="#L-261"><span class="linenos">261</span></a>
+</span><span id="L-262"><a href="#L-262"><span class="linenos">262</span></a><span class="n">INVALID_PUNCTUATION_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+</span><span id="L-263"><a href="#L-263"><span class="linenos">263</span></a>    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PUNCTUATION</span><span class="si">}</span><span class="s2">(?&lt;!</span><span class="si">{</span><span class="n">VALID_HYPHENS</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span>
+</span><span id="L-264"><a href="#L-264"><span class="linenos">264</span></a>    <span class="p">)</span>
+</span><span id="L-265"><a href="#L-265"><span class="linenos">265</span></a><span class="sd">&quot;&quot;&quot;Matches all punctuation except hyphens that are part of canonical town names.</span>
+</span><span id="L-266"><a href="#L-266"><span class="linenos">266</span></a>
+</span><span id="L-267"><a href="#L-267"><span class="linenos">267</span></a><span class="sd">Used in `mainegeo.townships.strip_town` (a helper for `mainegeo.townships.clean_town`).&quot;&quot;&quot;</span>
+</span><span id="L-268"><a href="#L-268"><span class="linenos">268</span></a>
+</span><span id="L-269"><a href="#L-269"><span class="linenos">269</span></a><span class="n">ENDSWITH_JUNIOR_SUFFIX_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;.+</span><span class="si">{</span><span class="n">JUNIOR_SUFFIX</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+</span><span id="L-270"><a href="#L-270"><span class="linenos">270</span></a><span class="sd">&quot;&quot;&quot;Matches town name that ends with a junior suffix (gore, grant, island, etc).</span>
+</span><span id="L-271"><a href="#L-271"><span class="linenos">271</span></a>
+</span><span id="L-272"><a href="#L-272"><span class="linenos">272</span></a><span class="sd">Junior suffixes are listed in `mainegeo.patterns.JUNIOR_SUFFIXES`.</span>
+</span><span id="L-273"><a href="#L-273"><span class="linenos">273</span></a>
+</span><span id="L-274"><a href="#L-274"><span class="linenos">274</span></a><span class="sd">Used in `mainegeo.townships.toggle_suffix`.&quot;&quot;&quot;</span>
+</span><span id="L-275"><a href="#L-275"><span class="linenos">275</span></a>
+</span><span id="L-276"><a href="#L-276"><span class="linenos">276</span></a><span class="n">CONTAINS_JUNIOR_SUFFIX_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;.+</span><span class="si">{</span><span class="n">JUNIOR_SUFFIX</span><span class="si">}</span><span class="s2"> TWP$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+</span><span id="L-277"><a href="#L-277"><span class="linenos">277</span></a><span class="sd">&quot;&quot;&quot;Matches town name that contains a junior suffix (gore, grant, island, etc).</span>
+</span><span id="L-278"><a href="#L-278"><span class="linenos">278</span></a>
+</span><span id="L-279"><a href="#L-279"><span class="linenos">279</span></a><span class="sd">Junior suffixes are listed in `mainegeo.patterns.JUNIOR_SUFFIXES`.</span>
 </span><span id="L-280"><a href="#L-280"><span class="linenos">280</span></a>
-</span><span id="L-281"><a href="#L-281"><span class="linenos">281</span></a><span class="n">MULTI_COUNTY_REGISTRATION_TOWNS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;MILLINOCKET&#39;</span><span class="p">]</span>
-</span><span id="L-282"><a href="#L-282"><span class="linenos">282</span></a><span class="sd">&quot;&quot;&quot;Towns that host unspecified township groups from multiple counties.</span>
+</span><span id="L-281"><a href="#L-281"><span class="linenos">281</span></a><span class="sd">Used in `mainegeo.townships.toggle_suffix`.&quot;&quot;&quot;</span>
+</span><span id="L-282"><a href="#L-282"><span class="linenos">282</span></a>
 </span><span id="L-283"><a href="#L-283"><span class="linenos">283</span></a>
-</span><span id="L-284"><a href="#L-284"><span class="linenos">284</span></a><span class="sd">As of 2025, the only town that is typically reported this way is Millinocket,</span>
-</span><span id="L-285"><a href="#L-285"><span class="linenos">285</span></a><span class="sd">e.g. Millinocket Penobscot Twps and Millinocket Piscataquis Twps.&quot;&quot;&quot;</span>
-</span><span id="L-286"><a href="#L-286"><span class="linenos">286</span></a>
-</span><span id="L-287"><a href="#L-287"><span class="linenos">287</span></a><span class="c1"># Building blocks</span>
-</span><span id="L-288"><a href="#L-288"><span class="linenos">288</span></a><span class="n">PLURAL</span> <span class="o">=</span> <span class="n">UNSPECIFIED_FLAG</span>
-</span><span id="L-289"><a href="#L-289"><span class="linenos">289</span></a><span class="n">SINGULAR</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;S</span><span class="se">\\</span><span class="s1">b&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">UNSPECIFIED_FLAG</span><span class="p">)</span>
-</span><span id="L-290"><a href="#L-290"><span class="linenos">290</span></a><span class="n">UNSPECIFIED_REGTOWN</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?P&lt;regtown&gt;</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">MULTI_COUNTY_REGISTRATION_TOWNS</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
-</span><span id="L-291"><a href="#L-291"><span class="linenos">291</span></a><span class="n">UNSPECIFIED_COUNTY</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?P&lt;cty&gt;</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">COUNTIES</span><span class="o">.</span><span class="n">sos_county</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
-</span><span id="L-292"><a href="#L-292"><span class="linenos">292</span></a><span class="n">SOS_FLAG</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?P&lt;sos_flag&gt;</span><span class="si">{</span><span class="n">UNSPECIFIED_FLAG</span><span class="si">}</span><span class="s2">)&quot;</span>
-</span><span id="L-293"><a href="#L-293"><span class="linenos">293</span></a>
-</span><span id="L-294"><a href="#L-294"><span class="linenos">294</span></a><span class="c1"># Patterns</span>
-</span><span id="L-295"><a href="#L-295"><span class="linenos">295</span></a><span class="n">PLURAL_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">b</span><span class="si">{</span><span class="n">PLURAL</span><span class="si">}</span><span class="se">\\</span><span class="s1">b&#39;</span><span class="p">)</span>
-</span><span id="L-296"><a href="#L-296"><span class="linenos">296</span></a><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
-</span><span id="L-297"><a href="#L-297"><span class="linenos">297</span></a>
-</span><span id="L-298"><a href="#L-298"><span class="linenos">298</span></a><span class="n">SINGULAR_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">b</span><span class="si">{</span><span class="n">SINGULAR</span><span class="si">}</span><span class="se">\\</span><span class="s1">b&#39;</span><span class="p">)</span>
-</span><span id="L-299"><a href="#L-299"><span class="linenos">299</span></a><span class="sd">&quot;&quot;&quot;Add docstring&quot;&quot;&quot;</span>
-</span><span id="L-300"><a href="#L-300"><span class="linenos">300</span></a>
-</span><span id="L-301"><a href="#L-301"><span class="linenos">301</span></a><span class="n">MULTI_COUNTY_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-</span><span id="L-302"><a href="#L-302"><span class="linenos">302</span></a>    <span class="sa">f</span><span class="s2">&quot;(?i)</span><span class="si">{</span><span class="n">UNSPECIFIED_REGTOWN</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">UNSPECIFIED_COUNTY</span><span class="si">}</span><span class="se">\\</span><span class="s2">w* </span><span class="si">{</span><span class="n">SOS_FLAG</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span>
-</span><span id="L-303"><a href="#L-303"><span class="linenos">303</span></a><span class="p">)</span>
-</span><span id="L-304"><a href="#L-304"><span class="linenos">304</span></a><span class="sd">&quot;&quot;&quot;Matches raw, unformatted unspecified groups that contain a county.</span>
-</span><span id="L-305"><a href="#L-305"><span class="linenos">305</span></a>
-</span><span id="L-306"><a href="#L-306"><span class="linenos">306</span></a><span class="sd">Capture groups:</span>
-</span><span id="L-307"><a href="#L-307"><span class="linenos">307</span></a><span class="sd">    * regtown</span>
-</span><span id="L-308"><a href="#L-308"><span class="linenos">308</span></a><span class="sd">    * cty</span>
-</span><span id="L-309"><a href="#L-309"><span class="linenos">309</span></a><span class="sd">    * sos_flag</span>
-</span><span id="L-310"><a href="#L-310"><span class="linenos">310</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-284"><a href="#L-284"><span class="linenos">284</span></a><span class="c1">## Unspecified groups</span>
+</span><span id="L-285"><a href="#L-285"><span class="linenos">285</span></a><span class="c1"># Constants</span>
+</span><span id="L-286"><a href="#L-286"><span class="linenos">286</span></a><span class="n">UNSPECIFIED_FLAG</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;TWPS&#39;</span>
+</span><span id="L-287"><a href="#L-287"><span class="linenos">287</span></a><span class="sd">&quot;&quot;&quot;Substring that indicates an unspecified group may be present in a raw election result.</span>
+</span><span id="L-288"><a href="#L-288"><span class="linenos">288</span></a>
+</span><span id="L-289"><a href="#L-289"><span class="linenos">289</span></a><span class="sd">Used in multiple functions in `mainegeo.elections`. Most important use is in</span>
+</span><span id="L-290"><a href="#L-290"><span class="linenos">290</span></a><span class="sd">`mainegeo.elections.ReportingUnit.has_unspecified_group`, which uses it in </span>
+</span><span id="L-291"><a href="#L-291"><span class="linenos">291</span></a><span class="sd">combination with other context clues by to detect unspecified groups.&quot;&quot;&quot;</span>
+</span><span id="L-292"><a href="#L-292"><span class="linenos">292</span></a>
+</span><span id="L-293"><a href="#L-293"><span class="linenos">293</span></a><span class="n">STANDARD_FLAG</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;UNSPECIFIED&#39;</span>
+</span><span id="L-294"><a href="#L-294"><span class="linenos">294</span></a><span class="sd">&quot;&quot;&quot;Substring that will be applied to unspecified groups during formatting.</span>
+</span><span id="L-295"><a href="#L-295"><span class="linenos">295</span></a>
+</span><span id="L-296"><a href="#L-296"><span class="linenos">296</span></a><span class="sd">Chosen to avoid overlap with words that may occur naturally in election </span>
+</span><span id="L-297"><a href="#L-297"><span class="linenos">297</span></a><span class="sd">result strings.&quot;&quot;&quot;</span>
+</span><span id="L-298"><a href="#L-298"><span class="linenos">298</span></a>
+</span><span id="L-299"><a href="#L-299"><span class="linenos">299</span></a><span class="n">MULTI_COUNTY_REGISTRATION_TOWNS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;MILLINOCKET&#39;</span><span class="p">]</span>
+</span><span id="L-300"><a href="#L-300"><span class="linenos">300</span></a><span class="sd">&quot;&quot;&quot;Towns that host unspecified township groups from multiple counties.</span>
+</span><span id="L-301"><a href="#L-301"><span class="linenos">301</span></a>
+</span><span id="L-302"><a href="#L-302"><span class="linenos">302</span></a><span class="sd">As of 2025, the only town that is typically reported this way is Millinocket,</span>
+</span><span id="L-303"><a href="#L-303"><span class="linenos">303</span></a><span class="sd">e.g. Millinocket Penobscot Twps and Millinocket Piscataquis Twps.&quot;&quot;&quot;</span>
+</span><span id="L-304"><a href="#L-304"><span class="linenos">304</span></a>
+</span><span id="L-305"><a href="#L-305"><span class="linenos">305</span></a><span class="c1"># Building blocks</span>
+</span><span id="L-306"><a href="#L-306"><span class="linenos">306</span></a><span class="n">PLURAL</span> <span class="o">=</span> <span class="n">UNSPECIFIED_FLAG</span>
+</span><span id="L-307"><a href="#L-307"><span class="linenos">307</span></a><span class="n">SINGULAR</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;S</span><span class="se">\\</span><span class="s1">b&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">UNSPECIFIED_FLAG</span><span class="p">)</span>
+</span><span id="L-308"><a href="#L-308"><span class="linenos">308</span></a><span class="n">UNSPECIFIED_REGTOWN</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?P&lt;regtown&gt;</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">MULTI_COUNTY_REGISTRATION_TOWNS</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="L-309"><a href="#L-309"><span class="linenos">309</span></a><span class="n">UNSPECIFIED_COUNTY</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?P&lt;cty&gt;</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">COUNTIES</span><span class="o">.</span><span class="n">sos_county</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="L-310"><a href="#L-310"><span class="linenos">310</span></a><span class="n">SOS_FLAG</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(?P&lt;sos_flag&gt;</span><span class="si">{</span><span class="n">UNSPECIFIED_FLAG</span><span class="si">}</span><span class="s2">)&quot;</span>
 </span><span id="L-311"><a href="#L-311"><span class="linenos">311</span></a>
-</span><span id="L-312"><a href="#L-312"><span class="linenos">312</span></a><span class="n">MULTI_COUNTY_FORMAT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\g&lt;regtown&gt; \g&lt;sos_flag&gt; [\g&lt;cty&gt;]&quot;</span>
-</span><span id="L-313"><a href="#L-313"><span class="linenos">313</span></a><span class="sd">&quot;&quot;&quot;Standardized format to apply to all multi-county unspecified groups.&quot;&quot;&quot;</span>
-</span><span id="L-314"><a href="#L-314"><span class="linenos">314</span></a>
-</span><span id="L-315"><a href="#L-315"><span class="linenos">315</span></a><span class="n">FORMATTED_GROUP_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-</span><span id="L-316"><a href="#L-316"><span class="linenos">316</span></a>    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">STANDARD_FLAG</span><span class="si">}</span><span class="s1"> (?P&lt;regtown&gt;.+) </span><span class="si">{</span><span class="n">UNSPECIFIED_FLAG</span><span class="si">}</span><span class="s1">( </span><span class="se">\\</span><span class="s1">[</span><span class="si">{</span><span class="n">UNSPECIFIED_COUNTY</span><span class="si">}</span><span class="se">\\</span><span class="s1">])?&#39;</span><span class="p">,</span>
-</span><span id="L-317"><a href="#L-317"><span class="linenos">317</span></a>    <span class="n">re</span><span class="o">.</span><span class="n">I</span>
-</span><span id="L-318"><a href="#L-318"><span class="linenos">318</span></a><span class="p">)</span>
-</span><span id="L-319"><a href="#L-319"><span class="linenos">319</span></a><span class="sd">&quot;&quot;&quot;Matches all formatted unspecified groups, including multi-county groups.&quot;&quot;&quot;</span>
+</span><span id="L-312"><a href="#L-312"><span class="linenos">312</span></a><span class="c1"># Patterns</span>
+</span><span id="L-313"><a href="#L-313"><span class="linenos">313</span></a><span class="n">PLURAL_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">b</span><span class="si">{</span><span class="n">PLURAL</span><span class="si">}</span><span class="se">\\</span><span class="s1">b&#39;</span><span class="p">)</span>
+</span><span id="L-314"><a href="#L-314"><span class="linenos">314</span></a><span class="n">SINGULAR_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">b</span><span class="si">{</span><span class="n">SINGULAR</span><span class="si">}</span><span class="se">\\</span><span class="s1">b&#39;</span><span class="p">)</span>
+</span><span id="L-315"><a href="#L-315"><span class="linenos">315</span></a><span class="n">MULTI_COUNTY_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+</span><span id="L-316"><a href="#L-316"><span class="linenos">316</span></a>    <span class="sa">f</span><span class="s2">&quot;(?i)</span><span class="si">{</span><span class="n">UNSPECIFIED_REGTOWN</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">UNSPECIFIED_COUNTY</span><span class="si">}</span><span class="se">\\</span><span class="s2">w* </span><span class="si">{</span><span class="n">SOS_FLAG</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span>
+</span><span id="L-317"><a href="#L-317"><span class="linenos">317</span></a><span class="p">)</span>
+</span><span id="L-318"><a href="#L-318"><span class="linenos">318</span></a><span class="sd">&quot;&quot;&quot;Matches raw, unformatted unspecified groups that contain a county.</span>
+</span><span id="L-319"><a href="#L-319"><span class="linenos">319</span></a>
+</span><span id="L-320"><a href="#L-320"><span class="linenos">320</span></a><span class="sd">Capture groups:</span>
+</span><span id="L-321"><a href="#L-321"><span class="linenos">321</span></a><span class="sd">    * regtown</span>
+</span><span id="L-322"><a href="#L-322"><span class="linenos">322</span></a><span class="sd">    * cty</span>
+</span><span id="L-323"><a href="#L-323"><span class="linenos">323</span></a><span class="sd">    * sos_flag</span>
+</span><span id="L-324"><a href="#L-324"><span class="linenos">324</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-325"><a href="#L-325"><span class="linenos">325</span></a>
+</span><span id="L-326"><a href="#L-326"><span class="linenos">326</span></a><span class="n">MULTI_COUNTY_FORMAT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\g&lt;regtown&gt; \g&lt;sos_flag&gt; [\g&lt;cty&gt;]&quot;</span>
+</span><span id="L-327"><a href="#L-327"><span class="linenos">327</span></a><span class="sd">&quot;&quot;&quot;Standardized format to apply to all multi-county unspecified groups.&quot;&quot;&quot;</span>
+</span><span id="L-328"><a href="#L-328"><span class="linenos">328</span></a>
+</span><span id="L-329"><a href="#L-329"><span class="linenos">329</span></a><span class="n">FORMATTED_GROUP_PATTERN</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+</span><span id="L-330"><a href="#L-330"><span class="linenos">330</span></a>    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">STANDARD_FLAG</span><span class="si">}</span><span class="s1"> (?P&lt;regtown&gt;.+) </span><span class="si">{</span><span class="n">UNSPECIFIED_FLAG</span><span class="si">}</span><span class="s1">( </span><span class="se">\\</span><span class="s1">[</span><span class="si">{</span><span class="n">UNSPECIFIED_COUNTY</span><span class="si">}</span><span class="se">\\</span><span class="s1">])?&#39;</span><span class="p">,</span>
+</span><span id="L-331"><a href="#L-331"><span class="linenos">331</span></a>    <span class="n">re</span><span class="o">.</span><span class="n">I</span>
+</span><span id="L-332"><a href="#L-332"><span class="linenos">332</span></a><span class="p">)</span>
+</span><span id="L-333"><a href="#L-333"><span class="linenos">333</span></a><span class="sd">&quot;&quot;&quot;Matches all formatted unspecified groups, including multi-county groups.&quot;&quot;&quot;</span>
 </span></pre></div>
 
 
@@ -677,7 +685,7 @@ Easterly Line of the State) or 'BPP' (Bingham's Penobscot Purchase).</p>
     </div>
     <a class="headerlink" href="#REGION"></a>
     
-            <div class="docstring"><p>Regex building block representing a region designator.</p>
+            <div class="docstring"><p>Uncompiled regex building block representing a region designator.</p>
 </div>
 
 
@@ -691,7 +699,7 @@ Easterly Line of the State) or 'BPP' (Bingham's Penobscot Purchase).</p>
     </div>
     <a class="headerlink" href="#RANGE"></a>
     
-            <div class="docstring"><p>Regex building block representing a range designator.</p>
+            <div class="docstring"><p>Uncompiled regex building block representing a range designator.</p>
 
 <p>Ranges are counted from the easterly line toward the west,
 numbered 1-19 (e.g., R1, R19).</p>
@@ -732,7 +740,7 @@ numbered 1-19 (e.g., R1, R19).</p>
     </div>
     <a class="headerlink" href="#TOWNSHIP"></a>
     
-            <div class="docstring"><p>Regex building block representing a township designator.</p>
+            <div class="docstring"><p>Uncompiled regex building block representing a township designator.</p>
 
 <h6 id="townships-are-designated-by">Townships are designated by:</h6>
 
@@ -782,7 +790,7 @@ numbered 1-19 (e.g., R1, R19).</p>
     </div>
     <a class="headerlink" href="#UNNAMED_PATTERN"></a>
     
-            <div class="docstring"><p>Matches a full unnamed township name, with tolerance for formatting variation.</p>
+            <div class="docstring"><p>Compiled regex matching a full unnamed township name, with tolerance for formatting variation.</p>
 
 <p>Used in <code><a href="townships.html#is_unnamed_township">mainegeo.townships.is_unnamed_township</a></code> and <code><a href="townships.html#clean_codes">mainegeo.townships.clean_codes</a></code>.</p>
 </div>
@@ -799,7 +807,7 @@ numbered 1-19 (e.g., R1, R19).</p>
     </div>
     <a class="headerlink" href="#UNNAMED_ELEMENTS_PATTERN"></a>
     
-            <div class="docstring"><p>Matches any unnamed township name element.</p>
+            <div class="docstring"><p>Compiled regex matching any unnamed township name element.</p>
 
 <p>Used in <code><a href="townships.html#clean_code">mainegeo.townships.clean_code</a></code>.</p>
 </div>
@@ -815,7 +823,7 @@ numbered 1-19 (e.g., R1, R19).</p>
     </div>
     <a class="headerlink" href="#LAST_REGION_PATTERN"></a>
     
-            <div class="docstring"><p>Matches the last region code in an unnamed township name.</p>
+            <div class="docstring"><p>Compiled regex matching the last region code in an unnamed township name.</p>
 
 <p>Used in <code><a href="townships.html#strip_region">mainegeo.townships.strip_region</a></code>.</p>
 </div>
@@ -879,7 +887,9 @@ numbered 1-19 (e.g., R1, R19).</p>
     </div>
     <a class="headerlink" href="#STANDARD_DELIMITER"></a>
     
-    
+            <div class="docstring"><p>Preferred delimiter character; all other delimiters will be replaced by this.</p>
+</div>
+
 
                 </section>
                 <section id="NONSTANDARD_DELIMITERS">
@@ -891,31 +901,35 @@ numbered 1-19 (e.g., R1, R19).</p>
     </div>
     <a class="headerlink" href="#NONSTANDARD_DELIMITERS"></a>
     
-    
+            <div class="docstring"><p>Substrings that are sometimes used by the SoS to delimit reporting towns.</p>
+</div>
 
-                </section>
-                <section id="DROP_CHARACTERS">
-                    <div class="attr variable">
-            <span class="name">DROP_CHARACTERS</span><span class="annotation">: List[str]</span>        =
-<span class="default_value">[&#39;.&#39;, &#39;=&#39;, &#39;*&#39;, &#34;&#39;&#34;, &#39;~&#39;]</span>
-
-        
-    </div>
-    <a class="headerlink" href="#DROP_CHARACTERS"></a>
-    
-    
 
                 </section>
                 <section id="MEANINGFUL_CHARACTERS">
                     <div class="attr variable">
             <span class="name">MEANINGFUL_CHARACTERS</span><span class="annotation">: List[str]</span>        =
-<span class="default_value">[&#39;(&#39;, &#39;)&#39;, &#39;--&#39;]</span>
+<span class="default_value">[&#39;(&#39;, &#39;)&#39;, &#39;-&#39;, &#39;&amp;&#39;, &#39;/&#39;, &#39;,&#39;]</span>
 
         
     </div>
     <a class="headerlink" href="#MEANINGFUL_CHARACTERS"></a>
     
-    
+            <div class="docstring"><p>Punctuation characters used by the SoS to communicate info about a reporting unit.</p>
+
+<h6 id="examples">Examples:</h6>
+
+<blockquote>
+  <ul>
+  <li>BENEDICTA/SILVER RIDGE TWPS: forward slashes delimit towns.</li>
+  <li>T15 R6 TWP (EAGLE LAKE): parentheses indicate registration town</li>
+  <li>BLAINE -- E TWP: double hyphens indicate registration town</li>
+  </ul>
+</blockquote>
+
+<p>These characters should not be stripped until this info has been parsed out.</p>
+</div>
+
 
                 </section>
                 <section id="REGISTRATION_PATTERN">
@@ -927,7 +941,7 @@ numbered 1-19 (e.g., R1, R19).</p>
     </div>
     <a class="headerlink" href="#REGISTRATION_PATTERN"></a>
     
-            <div class="docstring"><p>Matches substrings representing non-reporting registration towns.</p>
+            <div class="docstring"><p>Compiled regex matching a substring of non-reporting registration towns.</p>
 
 <p>Used in <code><a href="elections.html#ResultString">mainegeo.elections.ResultString</a></code>.</p>
 </div>
@@ -943,7 +957,7 @@ numbered 1-19 (e.g., R1, R19).</p>
     </div>
     <a class="headerlink" href="#CLEAN_TOWNSHIP_PATTERN"></a>
     
-            <div class="docstring"><p>Matches non-word characters and leading zeroes.</p>
+            <div class="docstring"><p>Compiled regex matching non-word characters and leading zeroes.</p>
 
 <p>Used in <code><a href="townships.html#clean_code">mainegeo.townships.clean_code</a></code>.</p>
 </div>
@@ -960,7 +974,7 @@ numbered 1-19 (e.g., R1, R19).</p>
     </div>
     <a class="headerlink" href="#NON_ALIAS_PATTERN"></a>
     
-            <div class="docstring"><p>Matches parts of a string that are not an unnamed township code or punctuation.</p>
+            <div class="docstring"><p>Compiled regex matching substrings that are not an unnamed township code or punctuation.</p>
 
 <p>Used in <code><a href="townships.html#has_alias">mainegeo.townships.has_alias</a></code> and <code><a href="townships.html#extract_alias">mainegeo.townships.extract_alias</a></code>.</p>
 </div>
@@ -970,27 +984,19 @@ numbered 1-19 (e.g., R1, R19).</p>
                 <section id="DROP_CHARACTERS_PATTERN">
                     <div class="attr variable">
             <span class="name">DROP_CHARACTERS_PATTERN</span><span class="annotation">: re.Pattern</span>        =
-<span class="default_value">re.compile(&#34;\\.|=|\\*|&#39;|\\~&#34;)</span>
+<span class="default_value">re.compile(&#39;[^\\w\\s\\(\\)\\-\\&amp;/,]&#39;)</span>
 
         
     </div>
     <a class="headerlink" href="#DROP_CHARACTERS_PATTERN"></a>
     
-            <div class="docstring"><p>Add docstring</p>
-</div>
+            <div class="docstring"><p>Matches all characters except word characters, whitespace, and meaningful punctuation.</p>
 
+<p>Meaningful punctuation characters are those used by the SoS to communicate information
+about a reporting unit (e.g. forward slashes to separate reporting towns). The full list
+of meanginful characters is defined in <code><a href="#MEANINGFUL_CHARACTERS">mainegeo.patterns.MEANINGFUL_CHARACTERS</a></code>.</p>
 
-                </section>
-                <section id="MEANINGFUL_CHARACTERS_PATTERN">
-                    <div class="attr variable">
-            <span class="name">MEANINGFUL_CHARACTERS_PATTERN</span><span class="annotation">: re.Pattern</span>        =
-<span class="default_value">re.compile(&#39;\\(|\\)|\\-\\-&#39;)</span>
-
-        
-    </div>
-    <a class="headerlink" href="#MEANINGFUL_CHARACTERS_PATTERN"></a>
-    
-            <div class="docstring"><p>Add docstring</p>
+<p>Used in <code>mainegeo.elections.ResultString._drop_non_meaningful_characters</code>.</p>
 </div>
 
 
@@ -1004,7 +1010,7 @@ numbered 1-19 (e.g., R1, R19).</p>
     </div>
     <a class="headerlink" href="#NONSTANDARD_DELIMITER_PATTERN"></a>
     
-            <div class="docstring"><p>Matches non-standard result string delimiters used occasionally by the SoS.</p>
+            <div class="docstring"><p>Compiled regex matching non-standard result string delimiters used occasionally by the SoS.</p>
 
 <p>Used in <code><a href="elections.html#ResultString">mainegeo.elections.ResultString</a></code>.</p>
 </div>
@@ -1020,7 +1026,7 @@ numbered 1-19 (e.g., R1, R19).</p>
     </div>
     <a class="headerlink" href="#ORPHAN_PARENTHESIS_PATTERN"></a>
     
-            <div class="docstring"><p>Matches the orphaned closing parenthesis left behind after delimiter normalization.</p>
+            <div class="docstring"><p>Compiled regex matching the orphaned closing parenthesis left after delimiter normalization.</p>
 
 <h6 id="capture-groups">Capture groups:</h6>
 
@@ -1124,11 +1130,11 @@ suffixes during processing.</p>
 
     </div>
     <a class="headerlink" href="#generate_valid_punctuation"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="generate_valid_punctuation-202"><a href="#generate_valid_punctuation-202"><span class="linenos">202</span></a><span class="k">def</span><span class="w"> </span><span class="nf">generate_valid_punctuation</span><span class="p">(</span><span class="n">char</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="generate_valid_punctuation-203"><a href="#generate_valid_punctuation-203"><span class="linenos">203</span></a>    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;(?P&lt;leading&gt;</span><span class="se">\\</span><span class="s1">w+ ?)</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s1">(?P&lt;trailing&gt; ?</span><span class="se">\\</span><span class="s1">w+)&#39;</span><span class="p">)</span>
-</span><span id="generate_valid_punctuation-204"><a href="#generate_valid_punctuation-204"><span class="linenos">204</span></a>    <span class="n">matches</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">,</span> <span class="n">TOWNSHIPS</span><span class="o">.</span><span class="n">town</span><span class="p">)</span>
-</span><span id="generate_valid_punctuation-205"><a href="#generate_valid_punctuation-205"><span class="linenos">205</span></a>    <span class="n">valid_contexts</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span> <span class="k">if</span> <span class="n">match</span><span class="p">]</span>
-</span><span id="generate_valid_punctuation-206"><a href="#generate_valid_punctuation-206"><span class="linenos">206</span></a>    <span class="k">return</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">valid_contexts</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="generate_valid_punctuation-215"><a href="#generate_valid_punctuation-215"><span class="linenos">215</span></a><span class="k">def</span><span class="w"> </span><span class="nf">generate_valid_punctuation</span><span class="p">(</span><span class="n">char</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="generate_valid_punctuation-216"><a href="#generate_valid_punctuation-216"><span class="linenos">216</span></a>    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;(?P&lt;leading&gt;</span><span class="se">\\</span><span class="s1">w+ ?)</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s1">(?P&lt;trailing&gt; ?</span><span class="se">\\</span><span class="s1">w+)&#39;</span><span class="p">)</span>
+</span><span id="generate_valid_punctuation-217"><a href="#generate_valid_punctuation-217"><span class="linenos">217</span></a>    <span class="n">matches</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">,</span> <span class="n">TOWNSHIPS</span><span class="o">.</span><span class="n">town</span><span class="p">)</span>
+</span><span id="generate_valid_punctuation-218"><a href="#generate_valid_punctuation-218"><span class="linenos">218</span></a>    <span class="n">valid_contexts</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span> <span class="k">if</span> <span class="n">match</span><span class="p">]</span>
+</span><span id="generate_valid_punctuation-219"><a href="#generate_valid_punctuation-219"><span class="linenos">219</span></a>    <span class="k">return</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">valid_contexts</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1146,9 +1152,9 @@ suffixes during processing.</p>
 
     </div>
     <a class="headerlink" href="#generate_false_suffix"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="generate_false_suffix-208"><a href="#generate_false_suffix-208"><span class="linenos">208</span></a><span class="k">def</span><span class="w"> </span><span class="nf">generate_false_suffix</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="generate_false_suffix-209"><a href="#generate_false_suffix-209"><span class="linenos">209</span></a>    <span class="n">leading</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">ALL_SUFFIXES</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="n">CONTAINS_FALSE_SUFFIX</span><span class="p">)</span>
-</span><span id="generate_false_suffix-210"><a href="#generate_false_suffix-210"><span class="linenos">210</span></a>    <span class="k">return</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span> <span class="n">leading</span><span class="p">))</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="generate_false_suffix-221"><a href="#generate_false_suffix-221"><span class="linenos">221</span></a><span class="k">def</span><span class="w"> </span><span class="nf">generate_false_suffix</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="generate_false_suffix-222"><a href="#generate_false_suffix-222"><span class="linenos">222</span></a>    <span class="n">leading</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">ALL_SUFFIXES</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="n">CONTAINS_FALSE_SUFFIX</span><span class="p">)</span>
+</span><span id="generate_false_suffix-223"><a href="#generate_false_suffix-223"><span class="linenos">223</span></a>    <span class="k">return</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span> <span class="n">leading</span><span class="p">))</span>
 </span></pre></div>
 
 
@@ -1299,7 +1305,7 @@ suffixes during processing.</p>
     </div>
     <a class="headerlink" href="#SUFFIX_PATTERN"></a>
     
-            <div class="docstring"><p>Add docstring</p>
+            <div class="docstring"><p>Matches all valid suffixes and suffix abbreviations.</p>
 
 <p>Used in <code><a href="townships.html#strip_suffix">mainegeo.townships.strip_suffix</a></code>.</p>
 </div>
@@ -1315,7 +1321,8 @@ suffixes during processing.</p>
     </div>
     <a class="headerlink" href="#VALID_AMPERSANDS_PATTERN"></a>
     
-            <div class="docstring"><p>Add docstring</p>
+            <div class="docstring"><p>Matches ampersands that are part of canonical town names and should
+not be interpreted as SoS result string formatting.</p>
 
 <p>Used in <code><a href="townships.html#strip_town">mainegeo.townships.strip_town</a></code> (a helper for <code><a href="townships.html#clean_town">mainegeo.townships.clean_town</a></code>).</p>
 </div>
@@ -1331,7 +1338,7 @@ suffixes during processing.</p>
     </div>
     <a class="headerlink" href="#INVALID_PUNCTUATION_PATTERN"></a>
     
-            <div class="docstring"><p>Add docstring</p>
+            <div class="docstring"><p>Matches all punctuation except hyphens that are part of canonical town names.</p>
 
 <p>Used in <code><a href="townships.html#strip_town">mainegeo.townships.strip_town</a></code> (a helper for <code><a href="townships.html#clean_town">mainegeo.townships.clean_town</a></code>).</p>
 </div>
@@ -1347,7 +1354,9 @@ suffixes during processing.</p>
     </div>
     <a class="headerlink" href="#ENDSWITH_JUNIOR_SUFFIX_PATTERN"></a>
     
-            <div class="docstring"><p>Add docstring</p>
+            <div class="docstring"><p>Matches town name that ends with a junior suffix (gore, grant, island, etc).</p>
+
+<p>Junior suffixes are listed in <code><a href="#JUNIOR_SUFFIXES">mainegeo.patterns.JUNIOR_SUFFIXES</a></code>.</p>
 
 <p>Used in <code><a href="townships.html#toggle_suffix">mainegeo.townships.toggle_suffix</a></code>.</p>
 </div>
@@ -1363,7 +1372,9 @@ suffixes during processing.</p>
     </div>
     <a class="headerlink" href="#CONTAINS_JUNIOR_SUFFIX_PATTERN"></a>
     
-            <div class="docstring"><p>Add docstring</p>
+            <div class="docstring"><p>Matches town name that contains a junior suffix (gore, grant, island, etc).</p>
+
+<p>Junior suffixes are listed in <code><a href="#JUNIOR_SUFFIXES">mainegeo.patterns.JUNIOR_SUFFIXES</a></code>.</p>
 
 <p>Used in <code><a href="townships.html#toggle_suffix">mainegeo.townships.toggle_suffix</a></code>.</p>
 </div>
@@ -1491,9 +1502,7 @@ e.g. Millinocket Penobscot Twps and Millinocket Piscataquis Twps.</p>
     </div>
     <a class="headerlink" href="#PLURAL_PATTERN"></a>
     
-            <div class="docstring"><p>Add docstring</p>
-</div>
-
+    
 
                 </section>
                 <section id="SINGULAR_PATTERN">
@@ -1505,9 +1514,7 @@ e.g. Millinocket Penobscot Twps and Millinocket Piscataquis Twps.</p>
     </div>
     <a class="headerlink" href="#SINGULAR_PATTERN"></a>
     
-            <div class="docstring"><p>Add docstring</p>
-</div>
-
+    
 
                 </section>
                 <section id="MULTI_COUNTY_PATTERN">
