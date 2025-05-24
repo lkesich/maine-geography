@@ -231,6 +231,9 @@ class ResultString:
         """
         Drop or replace special characters that don't communicate meaningful info.
 
+        Non-meaningful characters include all punctuation characters not found in
+        `mainegeo.patterns.MEANINGFUL_CHARACTERS`.
+
         Args:
             result_str: Delimited result string with one or more towns or townships
         """

@@ -72,10 +72,10 @@ Township names can contain zero, one, or two regions."""
 
 # Building blocks
 REGION: str = f"(?:{'|'.join(REGIONS)})"
-""" Regex building block representing a region designator."""
+""" Uncompiled regex building block representing a region designator."""
 
 RANGE: str = f"(?:R.?[\\d]{{1,2}})"
-""" Regex building block representing a range designator.
+""" Uncompiled regex building block representing a range designator.
 
 Ranges are counted from the easterly line toward the west,
 numbered 1-19 (e.g., R1, R19)."""
@@ -83,7 +83,7 @@ numbered 1-19 (e.g., R1, R19)."""
 TOWNSHIP_STANDARD: str = "(?:T.?\\d{1,2})"
 TOWNSHIP_ALTERNATE: str = f"(?<!\\w)T[ABCDX](?![a-z])"
 TOWNSHIP: str = f"(?:{TOWNSHIP_STANDARD}|{TOWNSHIP_ALTERNATE})"
-""" Regex building block representing a township designator.
+""" Uncompiled regex building block representing a township designator.
 
 Townships are designated by:
     - Numbers 1-19 from south to north (e.g., T1, T19)
@@ -94,17 +94,17 @@ UNNAMED_ELEMENTS: str = f"(?:{'|'.join([TOWNSHIP, RANGE, REGION])})"
 
 # Patterns
 UNNAMED_PATTERN: re.Pattern = re.compile(UNNAMED, re.I)
-"""Matches a full unnamed township name, with tolerance for formatting variation.
+"""Compiled regex matching a full unnamed township name, with tolerance for formatting variation.
 
 Used in `mainegeo.townships.is_unnamed_township` and `mainegeo.townships.clean_codes`."""
 
 UNNAMED_ELEMENTS_PATTERN: re.Pattern = re.compile(UNNAMED_ELEMENTS, re.I)
-"""Matches any unnamed township name element.
+"""Compiled regex matching any unnamed township name element.
 
 Used in `mainegeo.townships.clean_code`."""
 
 LAST_REGION_PATTERN: re.Pattern = re.compile(f" {REGION}$", re.I)
-"""Matches the last region code in an unnamed township name.
+"""Compiled regex matching the last region code in an unnamed township name.
 
 Used in `mainegeo.townships.strip_region`."""
 
@@ -114,20 +114,32 @@ LEADING_ZERO: str = '(?<=[^\\d])0(?=\\d)'
 NOT_REPORTING: str = f'(?!AND|&)'
 PARENTHETICAL: str = f'\\({NOT_REPORTING}[^\\(]+\\)'
 PRECEDES_DASH: str = f'^[^-]+--'
+
 STANDARD_DELIMITER: str = ","
+"""Preferred delimiter character; all other delimiters will be replaced by this."""
+
 NONSTANDARD_DELIMITERS: str = ["&", "/", "(AND "]
-DROP_CHARACTERS: List[str] = [".", "=", "*", "'", "~"]
-MEANINGFUL_CHARACTERS: List[str] = ["(", ")", "--"]
+"""Substrings that are sometimes used by the SoS to delimit reporting towns."""
+
+MEANINGFUL_CHARACTERS: List[str] = ["(", ")", "-", "&", "/", ","]
+"""Punctuation characters used by the SoS to communicate info about a reporting unit.
+
+Examples:
+    * BENEDICTA/SILVER RIDGE TWPS: forward slashes delimit towns.
+    * T15 R6 TWP (EAGLE LAKE): parentheses indicate registration town
+    * BLAINE -- E TWP: double hyphens indicate registration town
+
+These characters should not be stripped until this info has been parsed out."""
 
 # Patterns
 REGISTRATION_PATTERN: re.Pattern = re.compile(f'{PARENTHETICAL}|{PRECEDES_DASH}', re.I)
-"""Matches substrings representing non-reporting registration towns.
+"""Compiled regex matching a substring of non-reporting registration towns.
 
 Used in `mainegeo.elections.ResultString`.
 """
 
 CLEAN_TOWNSHIP_PATTERN: re.Pattern = re.compile(f"[^\\w]|{LEADING_ZERO}")
-"""Matches non-word characters and leading zeroes.
+"""Compiled regex matching non-word characters and leading zeroes.
 
 Used in `mainegeo.townships.clean_code`."""
 
@@ -135,32 +147,33 @@ NON_ALIAS_PATTERN: re.Pattern = re.compile(
     f'{UNNAMED}(?: twps?)?|{PUNCTUATION}',
     re.I
     )
-"""Matches parts of a string that are not an unnamed township code or punctuation.
+"""Compiled regex matching substrings that are not an unnamed township code or punctuation.
 
 Used in `mainegeo.townships.has_alias` and `mainegeo.townships.extract_alias`."""
 
 DROP_CHARACTERS_PATTERN: re.Pattern = re.compile(
-    '|'.join(map(re.escape, DROP_CHARACTERS))
+    f"[^\\w\\s{''.join(map(re.escape, MEANINGFUL_CHARACTERS))}]"
     )
-"""Add docstring"""
+"""Matches all characters except word characters, whitespace, and meaningful punctuation.
 
-MEANINGFUL_CHARACTERS_PATTERN: re.Pattern = re.compile(
-    '|'.join(map(re.escape, MEANINGFUL_CHARACTERS))
-    )
-"""Add docstring"""
+Meaningful punctuation characters are those used by the SoS to communicate information
+about a reporting unit (e.g. forward slashes to separate reporting towns). The full list
+of meanginful characters is defined in `mainegeo.patterns.MEANINGFUL_CHARACTERS`.
+
+Used in `mainegeo.elections.ResultString._drop_non_meaningful_characters`."""
 
 NONSTANDARD_DELIMITER_PATTERN: re.Pattern = re.compile(
     '|'.join(map(re.escape, NONSTANDARD_DELIMITERS)),
     re.I
     )
-"""Matches non-standard result string delimiters used occasionally by the SoS.
+""" Compiled regex matching non-standard result string delimiters used occasionally by the SoS.
 
 Used in `mainegeo.elections.ResultString`."""
 
 ORPHAN_PARENTHESIS_PATTERN: re.Pattern = re.compile(
     f'^(?P<result>[^(]+)(?P<orphan_parenthesis>[)])$'
     )
-"""Matches the orphaned closing parenthesis left behind after delimiter normalization.
+"""Compiled regex matching the orphaned closing parenthesis left after delimiter normalization.
 
 Capture groups:
     * result
@@ -236,29 +249,34 @@ Used in `mainegeo.townships.normalize_suffix`."""
 SUFFIX_PATTERN: re.Pattern = re.compile(
     f"(?<!{PRECEDES_FALSE_SUFFIX}) ({ALL_SUFFIXES})S?$", re.I
     )
-"""Add docstring
+"""Matches all valid suffixes and suffix abbreviations.
 
 Used in `mainegeo.townships.strip_suffix`."""
 
 VALID_AMPERSANDS_PATTERN: re.Pattern = re.compile(VALID_AMPERSANDS, re.I)
-"""Add docstring
+"""Matches ampersands that are part of canonical town names and should
+not be interpreted as SoS result string formatting.
 
 Used in `mainegeo.townships.strip_town` (a helper for `mainegeo.townships.clean_town`)."""
 
 INVALID_PUNCTUATION_PATTERN: re.Pattern = re.compile(
     f"{PUNCTUATION}(?<!{VALID_HYPHENS})", re.I
     )
-"""Add docstring
+"""Matches all punctuation except hyphens that are part of canonical town names.
 
 Used in `mainegeo.townships.strip_town` (a helper for `mainegeo.townships.clean_town`)."""
 
 ENDSWITH_JUNIOR_SUFFIX_PATTERN: re.Pattern = re.compile(f".+{JUNIOR_SUFFIX}$", re.I)
-"""Add docstring
+"""Matches town name that ends with a junior suffix (gore, grant, island, etc).
+
+Junior suffixes are listed in `mainegeo.patterns.JUNIOR_SUFFIXES`.
 
 Used in `mainegeo.townships.toggle_suffix`."""
 
 CONTAINS_JUNIOR_SUFFIX_PATTERN: re.Pattern = re.compile(f".+{JUNIOR_SUFFIX} TWP$", re.I)
-"""Add docstring
+"""Matches town name that contains a junior suffix (gore, grant, island, etc).
+
+Junior suffixes are listed in `mainegeo.patterns.JUNIOR_SUFFIXES`.
 
 Used in `mainegeo.townships.toggle_suffix`."""
 
@@ -293,11 +311,7 @@ SOS_FLAG = f"(?P<sos_flag>{UNSPECIFIED_FLAG})"
 
 # Patterns
 PLURAL_PATTERN: re.Pattern = re.compile(f'\\b{PLURAL}\\b')
-"""Add docstring"""
-
 SINGULAR_PATTERN: re.Pattern = re.compile(f'\\b{SINGULAR}\\b')
-"""Add docstring"""
-
 MULTI_COUNTY_PATTERN: re.Pattern = re.compile(
     f"(?i){UNSPECIFIED_REGTOWN} {UNSPECIFIED_COUNTY}\\w* {SOS_FLAG}", re.I
 )
