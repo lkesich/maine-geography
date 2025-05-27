@@ -6,6 +6,7 @@ __docformat__ = 'google'
 
 __all__ = [
     # Classes
+    'TownReference',
     'TownDatabase'
 ]
 
