@@ -80,8 +80,8 @@ def clean_code(town: str) -> str:
         'T4 R3'
         >>> clean_code('T10SD')
         'T10 SD'
-        >>> clean_code('CROSS LAKE TWP (T17 R5)')
-        'T17 R5'
+        >>> clean_code('FLETCHERS LANDING TWP (T8 SD)')
+        'T8 SD'
     """
     if is_unnamed_township(town) is False:
         return town

@@ -71,7 +71,7 @@ Easterly Line of the State) or 'BPP' (Bingham's Penobscot Purchase).
 Township names can contain zero, one, or two regions."""
 
 # Building blocks
-REGION: str = f"(?:{'|'.join(REGIONS)})"
+REGION: str = f"(?:(?<![a-z])(?:{'|'.join(REGIONS)})(?![a-z]))"
 """ Uncompiled regex building block representing a region designator."""
 
 RANGE: str = f"(?:R.?[\\d]{{1,2}})"
