@@ -127,7 +127,7 @@ class TownDatabase(TownshipDataSource):
                 geocode = json_record['cousub_geocode'],
                 name = json_record['cousub_name'],
                 basename = json_record['cousub_basename'],
-                geoclass = json_record['class']
+                geoclass = json_record['classfp']
             ),
             aliases = [
                 [

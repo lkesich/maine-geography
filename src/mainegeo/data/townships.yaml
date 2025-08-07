@@ -1046,6 +1046,8 @@ towns:
   - BIG LAKE
   - BIG LAKE TOWNSHIP
   - BIG LAKE TWP
+  - NO 21
+  - NO 21 TWP
   - NUMBER 21
   - NUMBER 21 TWP
   - PLANTATION NO 21
@@ -2606,10 +2608,10 @@ towns:
     name: Washington
     code: WAS
   cousub:
-    geocode: '2302913610'
-    name: Codyville plantation
+    geocode: '2302913612'
+    name: Codyville UT
     basename: Codyville
-    geoclass: T1
+    geoclass: Z3
   aliases:
   - CODYVILLE
   - CODYVILLE HISTORICAL
@@ -2820,6 +2822,24 @@ towns:
   aliases:
   - CORNVILLE
   - TOWN OF CORNVILLE
+- name: Cove Point Twp
+  geocode: '21805'
+  town_type: Unorganized Township
+  gnis_id: '1987332'
+  county:
+    fips: 21
+    name: Piscataquis
+    code: PIS
+  cousub:
+    geocode: '2302153628'
+    name: Northwest Piscataquis UT
+    basename: Northwest Piscataquis
+    geoclass: Z3
+  aliases:
+  - COVE POINT
+  - COVE POINT TOWNSHIP
+  - COVE POINT TWP
+  - TOWNSHIP OF COVE POINT
 - name: Cox Patent
   geocode: 03803
   town_type: Unorganized Township
@@ -2886,8 +2906,9 @@ towns:
     basename: Criehaven
     geoclass: Z3
   aliases:
-  - CRIEHAVEN
   - CRIEHAVEN TWP
+  - RAGGED ISLAND
+  - RAGGED ISLAND TWP
   - TOWNSHIP OF CRIEHAVEN
   - UNORGANIZED TERRITORY OF CRIEHAVEN
 - name: Cross Lake Twp
@@ -3418,10 +3439,10 @@ towns:
     name: Penobscot
     code: PEN
   cousub:
-    geocode: '2301918580'
-    name: Drew plantation
+    geocode: '2301918582'
+    name: Drew UT
     basename: Drew
-    geoclass: T1
+    geoclass: Z3
   aliases:
   - DREW
   - DREW HISTORICAL
@@ -4967,6 +4988,54 @@ towns:
   - HANCOCK TOWNSHIP
   - HANCOCK TWP
   - TOWN OF HANCOCK
+- name: Hancock County Island
+  geocode: 09000
+  town_type: Island Group
+  gnis_id: '0'
+  county:
+    fips: 9
+    name: Hancock
+    code: HAN
+  cousub:
+    geocode: '2300943578'
+    name: Marshall Island UT
+    basename: Marshall Island
+    geoclass: Z3
+  aliases:
+  - BAR ISLAND
+  - BAR ISLAND TWP
+  - BARRED ISLAND
+  - BARRED ISLAND TWP
+  - BEACH ISLAND
+  - BEACH ISLAND TWP
+  - BEAR ISLAND
+  - BEAR ISLAND TWP
+  - BIRCH ISLAND
+  - BIRCH ISLAND TWP
+  - BUTTER ISLAND
+  - BUTTER ISLAND TWP
+  - EAGLE ISLAND
+  - EAGLE ISLAND TWP
+  - EATON ISLAND
+  - EATON ISLAND TWP
+  - GREAT SPRUCE HEAD ISLAND
+  - GREAT SPRUCE HEAD ISLAND TWP
+  - HANCOCK COUNTY ISLAND
+  - HANCOCK COUNTY ISLAND TWP
+  - HOG ISLAND
+  - HOG ISLAND TWP
+  - HORSE HEAD ISLAND
+  - HORSE HEAD ISLAND TWP
+  - LITTLE SPRUCE HEAD ISLAND
+  - LITTLE SPRUCE HEAD ISLAND TWP
+  - MARSHALL ISLAND
+  - MARSHALL ISLAND TWP
+  - PUMPKIN ISLAND
+  - PUMPKIN ISLAND TWP
+  - SCOTT ISLAND
+  - SCOTT ISLAND TWP
+  - SCRAG ISLAND
+  - SCRAG ISLAND TWP
 - name: Hanover
   geocode: '17120'
   town_type: Town
@@ -5909,6 +5978,29 @@ towns:
   - KNOX TOWNSHIP
   - KNOX TWP
   - TOWN OF KNOX
+- name: Knox County Island
+  geocode: '13000'
+  town_type: Island Group
+  gnis_id: '0'
+  county:
+    fips: 13
+    name: Knox
+    code: KNO
+  cousub:
+    geocode: '2301315125'
+    name: Criehaven UT
+    basename: Criehaven
+    geoclass: Z3
+  aliases:
+  - KNOX COUNTY ISLAND
+  - KNOX COUNTY ISLAND TWP
+  - LARGE GREEN ISLAND
+  - LARGE GREEN ISLAND TWP
+  - LASELLS ISLAND
+  - LASELLS ISLAND TWP
+  - LITTLE GREEN ISLAND 2
+  - METINIC ISLAND
+  - METINIC ISLAND TWP
 - name: Kossuth Twp
   geocode: '29808'
   town_type: Unorganized Township
@@ -6274,10 +6366,14 @@ towns:
     basename: Louds Island
     geoclass: Z3
   aliases:
+  - INDIAN ISLAND
+  - INDIAN ISLAND TWP
   - LINCOLN COUNTY ISLAND
   - LINCOLN COUNTY ISLAND TWP
   - LOUDS ISLAND
   - LOUDS ISLAND TWP
+  - MARSH ISLAND
+  - MARSH ISLAND TWP
   - MUSCONGUS ISLAND
   - MUSCONGUS ISLAND TWP
 - name: Lincoln Plt
@@ -6478,8 +6574,8 @@ towns:
   - AND R9 WELS
   - AND R9 WELS R9
   - AND R9 WELS R9 WELS
-  - AND R9 WELS TA R8 ND R9
-  - AND R9 WELS TA R8 ND R9 WELS
+  - AND R9 WELS TA R8 R9
+  - AND R9 WELS TA R8 R9 WELS
   - LONG A
   - LONG A TOWNSHIP
   - LONG A TWP
@@ -6487,12 +6583,12 @@ towns:
   - R9 WELS
   - R9 WELS R9
   - R9 WELS R9 WELS
-  - R9 WELS TA R8 ND R9
-  - R9 WELS TA R8 ND R9 WELS
+  - R9 WELS TA R8 R9
+  - R9 WELS TA R8 R9 WELS
   - TA R8 AND R9
   - TA R8 AND R9 WELS
-  - TA R8 ND R9
-  - TA R8 ND R9 WELS
+  - TA R8 R9
+  - TA R8 R9 WELS
   - TOWNSHIP OF LONG A
 - name: Long Island
   geocode: '05125'
@@ -6827,10 +6923,10 @@ towns:
     name: Oxford
     code: OXF
   cousub:
-    geocode: '2301742835'
-    name: Magalloway plantation
-    basename: Magalloway
-    geoclass: T1
+    geocode: '2301752575'
+    name: North Oxford UT
+    basename: North Oxford
+    geoclass: Z3
   aliases:
   - MAGALLOWAY
   - MAGALLOWAY HISTORICAL
@@ -7017,7 +7113,9 @@ towns:
   aliases:
   - MATINICUS ISLE
   - MATINICUS ISLE PLT
+  - MATINICUS ROCK
   - PLANTATION OF MATINICUS ISLE
+  - WHEATON ISLAND
 - name: Mattamiscontis Twp
   geocode: '19810'
   town_type: Unorganized Township
@@ -7414,6 +7512,7 @@ towns:
     basename: Monhegan
     geoclass: T1
   aliases:
+  - MANANA ISLAND
   - MONHEGAN
   - MONHEGAN ISLAND
   - MONHEGAN ISLAND PLT
@@ -7730,6 +7829,26 @@ towns:
     basename: Muscle Ridge Islands
     geoclass: Z3
   aliases:
+  - ANDREWS ISLAND
+  - ANDREWS ISLAND TWP
+  - DIX ISLAND
+  - DIX ISLAND TWP
+  - FISHERMAN'S ISLAND
+  - FISHERMAN'S ISLAND TWP
+  - FISHERMANS ISLAND
+  - FISHERMANS ISLAND TWP
+  - FLAG ISLAND
+  - FLAG ISLAND TWP
+  - GRAFFAM ISLAND
+  - GRAFFAM ISLAND TWP
+  - GREAT POND ISLAND
+  - GREAT POND ISLAND TWP
+  - HEWETT ISLAND
+  - HEWETT ISLAND TWP
+  - LITTLE GREEN ISLAND
+  - LITTLE GREEN ISLAND TWP
+  - MINK ISLAND
+  - MINK ISLAND TWP
   - MUSCLE RIDGE
   - MUSCLE RIDGE ISLANDS
   - MUSCLE RIDGE SHOALS
@@ -7737,7 +7856,13 @@ towns:
   - MUSCLE RIDGE SHOALS TWP
   - MUSCLE RIDGE TOWNSHIP
   - MUSCLE RIDGE TWP
+  - OTTER ISLAND
+  - OTTER ISLAND TWP
+  - PLEASANT ISLAND
+  - PLEASANT ISLAND TWP
   - TOWNSHIP OF MUSCLE RIDGE SHOALS
+  - TWO BUSH ISLAND
+  - TWO BUSH ISLAND TWP
 - name: Naples
   geocode: '05130'
   town_type: Town
@@ -8688,7 +8813,7 @@ towns:
   - PASSADUMKEAG TOWNSHIP
   - PASSADUMKEAG TWP
   - TOWN OF PASSADUMKEAG
-- name: Passamaquoddy Indian Township
+- name: Passamaquoddy Indian Township Reservation
   geocode: '29832'
   town_type: Reservation
   gnis_id: '2418973'
@@ -8709,8 +8834,10 @@ towns:
   - INDIAN TWP RES
   - MOTAHKOMIKUK
   - PASSAMAQUODDY INDIAN TOWNSHIP
+  - PASSAMAQUODDY INDIAN TOWNSHIP RES
+  - PASSAMAQUODDY INDIAN TOWNSHIP RESERVATION
   - PASSAMAQUODDY INDIAN TWP
-- name: Passamaquoddy Pleasant Point
+- name: Passamaquoddy Pleasant Point Reservation
   geocode: '29480'
   town_type: Reservation
   gnis_id: '573503'
@@ -8725,6 +8852,8 @@ towns:
     geoclass: Z2
   aliases:
   - PASSAMAQUODDY PLEASANT POINT
+  - PASSAMAQUODDY PLEASANT POINT RES
+  - PASSAMAQUODDY PLEASANT POINT RESERVATION
   - PLEASANT POINT
   - PLEASANT POINT INDIAN RES
   - PLEASANT POINT INDIAN RESERVATION
@@ -8787,7 +8916,7 @@ towns:
   - PENOBSCOT TOWNSHIP
   - PENOBSCOT TWP
   - TOWN OF PENOBSCOT
-- name: Penobscot Indian Island
+- name: Penobscot Indian Island Reservation
   geocode: '19630'
   town_type: Reservation
   gnis_id: '2748815'
@@ -8804,6 +8933,8 @@ towns:
   - ALENAPE MENEHA
   - INDIAN ISLAND
   - PENOBSCOT INDIAN ISLAND
+  - PENOBSCOT INDIAN ISLAND RES
+  - PENOBSCOT INDIAN ISLAND RESERVATION
   - PENOBSCOT NATION
   - PENOBSCOT NATION VOTING DIST
   - PENOBSCOT NATION VOTING DISTRICT
@@ -8867,6 +8998,8 @@ towns:
   - PERKINS TWP
   - PERKINS TWP SWAN ISLAND
   - PERKINS TWP SWAN ISLAND TWP
+  - SWAN ISLAND
+  - SWAN ISLAND TWP
   - TOWNSHIP OF PERKINS SWAN ISLAND
   - TOWNSHIP OF PERKINS SWAN ISLAND TWP
 - name: Perry
@@ -8961,6 +9094,24 @@ towns:
   - PIERCE POND TWP
   - T2 R4 BKP WKR
   - TOWNSHIP OF PIERCE POND
+- name: Piscataquis County Island
+  geocode: '21000'
+  town_type: Island Group
+  gnis_id: '0'
+  county:
+    fips: 21
+    name: Piscataquis
+    code: PIS
+  cousub:
+    geocode: '2302153628'
+    name: Northwest Piscataquis UT
+    basename: Northwest Piscataquis
+    geoclass: Z3
+  aliases:
+  - PISCATAQUIS COUNTY ISLAND
+  - PISCATAQUIS COUNTY ISLAND TWP
+  - SUGAR ISLAND
+  - SUGAR ISLAND TWP
 - name: Pittsfield
   geocode: '25240'
   town_type: Town
@@ -9575,8 +9726,6 @@ towns:
   - ROCKWOOD STRIP T1 R1
   - ROCKWOOD STRIP T1 R1 NBKP
   - ROCKWOOD STRIP TWP
-  - T1 R1
-  - T1 R1 NBKP
 - name: Rockwood Strip T2 R1 NBKP
   geocode: '25845'
   town_type: Unorganized Township
@@ -11102,9 +11251,9 @@ towns:
     name: Piscataquis
     code: PIS
   cousub:
-    geocode: '2302151105'
-    name: Northeast Piscataquis UT
-    basename: Northeast Piscataquis
+    geocode: '2302153628'
+    name: Northwest Piscataquis UT
+    basename: Northwest Piscataquis
     geoclass: Z3
   aliases:
   - T1 R13
@@ -12908,15 +13057,12 @@ towns:
   aliases:
   - INDIAN 3
   - INDIAN PURCHASE T3
-  - INDIAN PURCHASE T3 ND
   - INDIAN PURCHASE TWP T3
-  - INDIAN PURCHASE TWP T3 ND
   - T03 INDIAN PURCHASE
   - T3
   - T3 INDIAN PURCHASE
   - T3 INDIAN PURCHASE TOWNSHIP
   - T3 INDIAN PURCHASE TWP
-  - T3 ND
 - name: T3 ND BPP
   geocode: 09801
   town_type: Unorganized Township
@@ -13270,15 +13416,12 @@ towns:
   aliases:
   - INDIAN 4
   - INDIAN PURCHASE T4
-  - INDIAN PURCHASE T4 ND
   - INDIAN PURCHASE TWP T4
-  - INDIAN PURCHASE TWP T4 ND
   - T04 INDIAN PURCHASE
   - T4
   - T4 INDIAN PURCHASE
   - T4 INDIAN PURCHASE TOWNSHIP
   - T4 INDIAN PURCHASE TWP
-  - T4 ND
 - name: T4 R10 WELS
   geocode: '21847'
   town_type: Unorganized Township
@@ -15079,17 +15222,8 @@ towns:
     geoclass: Z3
   aliases:
   - ASKWITH AND
-  - ASKWITH AND ND
-  - ASKWITH AND ND T1 R1
-  - ASKWITH AND ND T1 R1 NBKP
   - ASKWITH AND T1 R1
   - ASKWITH AND T1 R1 NBKP
-  - ND
-  - ND ND
-  - ND ND T1 R1
-  - ND ND T1 R1 NBKP
-  - ND T1 R1
-  - ND T1 R1 NBKP
   - TAUNTON & RAYNHAM ACADEMY GRANT
   - TAUNTON & RAYNHAM ACADEMY GRANT TWP
   - TAUNTON AND RAYNHAM
@@ -15915,6 +16049,22 @@ towns:
   - WASHINGTON
   - WASHINGTON TOWNSHIP
   - WASHINGTON TWP
+- name: Washington County Island
+  geocode: '29000'
+  town_type: Island Group
+  gnis_id: '0'
+  county:
+    fips: 29
+    name: Washington
+    code: WAS
+  cousub:
+    geocode: '2302919870'
+    name: East Central Washington UT
+    basename: East Central Washington
+    geoclass: Z3
+  aliases:
+  - WASHINGTON COUNTY ISLAND
+  - WASHINGTON COUNTY ISLAND TWP
 - name: Washington Twp
   geocode: 07827
   town_type: Unorganized Township
