@@ -260,7 +260,7 @@ class TownDatabase(TownshipDataSource):
                         records[alias] = town
         return records
             
-    def search_database(self, **kwargs) -> List[TownReference]:
+    def search(self, **kwargs) -> List[TownReference]:
         return [
             town for town in self.data
             if all(getattr(town, k) == v for k, v in kwargs.items())
