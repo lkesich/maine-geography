@@ -149,6 +149,8 @@ class ResultString:
             ['ARGYLE TWP']
             >>> extract_reporting_towns('BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP')
             ['BARNARD TWP', 'EBEEMEE TWP T5 R9 NWP', 'T4 R9 NWP']
+            >>> extract_reporting_towns('BERRY/CATHANCE/MARIONTWPS (EAST MACHIAS)')
+            ['BERRY', 'CATHANCE', 'MARION TWPS']
         """
         if self._registration_town_substring is None:
             reporting_substr = self.normalized_string
@@ -256,6 +258,13 @@ class ResultString:
 class ResultGeo:
     name: str
     county: County
+    
+    @classmethod
+    def from_strings(cls, name: str, county_code: str) -> "ResultGeo":
+        return cls(
+            name = name,
+            county = County(code=county_code)
+        )
 
 @dataclass
 class Municipality(ResultGeo):
@@ -389,14 +398,14 @@ class ReportingUnit:
         """
         List of registration towns as ResultGeo child objects.
         """
-        formatted_reporting_names = self._format_reporting_towns(
+        formatted_reporting_names = ReportingUnit._format_reporting_towns(
             self.parsed_string.reporting_town_names,
             self.parsed_string.registration_town_names,
             self.has_unspecified_group
         )
         objects = []
         for name in formatted_reporting_names:
-            ResultClass = self._classify_fragment(name)
+            ResultClass = ReportingUnit._classify_fragment(name)
             reporting_object = ResultClass(name, self.county)
             objects.append(reporting_object)
         return objects

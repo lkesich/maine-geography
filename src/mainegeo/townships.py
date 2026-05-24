@@ -26,6 +26,7 @@ __all__ = [
     'clean_town'
 ]
 
+from re import IGNORECASE
 from utils.strings import replace_all, squish, match_case, normalize_whitespace
 from utils.core import chain_operations
 from mainegeo.entities import TownType
@@ -241,6 +242,8 @@ def normalize_suffix(town: str) -> str:
         'Portland'
         >>> normalize_suffix('MATINICUS ISLE PLANTATION')
         'MATINICUS ISLE PLT'
+        >>> normalize_suffix('MARIONTWPS')
+        'MARION TWPS'
     """
     gnis_format = GNIS_PATTERN.match(town.upper())
     
@@ -251,7 +254,7 @@ def normalize_suffix(town: str) -> str:
         suffix = ABBREVIATIONS.get(gnis_format.group('geotype'))
         town_name = ' '.join(filter(None, [name, suffix]))
 
-    normalized = replace_all(SUFFIX_REPLACEMENTS, town_name)
+    normalized = replace_all(SUFFIX_REPLACEMENTS, town_name, IGNORECASE)
     return match_case(normalized, town, preserve_mixed_case=False)
     
 def strip_town(town: str) -> str:
@@ -282,6 +285,7 @@ def strip_town(town: str) -> str:
     town_name = normalize_whitespace(town)
     town_name = VALID_AMPERSANDS_PATTERN.sub('and', town_name)
     town_name = INVALID_PUNCTUATION_PATTERN.sub('', town_name)
+    town_name = town_name.strip()
     return match_case(town_name, town, preserve_mixed_case=False)
 
 def clean_town(town: str) -> str:
@@ -309,6 +313,8 @@ def clean_town(town: str) -> str:
         'CROSS LAKE TWP T17 R5'
         >>> clean_town('King & Bartlett Township')
         'King and Bartlett Twp'
+        >>> clean_town('MARIONTWPS ()')
+        'MARION TWPS'
     """
     cleaning_functions = [
         strip_town

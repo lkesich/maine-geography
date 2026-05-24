@@ -20,12 +20,11 @@ PUNCTUATION = f'[^\\s\\w]'
 
 ## Other
 KNOWN_TYPOS: Dict[str, str] = {
-    'MARIONTWP' : 'MARION TWP',
-    'PISCATAQUS': 'PISCATAQUIS', # affects many
-    'ORNVEILLE': 'ORNEVILLE', # affects many
-    'EDUMUNDS': 'EDMUNDS', # affects many
+    'PISCATAQUS': 'PISCATAQUIS',
+    'ORNVEILLE': 'ORNEVILLE',
+    'EDUMUNDS': 'EDMUNDS',
     'SILIVER RIDGE': 'SILVER RIDGE',
-    'FRANKLIN/T9 T10 SD': 'FRANKLIN/T9 SD/T10 SD', # affects many
+    'FRANKLIN/T9 T10 SD': 'FRANKLIN/T9 SD/T10 SD',
     'PLEASANT POINT VOTING DISTRICT RICT': 'PLEASANT POINT VOTING DISTRICT'
 }
 """ Errors and replacements for known typos in election results files.
@@ -118,7 +117,7 @@ PRECEDES_DASH: str = f'^[^-]+--'
 STANDARD_DELIMITER: str = ","
 """ Preferred delimiter character; all other delimiters will be replaced by this."""
 
-NONSTANDARD_DELIMITERS: str = ["&", "/", "(AND ", "(INC )"]
+NONSTANDARD_DELIMITERS: str = ["&", "/", "(AND ", "(INC "]
 """ Substrings that are sometimes used by the SoS to delimit reporting towns."""
 
 MEANINGFUL_CHARACTERS: List[str] = ["(", ")", "-", "&", "/", ","]
@@ -210,6 +209,9 @@ For example: Indian Township is the name of a town, not a township.
 These false suffixes should be treated differently than true 
 suffixes during processing."""
 
+AMBIGUOUS_SUFFIXES: List[str] = ['RES']
+""" Full or abbreviated suffixes that may occur as substrings in other contexts. """
+
 # Factory functions
 def generate_valid_punctuation(char: str, template: str) -> str:
     pattern = re.compile(f'(?P<leading>\\w+ ?){char}(?P<trailing> ?\\w+)')
@@ -217,9 +219,21 @@ def generate_valid_punctuation(char: str, template: str) -> str:
     valid_contexts = [match.expand(template) for match in matches if match]
     return '|'.join(valid_contexts)
 
-def generate_false_suffix() -> str:
-    leading = map(lambda x: re.sub(ALL_SUFFIXES, '', x), CONTAINS_FALSE_SUFFIX)
-    return '|'.join(map(str.strip, leading))
+def generate_valid_suffixes() -> dict[str, str]:
+    replacements = {}
+    for name, abbr in ABBREVIATIONS.items():
+        for town in CONTAINS_FALSE_SUFFIX:
+            if town.endswith((name, abbr)):
+                precedes_false = re.sub(f' {name}|{abbr}$', '', town)
+                ignore_false = f'(?<!{precedes_false})'
+            else:
+                ignore_false = ''
+        
+            for suffix in (name, abbr):
+                required_whitespace = ' ' if suffix in AMBIGUOUS_SUFFIXES else ' ?'                    
+                pattern = ignore_false + required_whitespace + suffix
+                replacements[pattern] = abbr
+    return replacements
 
 # Templates
 AMPERSANDS_TEMPLATE: str = '(?:(?<=\g<leading>)&(?=\g<trailing>))'
@@ -227,14 +241,14 @@ HYPHENS_TEMPLATE: str = '\g<leading>-(?=\g<trailing>)'
 
 # Building blocks
 GNIS_NAME = f"(?P<geotype>{'|'.join(GNIS_GEOTYPES)}) of (?P<town>.+)"
+VALID_SUFFIXES: Dict[str, str] = generate_valid_suffixes()
 SUFFIX_REPLACEMENTS: Dict[str, str] = {
-    f'(?i)(?<![A-Z]){full}(?=S?$)': abbr for full, abbr in ABBREVIATIONS.items()
+    f'{pattern}(?=S?$)': ' ' + canonical
+    for pattern, canonical in VALID_SUFFIXES.items()
 }
-ALL_SUFFIXES: str = '|'.join([*ABBREVIATIONS.keys(), *ABBREVIATIONS.values()])
-PRECEDES_FALSE_SUFFIX = generate_false_suffix()
-JUNIOR_SUFFIX: str = f"\\b({'|'.join(JUNIOR_SUFFIXES)})"
 VALID_AMPERSANDS: str = generate_valid_punctuation('&', AMPERSANDS_TEMPLATE)
 VALID_HYPHENS: str = generate_valid_punctuation('-', HYPHENS_TEMPLATE)
+JUNIOR_SUFFIX: str = f"\\b({'|'.join(JUNIOR_SUFFIXES)})"
 
 # Patterns
 GNIS_PATTERN: re.Pattern = re.compile(GNIS_NAME, re.I)
@@ -246,9 +260,7 @@ Capture groups:
 
 Used in `mainegeo.townships.normalize_suffix`."""
 
-SUFFIX_PATTERN: re.Pattern = re.compile(
-    f"(?<!{PRECEDES_FALSE_SUFFIX}) ({ALL_SUFFIXES})S?$", re.I
-    )
+SUFFIX_PATTERN: re.Pattern = re.compile(f"({'|'.join(VALID_SUFFIXES.keys())})s?$", re.I)
 """ Matches all valid suffixes and suffix abbreviations.
 
 Used in `mainegeo.townships.strip_suffix`."""
@@ -304,7 +316,7 @@ e.g. Millinocket Penobscot Twps and Millinocket Piscataquis Twps."""
 
 # Building blocks
 PLURAL = UNSPECIFIED_FLAG
-SINGULAR = re.sub('S\\b', '', UNSPECIFIED_FLAG)
+SINGULAR = re.sub('S$', '', UNSPECIFIED_FLAG)
 UNSPECIFIED_REGTOWN = f"(?P<regtown>{'|'.join(MULTI_COUNTY_REGISTRATION_TOWNS)})"
 UNSPECIFIED_COUNTY = f"(?P<cty>{'|'.join(COUNTIES.sos_county)})"
 SOS_FLAG = f"(?P<sos_flag>{UNSPECIFIED_FLAG})"
