@@ -198,10 +198,11 @@ def toggle_suffix(town: str, town_type: TownType = None) -> str:
 
     The TWP suffix is not canonical for all grants, gores, and islands.
     This function is used to generate plausible aliases for further testing.
+    Its intended use is alias generation and not routine cleanup.
 
     Args:
         town: A single town or township
-        town_type: A TownType object. If provided, will increase accuracy.
+        town_type: A `TownType` class. If provided, will increase accuracy.
 
     Returns:
         Gore, grant or island with township suffix added or removed, or else town
@@ -229,7 +230,7 @@ def normalize_suffix(town: str) -> str:
     """
     Normalize variations in geotype suffix abbreviation and location.
 
-    Does not alter pluralization.
+    Does not alter pluralization. Pads suffix with whitespace if needed.
     
     Args:
         town: A single town or township
@@ -263,21 +264,21 @@ def strip_town(town: str) -> str:
 
     This function performs the following operations:
         1. Strip leading and trailing whitespace and squish internal whitespace
-        1. Replace '&' characters that are recognized as part of a canonical town
+        2. Replace ampersands ('&') that are recognized as part of a canonical town
             name with 'and'
-        2. Strip all punctuation except '-' characters that are recognized as 
+        3. Strip all punctuation except hyphens ('-') that are recognized as 
             part of a canonical town name
 
     Args:
         town: A single town or township
 
     Returns:
-       str: Town name with punctuation stripped
+       Town name with punctuation stripped
 
     Example:
         >>> strip_town("Loud's Island")
         'Louds Island'
-        >>> strip_town('Dover-Foxcroft ')
+        >>> strip_town('Dover-Foxcroft -- ')
         'Dover-Foxcroft'
         >>> strip_town('Taunton & Raynham Academy Grant')
         'Taunton and Raynham Academy Grant'
@@ -302,7 +303,7 @@ def clean_town(town: str) -> str:
         town: A single town or township
 
     Returns:
-       str: Town name with punctuation stripped and formatting applied
+       Town name with punctuation stripped and formatting applied
 
     Example:
         >>> clean_town('City of Portland')

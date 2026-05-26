@@ -232,7 +232,7 @@ def generate_valid_suffixes() -> dict[str, str]:
             for suffix in (name, abbr):
                 required_whitespace = ' ' if suffix in AMBIGUOUS_SUFFIXES else ' ?'                    
                 pattern = ignore_false + required_whitespace + suffix
-                replacements[pattern] = abbr
+                replacements[pattern] = ' ' + abbr
     return replacements
 
 # Templates
@@ -243,7 +243,7 @@ HYPHENS_TEMPLATE: str = '\g<leading>-(?=\g<trailing>)'
 GNIS_NAME = f"(?P<geotype>{'|'.join(GNIS_GEOTYPES)}) of (?P<town>.+)"
 VALID_SUFFIXES: Dict[str, str] = generate_valid_suffixes()
 SUFFIX_REPLACEMENTS: Dict[str, str] = {
-    f'{pattern}(?=S?$)': ' ' + canonical
+    f'{pattern}(?=S?$)': canonical
     for pattern, canonical in VALID_SUFFIXES.items()
 }
 VALID_AMPERSANDS: str = generate_valid_punctuation('&', AMPERSANDS_TEMPLATE)
@@ -300,7 +300,7 @@ UNSPECIFIED_FLAG: str = 'TWPS'
 
 Used in multiple functions in `mainegeo.elections`. Most important use is in
 `mainegeo.elections.ReportingUnit.has_unspecified_group`, which uses it in 
-combination with other context clues by to detect unspecified groups."""
+combination with other context clues to detect unspecified groups."""
 
 STANDARD_FLAG: str = 'UNSPECIFIED'
 """ Substring that will be applied to unspecified groups during formatting.

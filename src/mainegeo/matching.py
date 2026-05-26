@@ -89,7 +89,7 @@ class TownDatabase(TownshipDataSource):
     
     @cached_class_attr
     def yaml_path(cls):
-        """ Processed data """
+        """ Path to YAML file with processed township data """
         return resources.files('mainegeo.data').joinpath('townships.yaml')
 
     @classmethod
@@ -266,9 +266,12 @@ class TownDatabase(TownshipDataSource):
             if all(getattr(town, k) == v for k, v in kwargs.items())
         ]
             
-    def match(self, town: str, county_fips: int = None, cleaned: bool = True) -> TownReference:
+    def match(self, town: str, county_fips: int = None, cleaned: bool = False) -> TownReference:
         """
-        Match a town name variant to the alias database and return the TownReference object.
+        Clean and match a town name to the alias database and return the `TownReference` object.
+        
+        For faster matches on already clean data, 
+        pass `cleaned = True` to match without cleaning.
 
         Args:
             town: A single town or township name
@@ -277,11 +280,11 @@ class TownDatabase(TownshipDataSource):
 
         Examples:
             >>> towndb = TownDatabase.build()
-            >>> towndb.match('Cross Lake Twp (T17 R5)', cleaned = False).name
+            >>> towndb.match('Cross Lake Twp (T17 R5)').name
             'Cross Lake Twp'
-            >>> towndb.match('Prentiss Twp') is None
+            >>> towndb.match('Prentiss Twp', cleaned = True) is None
             True
-            >>> towndb.match('Prentiss Twp', county_fips = 19).name
+            >>> towndb.match('Prentiss Twp', county_fips = 19, cleaned = True).name
             'Prentiss Twp T7 R3 NBPP'
         """
         town_name = town.upper() if cleaned else clean_town(town.upper())
@@ -321,10 +324,29 @@ class TownDatabase(TownshipDataSource):
                 if county_match:
                     return county_match
             
-    def canonical_name(self, town: str, county_fips: Optional[int] = None) -> str:
+    def canonical_name(self, town: str, county_fips: int = None, cleaned: bool = False) -> str:
         """
         Match a town to the alias database and return the canonical name only.
+        
+        Convenience method; equivalent to `TownDatabase.build().match(...).name`.
+        
+        For faster matches on already clean data, 
+        pass `cleaned = True` to match without cleaning.
+
+        Args:
+            town: A single town or township name
+            county_fips: Integer code for county. If used, will improve match rate.
+            cleaned: True if the town name is already clean, False if it should be cleaned.
+
+        Examples:
+            >>> towndb = TownDatabase.build()
+            >>> towndb.canonical_name('Cross Lake Twp (T17 R5)')
+            'Cross Lake Twp'
+            >>> towndb.canonical_name('Soldiertown Twp') is None
+            True
+            >>> towndb.canonical_name('Soldiertown Twp', county_fips = 25)
+            'Soldiertown Twp T2 R3 NBKP'
         """
-        match = self.match(town, county_fips)
+        match = self.match(town, county_fips, cleaned = cleaned)
         if match:
             return match.name
