@@ -21,6 +21,7 @@ PUNCTUATION = f'[^\\s\\w]'
 ## Other
 KNOWN_TYPOS: Dict[str, str] = {
     'PISCATAQUS': 'PISCATAQUIS',
+    'WINTERVLLE': 'WINTERVILLE',
     'ORNVEILLE': 'ORNEVILLE',
     'EDUMUNDS': 'EDMUNDS',
     'SILIVER RIDGE': 'SILVER RIDGE',
@@ -114,7 +115,7 @@ NOT_REPORTING: str = f'(?!AND|&)'
 PARENTHETICAL: str = f'\\({NOT_REPORTING}[^\\(]+\\)'
 PRECEDES_DASH: str = f'^[^-]+--'
 
-STANDARD_DELIMITER: str = ","
+STANDARD_DELIMITER: str = ", "
 """ Preferred delimiter character; all other delimiters will be replaced by this."""
 
 NONSTANDARD_DELIMITERS: str = ["&", "/", "(AND ", "(INC "]

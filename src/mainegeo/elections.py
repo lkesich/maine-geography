@@ -290,17 +290,11 @@ class Municipality(ResultGeo):
         
     @cached_property
     def matched_cousub(self) -> Cousub:
-        if self.matched_town:
-            return self.matched_town.cousub
-        else:
-            Cousub()
+        return self.matched_town.cousub if self.matched_town else Cousub()
         
     @cached_property
     def matched_county(self) -> County:
-        if self.matched_town:
-            return self.matched_town.county
-        else:
-            County()
+        return self.matched_town.county if self.matched_town else County()
     
     def to_dict(self) -> dict[str]:
         return {
@@ -383,7 +377,7 @@ class UnspecifiedGroup(ResultGeo):
 class ReportingUnit:
     """ A collection of towns and unspecified groups parsed from a `ResultString`.
     """
-    parsed_string: ResultString
+    result_string: ResultString
     county: County
 
     @classmethod
@@ -392,58 +386,58 @@ class ReportingUnit:
         Factory method to create a fully processed ReportingUnit.
         
         Examples:
-        >>> result = ReportingUnit.from_strings('PRENTISS TWP (WEBSTER PLT)', 'PEN')
-        >>> result.formatted_string
-        'Prentiss Twp T7 R3 NBPP [Webster Plt]'
-        >>> result.reporting_town_names
-        ['Prentiss Twp T7 R3 NBPP']
-        >>> result.registration_town_names
-        ['Webster Plt']
-        >>> result.unspecified_groups
-        []
-        
-        >>> result = ReportingUnit.from_strings('MEDWAY -- GRINDSTONE/SOLDIERTOWN TWPS', 'PEN')
-        >>> result.formatted_string
-        'Grindstone Twp, Soldiertown Twp T2 R7 WELS [Medway]'
-        >>> result.reporting_town_names
-        ['Grindstone Twp', 'Soldiertown Twp T2 R7 WELS']
-        >>> result.registration_town_names
-        ['Medway']
-        >>> len(result.unspecified_groups)
-        0
-        
-        >>> result = ReportingUnit.from_strings('FRANKLIN/T9 T10 SD TWPS', 'HAN')
-        >>> result.formatted_string
-        'Franklin, T9 SD BPP, T10 SD BPP'
-        >>> result.reporting_town_names
-        ['Franklin', 'T9 SD BPP', 'T10 SD BPP']
-        >>> result.registration_town_names
-        []
-        >>> len(result.unspecified_groups)
-        0
-        
-        >>> result = ReportingUnit.from_strings('MILLINOCKET/PISCATAQUIS TWPS', 'PEN')
-        >>> result.formatted_string
-        'Millinocket, Unspecified Piscataquis County Twps [Millinocket]'
-        >>> result.reporting_town_names
-        ['Millinocket', 'Unspecified Piscataquis County Twps']
-        >>> result.registration_town_names
-        ['Millinocket']
-        >>> len(result.unspecified_groups)
-        1
-        
-        >>> result = ReportingUnit.from_strings('MEDWAY TOWNSHIPS', 'PEN')
-        >>> result.formatted_string
-        'Unspecified Twps [Medway]'
-        >>> result.reporting_town_names
-        ['Unspecified Twps']
-        >>> result.registration_town_names
-        ['Medway']
-        >>> len(result.unspecified_groups)
-        1
-        """
+            >>> result = ReportingUnit.from_strings('PRENTISS TWP (WEBSTER PLT)', 'PEN')
+            >>> result.formatted_string
+            'Prentiss Twp T7 R3 NBPP [Webster Plt]'
+            >>> result.reporting_town_names
+            ['Prentiss Twp T7 R3 NBPP']
+            >>> result.registration_town_names
+            ['Webster Plt']
+            >>> result.unspecified_groups
+            []
+            
+            >>> result = ReportingUnit.from_strings('MEDWAY -- GRINDSTONE/SOLDIERTOWN TWPS', 'PEN')
+            >>> result.formatted_string
+            'Grindstone Twp [Medway], Soldiertown Twp T2 R7 WELS [Medway]'
+            >>> result.reporting_town_names
+            ['Grindstone Twp', 'Soldiertown Twp T2 R7 WELS']
+            >>> result.registration_town_names
+            ['Medway']
+            >>> len(result.unspecified_groups)
+            0
+            
+            >>> result = ReportingUnit.from_strings('FRANKLIN/T9 T10 SD TWPS', 'HAN')
+            >>> result.formatted_string
+            'Franklin, T9 SD BPP, T10 SD BPP'
+            >>> result.reporting_town_names
+            ['Franklin', 'T9 SD BPP', 'T10 SD BPP']
+            >>> result.registration_town_names
+            []
+            >>> len(result.unspecified_groups)
+            0
+            
+            >>> result = ReportingUnit.from_strings('MILLINOCKET/PISCATAQUIS TWPS', 'PEN')
+            >>> result.formatted_string
+            'Millinocket, Unspecified Piscataquis County Twps [Millinocket]'
+            >>> result.reporting_town_names
+            ['Millinocket', 'Unspecified Piscataquis County Twps']
+            >>> result.registration_town_names
+            ['Millinocket']
+            >>> len(result.unspecified_groups)
+            1
+            
+            >>> result = ReportingUnit.from_strings('MEDWAY TOWNSHIPS', 'PEN')
+            >>> result.formatted_string
+            'Unspecified Twps [Medway]'
+            >>> result.reporting_town_names
+            ['Unspecified Twps']
+            >>> result.registration_town_names
+            ['Medway']
+            >>> len(result.unspecified_groups)
+            1
+            """
         unit = cls(
-            parsed_string=ResultString(result_str),
+            result_string=ResultString(result_str),
             county=County(code=county_code)
         )
         return unit
@@ -451,19 +445,38 @@ class ReportingUnit:
     @property
     def raw_string(self) -> str:
         """
-        Return original SoS name for this reporting unit.
+        Original SoS name for this reporting unit.
         """
-        return self.parsed_string.raw_string
+        return self.result_string.raw_string
 
     @cached_property
     def formatted_string(self) -> str:
         """
-        Return a formatted string representation of this reporting unit.
+        A formatted string representation of this reporting unit.
         """
-        return ReportingUnit._make_name(
-            self.reporting_town_names,
-            self.registration_town_names
-        )
+        reporting = [
+            town + f' [{self.registration_string}]'
+            if
+                len(self.registration_town_names) > 0
+                and town not in self.registration_town_names
+            else town
+            for town in self.reporting_town_names
+        ]
+        return STANDARD_DELIMITER.join(reporting)
+    
+    @cached_property
+    def reporting_string(self) -> str:
+        """
+        A formatted string representation of reporting towns in this unit.
+        """
+        return STANDARD_DELIMITER.join(self.reporting_town_names)
+    
+    @cached_property
+    def registration_string(self) -> str:
+        """
+        A formatted string representation of registration towns in this unit.
+        """
+        return STANDARD_DELIMITER.join(self.registration_town_names)
                 
     @cached_property
     def reporting_town_names(self):
@@ -482,10 +495,10 @@ class ReportingUnit:
     @cached_property
     def registration_towns(self) -> List[NamedTownship]:
         """
-        List of registration towns as NamedTownship objects.
+        List of registration towns as `NamedTownship` objects.
         """
         towns = []
-        for name in self.parsed_string.registration_town_names:
+        for name in self.result_string.registration_town_names:
             regtown = NamedTownship(name, self.county)
             towns.append(regtown)
         
@@ -497,11 +510,11 @@ class ReportingUnit:
     @cached_property
     def reporting_towns(self) -> List[ResultGeo]:
         """
-        List of reporting towns, townships and groups as ResultGeo child objects.
+        List of reporting towns, townships and groups as `ResultGeo` child objects.
         """
         formatted_reporting_names = ReportingUnit._format_reporting_towns(
-            self.parsed_string.reporting_town_names,
-            self.parsed_string.registration_town_names,
+            self.result_string.reporting_town_names,
+            self.result_string.registration_town_names,
             self.has_unspecified_group
         )
         objects = []
@@ -532,6 +545,8 @@ class ReportingUnit:
             >>> unit = ReportingUnit.from_strings('MILLINOCKET/TWPS', 'PEN')
             >>> [town.name for town in unit.unspecified_groups]
             ['UNSPECIFIED MILLINOCKET TWPS']
+            >>> [town.canonical_name for town in unit.unspecified_groups]
+            ['Unspecified Penobscot County Twps']
         """
         return [t for t in self.reporting_towns if type(t) == UnspecifiedGroup]
     
@@ -557,8 +572,8 @@ class ReportingUnit:
             >>> unit.has_unspecified_group
             False
         """
-        reporting = self.parsed_string.reporting_town_names
-        registration = self.parsed_string.registration_town_names
+        reporting = self.result_string.reporting_town_names
+        registration = self.result_string.registration_town_names
         group_name = ' '.join(filter(None, [*registration, *reporting]))
 
         if len(registration) > 1:
@@ -574,14 +589,16 @@ class ReportingUnit:
         
     def to_dict(self) -> dict[str]:
         return {
-            'formatted': self.formatted_string,
-            'raw': self.raw_string,
+            'formatted_str': self.formatted_string,
+            'raw_str': self.raw_string,
+            'reporting_str': self.reporting_string,
+            'registration_str': self.registration_string,
             'reporting': {
-                'all': [t.to_dict() for t in self.reporting_towns],
-                'specified': [t.to_dict() for t in self.specified_reporting_towns],
-                'unspecified': [g.to_dict() for g in self.unspecified_groups]
+                'all': [town.to_dict() for town in self.reporting_towns],
+                'specified': [town.to_dict() for town in self.specified_reporting_towns],
+                'unspecified': [group.to_dict() for group in self.unspecified_groups]
             },
-            'registration': [t.to_dict() for t in self.registration_towns]
+            'registration': [town.to_dict() for town in self.registration_towns]
         }
 
     @staticmethod
@@ -649,24 +666,6 @@ class ReportingUnit:
         unformatted_group_name = ' '.join(filter(None, name_elements))
         group_name = ReportingUnit._format_unspecified_group(unformatted_group_name)
         return [group_name if UNSPECIFIED_FLAG in town else town for town in reporting_towns]
-    
-    @staticmethod
-    def _make_name(
-        reporting_towns: List[str], 
-        registration_towns: List[str]) -> str:
-        """
-        """
-        if len(reporting_towns) > 0:
-            reporting = ', '.join(reporting_towns)
-        else:
-            reporting = ''
-        
-        if len(registration_towns) > 0:
-            registration = f" [{', '.join(registration_towns)}]"
-        else:
-            registration = ''
-            
-        return reporting + registration
     
     @staticmethod
     def _classify_fragment(fragment_name: str) -> Type[ResultGeo]:
