@@ -1,0 +1,82 @@
+[
+  {
+    "county_fips": "031",
+    "county_name": "York",
+    "sos_county": "YOR"
+  },
+  {
+    "county_fips": "005",
+    "county_name": "Cumberland",
+    "sos_county": "CUM"
+  },
+  {
+    "county_fips": "001",
+    "county_name": "Androscoggin",
+    "sos_county": "AND"
+  },
+  {
+    "county_fips": "023",
+    "county_name": "Sagadahoc",
+    "sos_county": "SAG"
+  },
+  {
+    "county_fips": "015",
+    "county_name": "Lincoln",
+    "sos_county": "LIN"
+  },
+  {
+    "county_fips": "017",
+    "county_name": "Oxford",
+    "sos_county": "OXF"
+  },
+  {
+    "county_fips": "007",
+    "county_name": "Franklin",
+    "sos_county": "FRA"
+  },
+  {
+    "county_fips": "011",
+    "county_name": "Kennebec",
+    "sos_county": "KEN"
+  },
+  {
+    "county_fips": "013",
+    "county_name": "Knox",
+    "sos_county": "KNO"
+  },
+  {
+    "county_fips": "027",
+    "county_name": "Waldo",
+    "sos_county": "WAL"
+  },
+  {
+    "county_fips": "019",
+    "county_name": "Penobscot",
+    "sos_county": "PEN"
+  },
+  {
+    "county_fips": "025",
+    "county_name": "Somerset",
+    "sos_county": "SOM"
+  },
+  {
+    "county_fips": "021",
+    "county_name": "Piscataquis",
+    "sos_county": "PIS"
+  },
+  {
+    "county_fips": "009",
+    "county_name": "Hancock",
+    "sos_county": "HAN"
+  },
+  {
+    "county_fips": "029",
+    "county_name": "Washington",
+    "sos_county": "WAS"
+  },
+  {
+    "county_fips": "003",
+    "county_name": "Aroostook",
+    "sos_county": "ARO"
+  }
+]

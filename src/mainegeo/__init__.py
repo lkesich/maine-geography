@@ -14,5 +14,6 @@ __all__ = [
     'townships',
     'matching',
     'patterns',
-    'entities'
+    'entities',
+    'lookups'
 ]

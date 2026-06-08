@@ -12,11 +12,10 @@ __all__ = [
 
 from dataclasses import dataclass
 from functools import cached_property, cache
-from typing import List, Dict, Optional
-from importlib import resources
+from typing import List, Dict, Optional, ClassVar
 from pathlib import Path
 import yaml
-from mainegeo.connections import TownshipDataSource
+from mainegeo.connections import TOWNSHIPS_JSON, TOWNSHIPS_YAML
 from mainegeo.entities import (County, Cousub, TownType)
 from mainegeo.townships import (
     clean_code,
@@ -30,6 +29,10 @@ from mainegeo.townships import (
 def cached_class_attr(f):
     return classmethod(property(cache(f)))
 
+class MatchError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
 @dataclass
 class TownReference:
     name: str
@@ -39,13 +42,13 @@ class TownReference:
     county: County
     cousub: Cousub
     aliases: List[str]
-    _processed: Optional[bool] = False
+    processed: Optional[bool] = False
 
     def __post_init__(self):
-        if not self._processed:
+        if not self.processed:
             self._clean_aliases()
             self._infer_aliases()
-            self._processed = True
+            self.processed = True
 
     def _clean_aliases(self):
         aliases = sum(self.aliases, [])
@@ -69,50 +72,9 @@ class TownReference:
         
         self.aliases = list(set(aliases))
         self.aliases.sort()
-
-@dataclass(frozen=True)
-class TownAlias:
-    """ A lightweight frozen container holding the minimum elements required for matching.
-    """
-    name: str
-    county_fips: Optional[int] = None
-
-@dataclass
-class TownDatabase(TownshipDataSource):
-    data: List[TownReference] = None
-    _processed: bool = False
-    
-    def __post_init__(self):
-        if self._processed is False:
-            self._process_data()
-            self._validate_data()
-    
-    @cached_class_attr
-    def yaml_path(cls):
-        """ Path to YAML file with processed township data """
-        return resources.files('mainegeo.data').joinpath('townships.yaml')
-
-    @classmethod
-    def build(cls):
-        file_path = resources.files('mainegeo.data').joinpath('townships.yaml')    
-        # first call
-        if Path(file_path).exists():
-            return cls.load_from_yaml(file_path)
-        # subsequent calls
-        else:
-            towndb = cls.create_from_raw_data()
-            towndb.save_to_yaml(file_path)
-            return towndb
-
-    @classmethod
-    def create_from_raw_data(cls):
-        import json
-        with cls.json_path.open('r') as file:
-            towns = json.load(file, object_hook=cls.json_object_hook)
-            return cls(towns, _processed=False)
-    
+        
     @staticmethod
-    def json_object_hook(json_record):
+    def json_object_hook(json_record, processed = False):
         return TownReference(
             name = json_record['town'],
             geocode = json_record['town_geocode'],
@@ -142,12 +104,55 @@ class TownDatabase(TownshipDataSource):
                 json_record['misspellings'],
                 json_record['islands']
             ],
-            _processed = False
+            processed = processed
         )
+        
+@dataclass(frozen=True)
+class TownAlias:
+    """ A lightweight frozen container holding the minimum elements required for matching.
+    """
+    name: str
+    county_fips: Optional[int] = None
+
+@dataclass
+class TownDatabase:
+    data: List[TownReference] = None
+    processed: bool = False
+    
+    YAML_PATH: ClassVar[Path] = TOWNSHIPS_YAML
+    JSON_PATH: ClassVar[Path] = TOWNSHIPS_JSON
+    
+    def __post_init__(self):
+        if self.processed is False:
+            self._process_data()
+            self._validate_data()
+
+    @classmethod
+    def build(cls):
+        file_path = cls.YAML_PATH    
+        # first call
+        if Path(file_path).exists():
+            return cls.load_from_yaml(file_path)
+        # subsequent calls
+        else:
+            towndb = cls.create_from_raw_data()
+            towndb.save_to_yaml(file_path)
+            return towndb
+
+    @classmethod
+    def create_from_raw_data(cls, json_path: Path = None):
+        import json
+        
+        if json_path is None:
+            json_path = cls.JSON_PATH
+            
+        with open(json_path) as file:
+            towns = json.load(file, object_hook = TownReference.json_object_hook)
+            return cls(towns, processed = False)
     
     @classmethod
     def load_from_yaml(cls, file_path = None):
-        file_path = file_path or cls.yaml_path
+        file_path = file_path or cls.YAML_PATH
          
         with open(file_path, 'r') as f:
             data = yaml.safe_load(f)
@@ -171,14 +176,14 @@ class TownDatabase(TownshipDataSource):
                         geoclass = yml['cousub']['geoclass']
                     ),
                     aliases = yml['aliases'],
-                    _processed = True
+                    processed = True
                 )
                 towns.append(town)
             
-            return cls(towns, _processed=True)
+            return cls(towns, processed = True)
         
     def save_to_yaml(self, file_path = None):
-        file_path = file_path or self.yaml_path
+        file_path = file_path or self.YAML_PATH
         
         serializable_data = {
             'towns': [
@@ -203,8 +208,7 @@ class TownDatabase(TownshipDataSource):
             ]
         }
 
-        output_dir = Path(__file__).parent / "data"
-        output_dir.mkdir(exist_ok=True)
+        file_path.parent.mkdir(parents = True, exist_ok = True)
         
         with open(file_path, 'w') as f:
             yaml.dump(serializable_data, f, sort_keys=False)
@@ -213,7 +217,7 @@ class TownDatabase(TownshipDataSource):
         if self.data is not None:
             self._remove_duplicate_aliases()
             self.data.sort(key=lambda x: x.name)
-            self._processed = True
+            self.processed = True
 
     def _validate_data(self):
         geocodes = [town.geocode for town in self.data]
@@ -266,7 +270,13 @@ class TownDatabase(TownshipDataSource):
             if all(getattr(town, k) == v for k, v in kwargs.items())
         ]
             
-    def match(self, town: str, county_fips: int = None, cleaned: bool = False) -> TownReference:
+    def match(
+        self,
+        town: str,
+        county_fips: int = None,
+        cleaned: bool = False,
+        strict: bool = False
+    ) -> TownReference:
         """
         Clean and match a town name to the alias database and return the `TownReference` object.
         
@@ -277,6 +287,7 @@ class TownDatabase(TownshipDataSource):
             town: A single town or township name
             county_fips: Integer code for county. If used, will improve match rate.
             cleaned: True if the town name is already clean, False if it should be cleaned.
+            strict: True if exception should be raised when a match fails
 
         Examples:
             >>> towndb = TownDatabase.build()
@@ -323,6 +334,10 @@ class TownDatabase(TownshipDataSource):
 
                 if county_match:
                     return county_match
+                
+        if strict:
+            message = f'No match found for {town}.'
+            raise MatchError(message = message)
             
     def canonical_name(self, town: str, county_fips: int = None, cleaned: bool = False) -> str:
         """

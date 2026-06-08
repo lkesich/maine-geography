@@ -43,7 +43,7 @@ from mainegeo.townships import (
 )
 from mainegeo.patterns import (
     KNOWN_TYPOS,
-    AMBIGUOUS_GROUP_NAMES,
+    AMBIGUOUS_GROUPS,
     DROP_CHARACTERS_PATTERN,
     STANDARD_DELIMITER,
     NONSTANDARD_DELIMITER_PATTERN,
@@ -74,16 +74,18 @@ class ResultString:
         """
         Result string with capitalization, whitespace and delimiters normalized.
 
-        Typos found in the `mainegeo.patterns.KNOWN_TYPOS` and 
-        `mainegeo.patterns.AMBIGUOUS_GROUP_NAMES` dicts are also fixed.
+        Errors entered in `mainegeo.lookups.Overrides.known_typos` and 
+        `mainegeo.lookups.Overrides.ambiguous_groups` are also repaired.
 
         Example:
             >>> result = ResultString('FORT KENT/BIG TWENTY TWP/   T15 R15 WELS')
             >>> result.normalized_string
             'FORT KENT, BIG TWENTY TWP, T15 R15 WELS'
+            
             >>> result = ResultString('T12/R13 WELS/T9 R8 WELS')
             >>> result.normalized_string
             'T12 R13 WELS, T9 R8 WELS'
+            
             >>> result = ResultString('T10 SD TWP (CHERRYFIELD, FRANKLIN & MILBRIDGE)')
             >>> result.normalized_string
             'T10 SD TWP (CHERRYFIELD, FRANKLIN, MILBRIDGE)'
@@ -111,12 +113,15 @@ class ResultString:
             >>> result = ResultString('MOUNT CHASE -- T5 R7 TWP')
             >>> result.registration_town_names
             ['MOUNT CHASE']
+            
             >>> result = ResultString('T7 SD TWP (STEUBEN)')
             >>> result.registration_town_names
             ['STEUBEN']
+            
             >>> result = ResultString('CROSS LAKE TWP (T17 R5)')
             >>> result.registration_town_names
             []
+            
             >>> result = ResultString('ARGYLE TWP (ALTON, EDINBURG)')
             >>> result.registration_town_names
             ['ALTON', 'EDINBURG']
@@ -142,15 +147,19 @@ class ResultString:
             List: Reporting towns with formatting identifiers stripped
 
         Example:
-            >>> extract_reporting_towns('MOUNT CHASE--T5 R7 TWP')
+            >>> ResultString('MOUNT CHASE--T5 R7 TWP').reporting_town_names
             ['T5 R7']
-            >>> extract_reporting_towns('HERSEYTOWN, SOLDIERTOWN TWPS (MEDWAY)')
+            
+            >>> ResultString('HERSEYTOWN, SOLDIERTOWN TWPS (MEDWAY)').reporting_town_names
             ['HERSEYTOWN', 'SOLDIERTOWN TWPS']
-            >>> extract_reporting_towns('ARGYLE TWP (ALTON, EDINBURG)')
+            
+            >>> ResultString('ARGYLE TWP (ALTON, EDINBURG)').reporting_town_names
             ['ARGYLE TWP']
-            >>> extract_reporting_towns('BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP')
+            
+            >>> ResultString('BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP').reporting_town_names
             ['BARNARD TWP', 'EBEEMEE TWP T5 R9 NWP', 'T4 R9 NWP']
-            >>> extract_reporting_towns('BERRY/CATHANCE/MARIONTWPS (EAST MACHIAS)')
+            
+            >>> ResultString('BERRY/CATHANCE/MARIONTWPS (EAST MACHIAS)').reporting_town_names
             ['BERRY', 'CATHANCE', 'MARION TWPS']
         """
         if self._registration_town_substring is None:
@@ -175,13 +184,15 @@ class ResultString:
         Raises:
             ValueError: If result string contains multiple registration town substrings.
 
-        Example:
+        Examples:
             >>> result = ResultString('MOUNT CHASE -- T5 R7 TWP')
             >>> result._registration_town_substring
-            'MOUNT CHASE --'
+            'MOUNT CHASE--'
+            
             >>> result = ResultString('T7 SD TWP (STEUBEN)')
             >>> result._registration_town_substring
             '(STEUBEN)'
+            
             >>> result = ResultString('ARGYLE TWP (ALTON, EDINBURG)')
             >>> result._registration_town_substring
             '(ALTON, EDINBURG)'
@@ -216,7 +227,7 @@ class ResultString:
 
         These typos recur from time to time, but follow a general pattern. It simplifies
         unspecified group name detection significantly if they are corrected early in
-        processing. They are stored in the AMBIGUOUS_GROUP_NAMES dict in the patterns module.
+        processing. They are stored in `lookups.Overrides.ambiguous_groups`.
 
         Args:
             result_str: Delimited result string with one or more towns or townships
@@ -224,10 +235,11 @@ class ResultString:
         Example:
             >>> ResultString._rename_ambiguous_groups('MILLINOCKET -- PISCATAQUIS TWP')
             'MILLINOCKET -- PISCATAQUIS TWPS'
+            
             >>> ResultString._rename_ambiguous_groups('PENOBSCOT TWPS')
             'MILLINOCKET PENOBSCOT TWPS'
         """
-        return replace_all(AMBIGUOUS_GROUP_NAMES, result_str)
+        return replace_all(AMBIGUOUS_GROUPS, result_str)
 
     @staticmethod
     def _drop_non_meaningful_chars(result_str: str) -> str:
@@ -252,7 +264,7 @@ class ResultString:
             result_str: Delimited result string with one or more towns or townships
         """
         delimit = NONSTANDARD_DELIMITER_PATTERN.sub(STANDARD_DELIMITER, result_str)
-        cleanup = ORPHAN_PARENTHESIS_PATTERN.sub('\g<result>', delimit)
+        cleanup = ORPHAN_PARENTHESIS_PATTERN.sub(r'\g<result>', delimit)
         return cleanup
 
 @dataclass
@@ -301,9 +313,9 @@ class Municipality(ResultGeo):
             'name': self.consensus_name,
             'canonical_name': self.canonical_name,
             'raw_name': self.name,
-            'geocode': self.matched_geocode,
-            'cousub': asdict(self.matched_cousub),
             'county': asdict(self.matched_county),
+            'cousub': asdict(self.matched_cousub),
+            'geocode': self.matched_geocode,
             'matched': self.matched_town is not None
         }
 
@@ -369,7 +381,9 @@ class UnspecifiedGroup(ResultGeo):
     def to_dict(self):
         return {
             'name': self.consensus_name,
-            'group_county': asdict(self.group_county),
+            'canonical_name': self.canonical_name,
+            'raw_name': self.name,
+            'county': asdict(self.group_county),
             'group_registration_town': self.group_registration_town.to_dict()
         }
 
@@ -382,8 +396,7 @@ class ReportingUnit:
 
     @classmethod
     def from_strings(cls, result_str: str, county_code: str) -> "ReportingUnit":
-        """
-        Factory method to create a fully processed ReportingUnit.
+        """ Factory method to create a fully processed ReportingUnit.
         
         Examples:
             >>> result = ReportingUnit.from_strings('PRENTISS TWP (WEBSTER PLT)', 'PEN')
@@ -403,8 +416,6 @@ class ReportingUnit:
             ['Grindstone Twp', 'Soldiertown Twp T2 R7 WELS']
             >>> result.registration_town_names
             ['Medway']
-            >>> len(result.unspecified_groups)
-            0
             
             >>> result = ReportingUnit.from_strings('FRANKLIN/T9 T10 SD TWPS', 'HAN')
             >>> result.formatted_string
@@ -413,8 +424,6 @@ class ReportingUnit:
             ['Franklin', 'T9 SD BPP', 'T10 SD BPP']
             >>> result.registration_town_names
             []
-            >>> len(result.unspecified_groups)
-            0
             
             >>> result = ReportingUnit.from_strings('MILLINOCKET/PISCATAQUIS TWPS', 'PEN')
             >>> result.formatted_string
@@ -446,6 +455,11 @@ class ReportingUnit:
     def raw_string(self) -> str:
         """
         Original SoS name for this reporting unit.
+        
+        Examples:
+            >>> unit = ReportingUnit.from_strings('WEBSTER PLT -- PRENTISS TWP', 'PEN')
+            >>> unit.raw_string
+            'WEBSTER PLT -- PRENTISS TWP'
         """
         return self.result_string.raw_string
 
@@ -453,6 +467,27 @@ class ReportingUnit:
     def formatted_string(self) -> str:
         """
         A formatted string representation of this reporting unit.
+        
+        Examples:
+            >>> args = ('T12/R13 & T9/R8 WELS (ASHLAND)', 'ARO')
+            >>> ReportingUnit.from_strings(*args).formatted_string
+            'T12 R13 WELS [Ashland], T9 R8 WELS [Ashland]'
+            
+            >>> args = ('GRINDSTONE/HERSEYTOWN/SOLDIERTOWN TWP', 'PEN')
+            >>> ReportingUnit.from_strings(*args).formatted_string
+            'Grindstone Twp, Herseytown Twp, Soldiertown Twp T2 R7 WELS'
+            
+            >>> args = ('SHERMAN (AND BENEDICTA & SILVER RIDGE TWPS) ', 'ARO')
+            >>> ReportingUnit.from_strings(*args).formatted_string
+            'Sherman, Benedicta Twp, Silver Ridge Twp'
+            
+            >>> args = ('JACKMAN TWPS', 'SOM')
+            >>> ReportingUnit.from_strings(*args).formatted_string
+            'Unspecified Twps [Jackman]'
+            
+            >>> args = ('MILLINOCKET/PISCATAQUIS TWPS', 'PEN')
+            >>> ReportingUnit.from_strings(*args).formatted_string
+            'Millinocket, Unspecified Piscataquis County Twps [Millinocket]'
         """
         reporting = [
             town + f' [{self.registration_string}]'
@@ -468,6 +503,23 @@ class ReportingUnit:
     def reporting_string(self) -> str:
         """
         A formatted string representation of reporting towns in this unit.
+
+        Examples:
+            >>> args = ('WEBSTER PLT -- PRENTISS TWP', 'PEN')
+            >>> ReportingUnit.from_strings(*args).reporting_string
+            'Prentiss Twp T7 R3 NBPP'
+            
+            >>> args = ('T12/R13 & T9/R8 WELS (ASHLAND)', 'ARO')
+            >>> ReportingUnit.from_strings(*args).reporting_string
+            'T12 R13 WELS, T9 R8 WELS'
+            
+            >>> args = ('JACKMAN TWPS', 'SOM')
+            >>> ReportingUnit.from_strings(*args).reporting_string
+            'Unspecified Twps'
+            
+            >>> args = ('MILLINOCKET/PISCATAQUIS TWPS', 'PEN')
+            >>> ReportingUnit.from_strings(*args).reporting_string
+            'Millinocket, Unspecified Piscataquis County Twps'
         """
         return STANDARD_DELIMITER.join(self.reporting_town_names)
     
@@ -559,15 +611,19 @@ class ReportingUnit:
             >>> unit = ReportingUnit.from_strings('MEDWAY/TOWNSHIPS', 'PEN')
             >>> unit.has_unspecified_group
             True
+            
             >>> unit = ReportingUnit.from_strings('ADAMSTOWN/LOWER CUPSUPTIC TWPS (RANGELEY)', 'OXF')
             >>> unit.has_unspecified_group
             False
+            
             >>> unit = ReportingUnit.from_strings('MILLINOCKET PISCATAQUIS TWPS', 'PIS')
             >>> unit.has_unspecified_group
             True
+            
             >>> unit = ReportingUnit.from_strings('MILLINOCKET/PEN TWPS', 'PEN')
             >>> unit.has_unspecified_group
             True
+            
             >>> unit = ReportingUnit.from_strings('LEXINGTON & SPRING LAKE TWPS', 'SOM')
             >>> unit.has_unspecified_group
             False
@@ -589,12 +645,11 @@ class ReportingUnit:
         
     def to_dict(self) -> dict[str]:
         return {
-            'formatted_str': self.formatted_string,
             'raw_str': self.raw_string,
+            'formatted_str': self.formatted_string,
             'reporting_str': self.reporting_string,
             'registration_str': self.registration_string,
             'reporting': {
-                'all': [town.to_dict() for town in self.reporting_towns],
                 'specified': [town.to_dict() for town in self.specified_reporting_towns],
                 'unspecified': [group.to_dict() for group in self.unspecified_groups]
             },
@@ -620,8 +675,10 @@ class ReportingUnit:
         Examples:
             >>> ReportingUnit._format_reporting_towns(['LEXINGTON', 'SPRING LAKE TWPS'], [], False)
             ['LEXINGTON', 'SPRING LAKE TWP']
+            
             >>> ReportingUnit._format_reporting_towns(['FRANKLIN', 'TWPS'], [], True)
             ['FRANKLIN', 'UNSPECIFIED FRANKLIN TWPS']
+            
             >>> ReportingUnit._format_reporting_towns(['PENOBSCOT TWPS'], ['MILLINOCKET'], True)
             ['UNSPECIFIED MILLINOCKET TWPS [PEN]']
         """

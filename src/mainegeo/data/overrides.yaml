@@ -1,0 +1,39 @@
+known_typos:
+- original: PISCATAQUS
+  replacement: PISCATAQUIS
+- original: WINTERVLLE
+  replacement: WINTERVILLE
+- original: ORNVEILLE
+  replacement: ORNEVILLE
+- original: EDUMUNDS
+  replacement: EDMUNDS
+- original: SILIVER RIDGE
+  replacement: SILVER RIDGE
+- original: FRANKLIN/T9 T10 SD
+  replacement: FRANKLIN/T9 SD/T10 SD
+- original: PLEASANT POINT VOTING DISTRICT RICT
+  replacement: PLEASANT POINT VOTING DISTRICT
+
+ambiguous_groups:
+- pattern: PEN(?:OBSCOT)? TWP$
+  replacement: PENOBSCOT TWPS
+  notes: |
+    SoS staff sometimes omit the registration town name for Millinocket 
+    groups. Groups of Penobscot townships with no other label are safely 
+    assumed to register at Millinocket.
+- pattern: PIS(?:CATAQUIS)? TWP$
+  replacement: PISCATAQUIS TWPS
+  notes: |
+    SoS staff sometimes omit the registration town name for Millinocket 
+    groups. Groups of Penobscot townships with no other label are safely 
+    assumed to register at Millinocket.
+- pattern: ^PENOBSCOT TWPS$
+  replacement: MILLINOCKET PENOBSCOT TWPS
+  notes: |
+    During at least one cycle, SoS staff did not pluralize the Millinocket 
+    group names. The intent in these cases is clear.
+- pattern: ^PISCATAQUIS TWPS$
+  replacement: MILLINOCKET PISCATAQUIS TWPS
+  notes: |-
+    During at least one cycle, SoS staff did not pluralize the Millinocket 
+    group names. The intent in these cases is clear.

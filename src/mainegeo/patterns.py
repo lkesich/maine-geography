@@ -4,12 +4,13 @@
 __docformat__ = 'google'
 
 import re
-from mainegeo.lookups import CountyData, TownshipData
+from mainegeo.lookups import CountyData, TownshipData, Overrides
 from typing import List, Dict
 
-# Lazy loading lookup tables
+# Lookup objects
 COUNTIES: CountyData = CountyData()
 TOWNSHIPS: TownshipData = TownshipData()
+OVERRIDES: Overrides = Overrides()
 
 # Base character sets for patterns
 FUZZY = f"[^,\\w]{{0,3}}"
@@ -20,13 +21,8 @@ PUNCTUATION = f'[^\\s\\w]'
 
 ## Other
 KNOWN_TYPOS: Dict[str, str] = {
-    'PISCATAQUS': 'PISCATAQUIS',
-    'WINTERVLLE': 'WINTERVILLE',
-    'ORNVEILLE': 'ORNEVILLE',
-    'EDUMUNDS': 'EDMUNDS',
-    'SILIVER RIDGE': 'SILVER RIDGE',
-    'FRANKLIN/T9 T10 SD': 'FRANKLIN/T9 SD/T10 SD',
-    'PLEASANT POINT VOTING DISTRICT RICT': 'PLEASANT POINT VOTING DISTRICT'
+    group['original']: group['replacement']
+    for group in OVERRIDES.known_typos
 }
 """ Errors and replacements for known typos in election results files.
 
@@ -35,34 +31,27 @@ town name should be spelled. Misspellings that are the result of confusion
 and might reoccur in the future are logged as aliases in 
 `mainegeo.matching.TownDatabase`.
 
+See `lookups.Overrides` to add new entries.
+
 Used in `mainegeo.elections.ResultString.normalized_string`.
 """
 
-AMBIGUOUS_GROUP_NAMES: Dict[str, str] = {
-    '^PENOBSCOT TWPS$': 'MILLINOCKET PENOBSCOT TWPS',
-    '^PISCATAQUIS TWPS$': 'MILLINOCKET PISCATAQUIS TWPS',
-    'PEN(?:OBSCOT)? TWP$': 'PENOBSCOT TWPS',
-    'PIS(?:CATAQUIS)? TWP$': 'PISCATAQUIS TWPS',
+AMBIGUOUS_GROUPS: Dict[str, str] = {
+    group['pattern']: group['replacement']
+    for group in OVERRIDES.ambiguous_groups
 }
 """ Errors and replacements for ambiguously-named unspecified groups.
 
 These typos follow patterns, but it simplifies unspecified group name 
 detection significantly if they are corrected early in processing.
 
-Corrections in this dictionary include:
-    * SoS staff sometimes omit the registration town name for Millinocket
-    groups. Groups of Penobscot or Piscataquis townships with no other
-    label are safely assumed to register at Millinocket.
-
-    * On one occasion, SoS staff did not pluralize the group name (e.g. 
-    'MILLINOCKET -- PENOBSCOT TWP'). The intent in this case is clear.
+See `mainegeo.lookups.Overrides` to add new entries.
     
 Used in `mainegeo.elections.ResultString.normalized_string`."""
 
-
 ## Townships
 # Constants
-REGIONS: List[str] = ["ED","MD","ND","SD","TS","BKP","BPP","EKR","NWP","WKR","NBKP","NBPP","WBKP","WELS"]
+REGIONS: List[str] = ['ED','MD','ND','SD','TS','BKP','BPP','EKR','NWP','WKR','NBKP','NBPP','WBKP','WELS']
 """ Valid region codes that can appear in township names.
     
 These are two- to four-letter codes like 'WELS' (West of the
@@ -187,10 +176,10 @@ GNIS_GEOTYPES: List[str] = ["CITY", "PLANTATION", "TOWNSHIP", "TOWN"]
 """ Geotypes used by the Geographic Names Information System (GNIS)."""
 
 ABBREVIATIONS: Dict[str, str] = {
-    "PLANTATION": "PLT",
-    "TOWNSHIP": "TWP",
-    "VOTING DISTRICT": "VOTING DIST",
-    "RESERVATION": "RES"
+    "PLANTATION":       "PLT",
+    "TOWNSHIP":         "TWP",
+    "VOTING DISTRICT":  "VOTING DIST",
+    "RESERVATION":      "RES"
 }
 """ Geotype suffixes used by the Maine SoS and their abbreviations."""
 
@@ -203,7 +192,7 @@ but refer to the same place and are often used interchangeably by the SoS."""
 DIRECTIONS: List[str] = ['NORTH', 'SOUTH', 'EAST', 'WEST']
 """ Direction words which may modify place names."""
 
-CONTAINS_FALSE_SUFFIX: List[str] = ['INDIAN TOWNSHIP']
+CONTAINS_FALSE_SUFFIX: List[str] = ['INDIAN TOWNSHIP', 'INDIAN RESERVATION']
 """ Canonical place names that contain a word that is normally a suffix.
 
 For example: Indian Township is the name of a town, not a township.
@@ -214,27 +203,39 @@ AMBIGUOUS_SUFFIXES: List[str] = ['RES']
 """ Full or abbreviated suffixes that may occur as substrings in other contexts. """
 
 # Factory functions
+def generate_suffixes() -> dict[str, str]:
+    replacements = []
+    for name, abbr in ABBREVIATIONS.items():
+        
+        precedes_false = []
+        for town in CONTAINS_FALSE_SUFFIX:
+            if town.endswith((name, abbr)):
+                precedes_false.append(re.sub(f' {name}|{abbr}$', '', town)) 
+        
+        if len(precedes_false) > 0:
+            ignore_false = f"(?<!{'|'.join(precedes_false)} )"
+        else:
+            ignore_false = ''
+        
+        for suffix in (name, abbr):
+            required_whitespace = ' ' if suffix in AMBIGUOUS_SUFFIXES else ' ?'
+            terminator = '$' if suffix in AMBIGUOUS_SUFFIXES else 's?$'
+            
+            replacements.append({
+                'suffix': suffix,
+                'replacement': ' ' + abbr,
+                'strip_pattern': required_whitespace + ignore_false + suffix + terminator,
+                'clean_pattern': required_whitespace + suffix + f"(?={terminator})",
+                'terminator': terminator
+            })
+    
+    return replacements
+
 def generate_valid_punctuation(char: str, template: str) -> str:
     pattern = re.compile(f'(?P<leading>\\w+ ?){char}(?P<trailing> ?\\w+)')
     matches = map(pattern.match, TOWNSHIPS.town)
     valid_contexts = [match.expand(template) for match in matches if match]
     return '|'.join(valid_contexts)
-
-def generate_valid_suffixes() -> dict[str, str]:
-    replacements = {}
-    for name, abbr in ABBREVIATIONS.items():
-        for town in CONTAINS_FALSE_SUFFIX:
-            if town.endswith((name, abbr)):
-                precedes_false = re.sub(f' {name}|{abbr}$', '', town)
-                ignore_false = f'(?<!{precedes_false})'
-            else:
-                ignore_false = ''
-        
-            for suffix in (name, abbr):
-                required_whitespace = ' ' if suffix in AMBIGUOUS_SUFFIXES else ' ?'                    
-                pattern = ignore_false + required_whitespace + suffix
-                replacements[pattern] = ' ' + abbr
-    return replacements
 
 # Templates
 AMPERSANDS_TEMPLATE: str = '(?:(?<=\g<leading>)&(?=\g<trailing>))'
@@ -242,14 +243,14 @@ HYPHENS_TEMPLATE: str = '\g<leading>-(?=\g<trailing>)'
 
 # Building blocks
 GNIS_NAME = f"(?P<geotype>{'|'.join(GNIS_GEOTYPES)}) of (?P<town>.+)"
-VALID_SUFFIXES: Dict[str, str] = generate_valid_suffixes()
-SUFFIX_REPLACEMENTS: Dict[str, str] = {
-    f'{pattern}(?=S?$)': canonical
-    for pattern, canonical in VALID_SUFFIXES.items()
-}
 VALID_AMPERSANDS: str = generate_valid_punctuation('&', AMPERSANDS_TEMPLATE)
 VALID_HYPHENS: str = generate_valid_punctuation('-', HYPHENS_TEMPLATE)
 JUNIOR_SUFFIX: str = f"\\b({'|'.join(JUNIOR_SUFFIXES)})"
+SUFFIXES: list[dict] = generate_suffixes()
+SUFFIX_REPLACEMENTS: dict[str, str] = {
+    suffix['clean_pattern']: suffix['replacement']
+    for suffix in SUFFIXES
+}
 
 # Patterns
 GNIS_PATTERN: re.Pattern = re.compile(GNIS_NAME, re.I)
@@ -261,8 +262,10 @@ Capture groups:
 
 Used in `mainegeo.townships.normalize_suffix`."""
 
-SUFFIX_PATTERN: re.Pattern = re.compile(f"({'|'.join(VALID_SUFFIXES.keys())})s?$", re.I)
-""" Matches all valid suffixes and suffix abbreviations.
+SUFFIX_PATTERN: re.Pattern = re.compile(
+    f"{'|'.join([suffix['strip_pattern'] for suffix in SUFFIXES])}", re.I
+    )
+""" Matches all valid terminal suffixes and suffix abbreviations.
 
 Used in `mainegeo.townships.strip_suffix`."""
 

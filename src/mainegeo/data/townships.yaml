@@ -9542,8 +9542,6 @@ towns:
   - READFIELD TOWNSHIP
   - READFIELD TWP
   - TOWN OF READFIELD
-  - TOWNSHIP
-  - TWP
 - name: Redington Twp
   geocode: 07819
   town_type: Unorganized Township

@@ -11,7 +11,6 @@ election reporting units into single town strings, see `mainegeo.elections`.
 __docformat__ = 'google'
 
 __all__ = [
-    # Functions
     'is_unnamed_township',
     'clean_code',
     'clean_codes',
@@ -56,11 +55,13 @@ def is_unnamed_township(town: str) -> bool:
     Returns:
         True if input contains an unnamed township, else False
         
-    Example:
+    Examples:
         >>> is_unnamed_township('T5 R7')
         True
+        
         >>> is_unnamed_township('CROSS LAKE TWP (T17 R5)')
         True
+        
         >>> is_unnamed_township('CROSS LAKE TWP')
         False
     """
@@ -76,11 +77,13 @@ def clean_code(town: str) -> str:
     Returns:
         Normalized township string, or unmodified string if input does not contain township
         
-    Example:
+    Examples:
         >>> clean_code('T4/R3 TWP')
         'T4 R3'
+        
         >>> clean_code('T10SD')
         'T10 SD'
+        
         >>> clean_code('FLETCHERS LANDING TWP (T8 SD)')
         'T8 SD'
     """
@@ -101,11 +104,13 @@ def clean_codes(towns: str) -> str:
     Returns:
         Input string with punctuation and spacing normalized for all township codes
         
-    Example:
+    Examples:
         >>> clean_codes('ASHLAND -- T12/R13, T9/R8')
         'ASHLAND -- T12 R13, T9 R8'
+        
         >>> clean_codes('T4/R3 TWP')
         'T4 R3 TWP'
+        
         >>> clean_codes('BARNARD TWP/EBEEMEE TWP (T5-R9 NWP)/T4R9 NWP TWP')
         'BARNARD TWP/EBEEMEE TWP (T5 R9 NWP)/T4 R9 NWP TWP'
     """
@@ -123,13 +128,16 @@ def has_alias(town: str) -> str:
     Returns:
         True if town string contains a township code and alias, else False
 
-    Example:
+    Examples:
         >>> has_alias('CROSS LAKE TWP (T17 R5)')
         True
+        
         >>> has_alias('EBEEMEE TWP')
         False
+        
         >>> has_alias('PRENTISS TWP T7 R3 NBPP')
         True
+        
         >>> has_alias('T7 R3 NBPP TWP')
         False
     """
@@ -148,13 +156,16 @@ def extract_alias(town: str) -> str:
     Returns:
         Input string with township code removed.
 
-    Example:
+    Examples:
         >>> extract_alias('CROSS LAKE TWP (T17 R5)')
         'CROSS LAKE TWP'
+        
         >>> extract_alias('T3 Indian Purchase Twp')
         'Indian Purchase Twp'
+        
         >>> extract_alias('Rockwood Strip (T1 R1) Twp')
         'Rockwood Strip Twp'
+        
         >>> extract_alias('T7 R3 NBPP (PRENTISS TWP)')
         'PRENTISS TWP'
     """
@@ -171,11 +182,13 @@ def clean_township(town: str) -> str:
     Returns:
         Normalized township string, or unmodified string if input does not contain township
         
-    Example:
+    Examples:
         >>> clean_township('T4/R3 TWP')
         'T4 R3'
+        
         >>> clean_township('T10SD')
         'T10 SD'
+        
         >>> clean_township('CROSS LAKE TWP (T17 R5)')
         'CROSS LAKE TWP T17 R5'
     """
@@ -190,6 +203,34 @@ def strip_region(town: str) -> str:
     return LAST_REGION_PATTERN.sub('', town)
 
 def strip_suffix(town: str) -> str:
+    """
+    Strips valid terminal suffix from town string.
+    
+    Context-sensitive: ignores suffix substrings if they are not in a valid 
+    suffix context.
+    
+    This method is used to generate plausible aliases for further testing.
+    Its intended use is alias generation and not routine cleanup.
+    
+    Args:
+        town: A single town or township
+        
+    Returns:
+        Town with valid terminal suffix stripped
+        
+    Examples:
+        >>> strip_suffix('RANGELEY PLANTATION')
+        'RANGELEY'
+        
+        >>> strip_suffix('Passamaquoddy Indian Township')
+        'Passamaquoddy Indian Township'
+        
+        >>> strip_suffix('Indian Stream Township')
+        'Indian Stream'
+        
+        >>> strip_suffix('Matinicus Isle Plt')
+        'Matinicus Isle'
+    """
     return SUFFIX_PATTERN.sub('', town)
 
 def toggle_suffix(town: str, town_type: TownType = None) -> str:
@@ -197,7 +238,7 @@ def toggle_suffix(town: str, town_type: TownType = None) -> str:
     Adds or removes a township suffix to grants, gores, and islands.
 
     The TWP suffix is not canonical for all grants, gores, and islands.
-    This function is used to generate plausible aliases for further testing.
+    This method is used to generate plausible aliases for further testing.
     Its intended use is alias generation and not routine cleanup.
 
     Args:
@@ -207,13 +248,16 @@ def toggle_suffix(town: str, town_type: TownType = None) -> str:
     Returns:
         Gore, grant or island with township suffix added or removed, or else town
 
-    Example:
+    Examples:
         >>> toggle_suffix('MOXIE GORE TWP')
         'MOXIE GORE'
+        
         >>> toggle_suffix('HOPKINS ACADEMY GRANT')
         'HOPKINS ACADEMY GRANT TWP'
+        
         >>> toggle_suffix('LOUDS ISLAND', TownType.UNORGANIZED)
         'LOUDS ISLAND TWP'
+        
         >>> toggle_suffix('CHEBEAGUE ISLAND', TownType.TOWN)
         'CHEBEAGUE ISLAND'
     """
@@ -238,13 +282,18 @@ def normalize_suffix(town: str) -> str:
     Returns:
         Town with normalized suffix
 
-    Example:
+    Examples:
         >>> normalize_suffix('City of Portland')
         'Portland'
+        
         >>> normalize_suffix('MATINICUS ISLE PLANTATION')
         'MATINICUS ISLE PLT'
+       
         >>> normalize_suffix('MARIONTWPS')
         'MARION TWPS'
+        
+        >>> normalize_suffix('Indian Township')
+        'Indian Twp'
     """
     gnis_format = GNIS_PATTERN.match(town.upper())
     
@@ -275,11 +324,13 @@ def strip_town(town: str) -> str:
     Returns:
        Town name with punctuation stripped
 
-    Example:
+    Examples:
         >>> strip_town("Loud's Island")
         'Louds Island'
+        
         >>> strip_town('Dover-Foxcroft -- ')
         'Dover-Foxcroft'
+        
         >>> strip_town('Taunton & Raynham Academy Grant')
         'Taunton and Raynham Academy Grant'
     """
@@ -305,15 +356,19 @@ def clean_town(town: str) -> str:
     Returns:
        Town name with punctuation stripped and formatting applied
 
-    Example:
+    Examples:
         >>> clean_town('City of Portland')
         'Portland'
+        
         >>> clean_town('T8/R11 TWP')
         'T8 R11'
+        
         >>> clean_town('CROSS LAKE TWP (T17 R5)')
         'CROSS LAKE TWP T17 R5'
+        
         >>> clean_town('King & Bartlett Township')
         'King and Bartlett Twp'
+        
         >>> clean_town('MARIONTWPS ()')
         'MARION TWPS'
     """
