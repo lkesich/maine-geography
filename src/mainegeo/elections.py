@@ -62,13 +62,21 @@ from mainegeo.patterns import (
     FORMATTED_GROUP_PATTERN
 )
 
-def cached_class_attr(f):
-    return classmethod(property(cache(f)))
-
 @dataclass
 class ResultString:
     raw_string: str
-
+    
+    @cached_property
+    def exists(self) -> bool:
+        if self.raw_string is None:
+            return False
+        elif len(self.raw_string) > 5:
+            return True
+        elif re.search(r'\w', self.raw_string):
+            return True
+        else:
+            return False
+        
     @cached_property
     def normalized_string(self) -> str:
         """
@@ -92,14 +100,15 @@ class ResultString:
         """
         initial_cleanup = [
             str.upper
-            , self._fix_known_typos
-            , self._rename_ambiguous_groups
-            , self._drop_non_meaningful_chars
+            , ResultString._fix_known_typos
+            , ResultString._rename_ambiguous_groups
+            , ResultString._drop_non_meaningful_chars
             , clean_codes
-            , self._normalize_delimiters
+            , ResultString._normalize_delimiters
             , normalize_whitespace
         ]
-        return chain_operations(self.raw_string, initial_cleanup)
+        if self.exists:
+            return chain_operations(self.raw_string, initial_cleanup)
     
     @cached_property
     def registration_town_names(self) -> List[str]:
@@ -197,15 +206,16 @@ class ResultString:
             >>> result._registration_town_substring
             '(ALTON, EDINBURG)'
         """
-        flagged = REGISTRATION_PATTERN.findall(self.normalized_string)
-        substrings = list(filterfalse(is_unnamed_township, flagged))
-        
-        if len(substrings) > 1:
-            raise ValueError(f'Multiple registration town substrings found in result string: {self.normalized_string}')
-        elif len(substrings) == 0:
-            return None
-        else:
-            return substrings[0]
+        if self.exists:
+            flagged = REGISTRATION_PATTERN.findall(self.normalized_string)
+            substrings = list(filterfalse(is_unnamed_township, flagged))
+            
+            if len(substrings) > 1:
+                raise ValueError(f'Multiple registration town substrings found in result string: {self.normalized_string}')
+            elif len(substrings) == 0:
+                return None
+            else:
+                return substrings[0]
 
     @staticmethod
     def _fix_known_typos(result_str: str) -> str:
@@ -581,17 +591,20 @@ class ReportingUnit:
         """
         List of reporting towns, townships and groups as `ResultGeo` child objects.
         """
-        formatted_reporting_names = ReportingUnit._format_reporting_towns(
-            self.result_string.reporting_town_names,
-            self.result_string.registration_town_names,
-            self.has_unspecified_group
-        )
-        objects = []
-        for name in formatted_reporting_names:
-            ResultClass = ReportingUnit._classify_fragment(name)
-            reporting_object = ResultClass(name, self.county, strict = self.strict)
-            objects.append(reporting_object)
-        return objects
+        towns = []
+        
+        if self.result_string.exists:
+            formatted_reporting_names = ReportingUnit._format_reporting_towns(
+                self.result_string.reporting_town_names,
+                self.result_string.registration_town_names,
+                self.has_unspecified_group
+            )
+            for name in formatted_reporting_names:
+                ResultClass = ReportingUnit._classify_fragment(name)
+                reporting_town = ResultClass(name, self.county, strict = self.strict)
+                towns.append(reporting_town)
+        
+        return towns
     
     @cached_property
     def specified_reporting_towns(self) -> List[ResultGeo]:
