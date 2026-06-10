@@ -5,9 +5,9 @@ aliases, and provides a function for matching.
 __docformat__ = 'google'
 
 __all__ = [
-    # Classes
     'TownReference',
-    'TownDatabase'
+    'TownDatabase',
+    'get_town_database'
 ]
 
 from dataclasses import dataclass
@@ -15,7 +15,7 @@ from functools import cached_property, cache
 from typing import List, Dict, Optional, ClassVar
 from pathlib import Path
 import yaml
-from mainegeo.connections import TOWNSHIPS_JSON, TOWNSHIPS_YAML
+from mainegeo.paths import TOWNSHIPS_JSON, TOWNSHIPS_YAML
 from mainegeo.entities import (County, Cousub, TownType)
 from mainegeo.townships import (
     clean_code,
@@ -25,9 +25,6 @@ from mainegeo.townships import (
     toggle_suffix,
     extract_alias
 )
-
-def cached_class_attr(f):
-    return classmethod(property(cache(f)))
 
 class MatchError(Exception):
     def __init__(self, message):
@@ -365,3 +362,7 @@ class TownDatabase:
         match = self.match(town, county_fips, cleaned = cleaned)
         if match:
             return match.name
+
+@cache        
+def get_town_database() -> TownDatabase:
+    return TownDatabase.build()

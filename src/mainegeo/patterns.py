@@ -4,13 +4,11 @@
 __docformat__ = 'google'
 
 import re
-from mainegeo.lookups import CountyData, TownshipData, Overrides
-from typing import List, Dict
-
-# Lookup objects
-COUNTIES: CountyData = CountyData()
-TOWNSHIPS: TownshipData = TownshipData()
-OVERRIDES: Overrides = Overrides()
+from mainegeo.lookups import (
+    CountyData,
+    TownshipData,
+    Overrides
+)
 
 # Base character sets for patterns
 FUZZY = f"[^,\\w]{{0,3}}"
@@ -20,9 +18,9 @@ PUNCTUATION = f'[^\\s\\w]'
 """@private"""
 
 ## Other
-KNOWN_TYPOS: Dict[str, str] = {
+KNOWN_TYPOS: dict[str, str] = {
     group['original']: group['replacement']
-    for group in OVERRIDES.known_typos
+    for group in Overrides.get_lookup().known_typos
 }
 """ Errors and replacements for known typos in election results files.
 
@@ -36,9 +34,9 @@ See `lookups.Overrides` to add new entries.
 Used in `mainegeo.elections.ResultString.normalized_string`.
 """
 
-AMBIGUOUS_GROUPS: Dict[str, str] = {
+AMBIGUOUS_GROUPS: dict[str, str] = {
     group['pattern']: group['replacement']
-    for group in OVERRIDES.ambiguous_groups
+    for group in Overrides.get_lookup().ambiguous_groups
 }
 """ Errors and replacements for ambiguously-named unspecified groups.
 
@@ -51,7 +49,7 @@ Used in `mainegeo.elections.ResultString.normalized_string`."""
 
 ## Townships
 # Constants
-REGIONS: List[str] = ['ED','MD','ND','SD','TS','BKP','BPP','EKR','NWP','WKR','NBKP','NBPP','WBKP','WELS']
+REGIONS: list[str] = ['ED','MD','ND','SD','TS','BKP','BPP','EKR','NWP','WKR','NBKP','NBPP','WBKP','WELS']
 """ Valid region codes that can appear in township names.
     
 These are two- to four-letter codes like 'WELS' (West of the
@@ -110,7 +108,7 @@ STANDARD_DELIMITER: str = ", "
 NONSTANDARD_DELIMITERS: str = ["&", "/", "(AND ", "(INC "]
 """ Substrings that are sometimes used by the SoS to delimit reporting towns."""
 
-MEANINGFUL_CHARACTERS: List[str] = ["(", ")", "-", "&", "/", ","]
+MEANINGFUL_CHARACTERS: list[str] = ["(", ")", "-", "&", "/", ","]
 """ Punctuation characters used by the SoS to communicate info about a reporting unit.
 
 Examples:
@@ -172,10 +170,10 @@ Used in `mainegeo.elections.ResultString`."""
 
 ## Name standardization
 # Constants
-GNIS_GEOTYPES: List[str] = ["CITY", "PLANTATION", "TOWNSHIP", "TOWN"]
+GNIS_GEOTYPES: list[str] = ["CITY", "PLANTATION", "TOWNSHIP", "TOWN"]
 """ Geotypes used by the Geographic Names Information System (GNIS)."""
 
-ABBREVIATIONS: Dict[str, str] = {
+ABBREVIATIONS: dict[str, str] = {
     "PLANTATION":       "PLT",
     "TOWNSHIP":         "TWP",
     "VOTING DISTRICT":  "VOTING DIST",
@@ -183,23 +181,23 @@ ABBREVIATIONS: Dict[str, str] = {
 }
 """ Geotype suffixes used by the Maine SoS and their abbreviations."""
 
-JUNIOR_SUFFIXES: List[str] = ['GORE', 'GRANT', 'ISLAND']
+JUNIOR_SUFFIXES: list[str] = ['GORE', 'GRANT', 'ISLAND']
 """ Geotypes which may precede another geotype suffix or be used alone.
 
 For example, Moxie Gore and Moxie Gore Twp have subtly different meanings,
 but refer to the same place and are often used interchangeably by the SoS."""
 
-DIRECTIONS: List[str] = ['NORTH', 'SOUTH', 'EAST', 'WEST']
+DIRECTIONS: list[str] = ['NORTH', 'SOUTH', 'EAST', 'WEST']
 """ Direction words which may modify place names."""
 
-CONTAINS_FALSE_SUFFIX: List[str] = ['INDIAN TOWNSHIP', 'INDIAN RESERVATION']
+CONTAINS_FALSE_SUFFIX: list[str] = ['INDIAN TOWNSHIP', 'INDIAN RESERVATION']
 """ Canonical place names that contain a word that is normally a suffix.
 
 For example: Indian Township is the name of a town, not a township.
 These false suffixes should be treated differently than true 
 suffixes during processing."""
 
-AMBIGUOUS_SUFFIXES: List[str] = ['RES']
+AMBIGUOUS_SUFFIXES: list[str] = ['RES']
 """ Full or abbreviated suffixes that may occur as substrings in other contexts. """
 
 # Factory functions
@@ -233,7 +231,7 @@ def generate_suffixes() -> dict[str, str]:
 
 def generate_valid_punctuation(char: str, template: str) -> str:
     pattern = re.compile(f'(?P<leading>\\w+ ?){char}(?P<trailing> ?\\w+)')
-    matches = map(pattern.match, TOWNSHIPS.town)
+    matches = map(pattern.match, TownshipData.get_lookup().town)
     valid_contexts = [match.expand(template) for match in matches if match]
     return '|'.join(valid_contexts)
 
@@ -312,7 +310,7 @@ STANDARD_FLAG: str = 'UNSPECIFIED'
 Chosen to avoid overlap with words that may occur naturally in election 
 result strings."""
 
-MULTI_COUNTY_REGISTRATION_TOWNS: List[str] = ['MILLINOCKET']
+MULTI_COUNTY_REGISTRATION_TOWNS: list[str] = ['MILLINOCKET']
 """ Towns that host unspecified township groups from multiple counties.
 
 As of 2025, the only town that is typically reported this way is Millinocket,
@@ -322,7 +320,7 @@ e.g. Millinocket Penobscot Twps and Millinocket Piscataquis Twps."""
 PLURAL = UNSPECIFIED_FLAG
 SINGULAR = re.sub('S$', '', UNSPECIFIED_FLAG)
 UNSPECIFIED_REGTOWN = f"(?P<regtown>{'|'.join(MULTI_COUNTY_REGISTRATION_TOWNS)})"
-UNSPECIFIED_COUNTY = f"(?P<cty>{'|'.join(COUNTIES.sos_county)})"
+UNSPECIFIED_COUNTY = f"(?P<cty>{'|'.join(CountyData.get_lookup().sos_county)})"
 SOS_FLAG = f"(?P<sos_flag>{UNSPECIFIED_FLAG})"
 
 # Patterns

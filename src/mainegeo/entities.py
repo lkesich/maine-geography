@@ -1,13 +1,6 @@
 from dataclasses import dataclass
-from mainegeo import lookups
-from functools import cache
 from enum import Enum
-
-def cached_class_attr(f):
-    """
-    @private
-    """
-    return classmethod(property(cache(f)))
+from mainegeo.lookups import CountyData
 
 class TownType(Enum):
     """
@@ -57,20 +50,14 @@ class County:
     fips: str|int = None
     
     def __post_init__(self):
-        self._normalize_types()
-        self._assign_missing_attributes()
-    
-    @cached_class_attr
-    def _lookup(cls):
-        return lookups.CountyData()
-    
-    def _normalize_types(self):
-        if self.fips: self.fips = int(self.fips)
+        if self.fips:
+            self.fips = int(self.fips)
             
-    def _assign_missing_attributes(self):
-        attrs = (self.name, self.code, self.fips)
-        if not all(attrs):
-            l = self._lookup
-            self.fips = self.fips or l.code_to_fips.get(self.code) or l.name_to_fips.get(self.name)
-            self.code = self.code or l.fips_to_code.get(self.fips) or l.name_to_code.get(self.name)
-            self.name = self.name or l.fips_to_name.get(self.fips) or l.code_to_name.get(self.code)
+        if not all((self.name, self.code, self.fips)):
+            lookup = CountyData.get_lookup()
+            fips = self.fips
+            code = self.code
+            name = self.name
+            self.fips = fips or lookup.code_to_fips.get(code) or lookup.name_to_fips.get(name)
+            self.code = code or lookup.fips_to_code.get(fips) or lookup.name_to_code.get(name)
+            self.name = name or lookup.fips_to_name.get(fips) or lookup.code_to_name.get(code)

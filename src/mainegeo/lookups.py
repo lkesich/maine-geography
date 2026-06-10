@@ -6,15 +6,15 @@ __all__ = [
     'CountyData'
 ]
 
-from ruamel.yaml import YAML
 import json
+from ruamel.yaml import YAML
 from collections import defaultdict
 from dataclasses import dataclass
-from functools import cached_property
+from functools import cache, cached_property
 from typing import ClassVar
 from pathlib import Path
 
-from mainegeo.connections import (
+from mainegeo.paths import (
     OVERRIDES_YAML,
     COUNTIES_JSON,
     TOWNSHIPS_JSON
@@ -22,6 +22,13 @@ from mainegeo.connections import (
 
 yaml = YAML()
 yaml.indent(mapping = 2, sequence = 4)
+
+def invert_list_of_dicts(dictionaries: list[dict]):
+    result = defaultdict(list)
+    for dictionary in dictionaries:
+        for key, value in dictionary.items():
+            result[key].append(value)
+    return dict(result)
 
 @dataclass
 class Lookup:
@@ -31,6 +38,11 @@ class Lookup:
         self.set_data()
         self.set_convenience_attrs()
         
+    @classmethod
+    @cache            
+    def get_lookup(cls):
+        return cls()
+        
     @property
     def loader(self):
         extension = self.DATA_SOURCE.suffix.lower()
@@ -38,6 +50,8 @@ class Lookup:
             return json.load
         elif extension in ('.yaml', '.yml'):
             return yaml.load
+        else:
+            raise ValueError(f'Unsupported extension: {extension}')
     
     def load_data(self):
         with open(self.DATA_SOURCE) as f:
@@ -46,26 +60,18 @@ class Lookup:
     def set_data(self):
         data = self.load_data()
         if isinstance(data, list):
-            data = Lookup.invert_list_of_dicts(data)
+            data = invert_list_of_dicts(data)
         self.data = data
                 
     def set_convenience_attrs(self):
         for key in self.data.keys():
             if key in self.__dataclass_fields__.keys():
                 setattr(self, key, self.data[key])
-    
-    @staticmethod
-    def invert_list_of_dicts(dictionaries: list[dict]):
-        result = defaultdict(list)
-        for dictionary in dictionaries:
-            for key, value in dictionary.items():
-                result[key].append(value)
-        return dict(result)
 
 @dataclass     
 class Overrides(Lookup):
-    known_typos: dict = None
-    ambiguous_groups: dict = None
+    known_typos: list[dict] = None
+    ambiguous_groups: list[dict] = None
     
     DATA_SOURCE: ClassVar[Path] = OVERRIDES_YAML
     
@@ -76,7 +82,7 @@ class Overrides(Lookup):
             'replacement': replacement,
             'notes': notes
         }
-        entry = {k: v for k, v in entry_template.items() if v}
+        entry = {k: v for k, v in entry_template.items() if v is not None}
         data['known_typos'].append(entry)
         
         with open(self.DATA_SOURCE, 'w') as f:
@@ -91,7 +97,7 @@ class Overrides(Lookup):
             'replacement': replacement,
             'notes': notes
         }
-        entry = {k: v for k, v in entry_template.items() if v}
+        entry = {k: v for k, v in entry_template.items() if v is not None}
         data['ambiguous_groups'].append(entry)
         
         with open(self.DATA_SOURCE, 'w') as f:
@@ -102,7 +108,7 @@ class Overrides(Lookup):
 @dataclass       
 class TownshipData(Lookup):
     town: list[str] = None
-    
+
     DATA_SOURCE: ClassVar[Path] = TOWNSHIPS_JSON
 
 @dataclass

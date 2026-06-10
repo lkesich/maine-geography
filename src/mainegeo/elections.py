@@ -24,14 +24,14 @@ __all__ = [
 
 import re
 from dataclasses import dataclass, asdict
-from functools import cached_property, cache
+from functools import cache, cached_property
 from typing import List, Type
 from itertools import filterfalse
 
 from utils.strings import replace_all, normalize_whitespace
 from utils.core import chain_operations
 
-from mainegeo.matching import TownDatabase
+from mainegeo.matching import get_town_database
 from mainegeo.entities import County, Cousub
 from mainegeo.townships import (
     clean_code,
@@ -271,20 +271,30 @@ class ResultString:
 class ResultGeo:
     name: str
     county: County
+    strict: bool = False
     
     @classmethod
-    def from_strings(cls, name: str, county_code: str) -> "ResultGeo":
+    def from_strings(cls, name: str, county_code: str, strict: bool = False) -> "ResultGeo":
         return cls(
             name = name,
-            county = County(code=county_code)
+            county = County(code=county_code),
+            strict = strict
         )
 
 @dataclass
 class Municipality(ResultGeo):
-    @cached_class_attr
-    def towndb(cls):
-        towndb = TownDatabase.build()
-        return towndb
+    @cached_property
+    def matched_town(self):
+        return get_town_database().match(
+            self.name,
+            self.county.fips,
+            cleaned = True,
+            strict = self.strict
+        )
+    
+    @property
+    def is_matched(self):
+        return self.matched_town is not None
     
     @property
     def canonical_name(self):
@@ -316,15 +326,13 @@ class Municipality(ResultGeo):
             'county': asdict(self.matched_county),
             'cousub': asdict(self.matched_cousub),
             'geocode': self.matched_geocode,
-            'matched': self.matched_town is not None
+            'is_matched': self.is_matched
         }
 
 @dataclass
 class NamedTownship(Municipality):
-    @cached_property
-    def matched_town(self):
-        return self.towndb.match(self.name, self.county.fips, cleaned = True)
-
+    pass
+    
 @dataclass
 class UnnamedTownship(Municipality):
     @property
@@ -338,29 +346,30 @@ class UnnamedTownship(Municipality):
     @property
     def code(self):
         return clean_code(self.name)
-    
-    @cached_property
-    def matched_town(self):
-        for name in (self.name, self.code, self.alias):
-            match = self.towndb.match(name, self.county.fips, cleaned = True)
-            if match:
-                return match
 
 @dataclass
 class UnspecifiedGroup(ResultGeo):
     @cached_property
     def _format_match(self) -> re.Match:
         return FORMATTED_GROUP_PATTERN.match(self.name)
+    
+    @property
+    def is_matched(self):
+        return self._format_match and self.group_registration_town.is_matched
 
     @property
     def group_county(self) -> County:
         county_code = self._format_match.group('cty') or self.county.code
-        return County(code=county_code)
+        return County(code = county_code)
     
     @property
     def group_registration_town(self) -> NamedTownship:
         reg_town_name = self._format_match.group('regtown')
-        return NamedTownship(name=reg_town_name, county=self.county)
+        return NamedTownship(
+            name = reg_town_name,
+            county = self.county,
+            strict = self.strict
+        )
     
     @property
     def canonical_name(self):
@@ -384,7 +393,8 @@ class UnspecifiedGroup(ResultGeo):
             'canonical_name': self.canonical_name,
             'raw_name': self.name,
             'county': asdict(self.group_county),
-            'group_registration_town': self.group_registration_town.to_dict()
+            'group_registration_town': self.group_registration_town.to_dict(),
+            'is_matched': self.is_matched
         }
 
 @dataclass
@@ -393,9 +403,15 @@ class ReportingUnit:
     """
     result_string: ResultString
     county: County
+    strict: bool = False
 
     @classmethod
-    def from_strings(cls, result_str: str, county_code: str) -> "ReportingUnit":
+    def from_strings(
+        cls,
+        result_str: str,
+        county_code: str,
+        strict: bool = False
+    ) -> "ReportingUnit":
         """ Factory method to create a fully processed ReportingUnit.
         
         Examples:
@@ -446,8 +462,9 @@ class ReportingUnit:
             1
             """
         unit = cls(
-            result_string=ResultString(result_str),
-            county=County(code=county_code)
+            result_string = ResultString(result_str),
+            county = County(code = county_code),
+            strict = strict
         )
         return unit
     
@@ -551,7 +568,7 @@ class ReportingUnit:
         """
         towns = []
         for name in self.result_string.registration_town_names:
-            regtown = NamedTownship(name, self.county)
+            regtown = NamedTownship(name, self.county, strict = self.strict)
             towns.append(regtown)
         
         for group in self.unspecified_groups:
@@ -572,7 +589,7 @@ class ReportingUnit:
         objects = []
         for name in formatted_reporting_names:
             ResultClass = ReportingUnit._classify_fragment(name)
-            reporting_object = ResultClass(name, self.county)
+            reporting_object = ResultClass(name, self.county, strict = self.strict)
             objects.append(reporting_object)
         return objects
     
@@ -595,10 +612,13 @@ class ReportingUnit:
         
         Examples:
             >>> unit = ReportingUnit.from_strings('MILLINOCKET/TWPS', 'PEN')
-            >>> [town.name for town in unit.unspecified_groups]
+            >>> groups = unit.unspecified_groups
+            >>> [group.name for group in groups]
             ['UNSPECIFIED MILLINOCKET TWPS']
-            >>> [town.canonical_name for town in unit.unspecified_groups]
+            >>> [group.canonical_name for group in groups]
             ['Unspecified Penobscot County Twps']
+            >>> [group.group_registration_town.canonical_name for group in groups]
+            ['Millinocket']
         """
         return [t for t in self.reporting_towns if type(t) == UnspecifiedGroup]
     
@@ -731,9 +751,7 @@ class ReportingUnit:
         """
         if is_unnamed_township(fragment_name):
             return UnnamedTownship
-        
-        if UNSPECIFIED_FLAG in fragment_name:
+        elif UNSPECIFIED_FLAG in fragment_name:
             return UnspecifiedGroup
-        
-        if fragment_name:
+        else:
             return NamedTownship

@@ -10307,6 +10307,8 @@ towns:
   - PLANTATION OF SEBOEIS
   - SEBOEIS
   - SEBOEIS PLT
+  - SEBOIS
+  - SEBOIS PLT
 - name: Seboomook Twp
   geocode: '25852'
   town_type: Unorganized Township
