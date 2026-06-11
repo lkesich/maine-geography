@@ -8,11 +8,12 @@ __all__ = [
 
 import json
 from ruamel.yaml import YAML
-from collections import defaultdict
 from dataclasses import dataclass
 from functools import cache, cached_property
 from typing import ClassVar
 from pathlib import Path
+
+from utils.core import invert_list_of_dicts
 
 from mainegeo.paths import (
     OVERRIDES_YAML,
@@ -22,13 +23,6 @@ from mainegeo.paths import (
 
 yaml = YAML()
 yaml.indent(mapping = 2, sequence = 4)
-
-def invert_list_of_dicts(dictionaries: list[dict]):
-    result = defaultdict(list)
-    for dictionary in dictionaries:
-        for key, value in dictionary.items():
-            result[key].append(value)
-    return dict(result)
 
 @dataclass
 class Lookup:

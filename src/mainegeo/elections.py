@@ -24,7 +24,7 @@ __all__ = [
 
 import re
 from dataclasses import dataclass, asdict
-from functools import cache, cached_property
+from functools import cached_property
 from typing import List, Type
 from itertools import filterfalse
 
@@ -64,6 +64,192 @@ from mainegeo.patterns import (
 
 @dataclass
 class ResultString:
+    """
+    A string containing one or more geographies from raw election results.
+    
+    This dataclass performs initial normalization and parsing operations on a raw 
+    election result string. It owns operations that are fully agnostic to what
+    the underlying geographies in the string represent.
+    
+    Args:
+        raw_string: The raw string representation of the reporting unit
+    
+    `ResultString` operations normalize variations in meaningful formatting (including 
+    whitespace, delimiters, and other punctuation) so that two types of parsing can occur:
+    
+        1. The splitting of result strings into a list of tokens, each
+            one representing a single geography.
+        2. The separation of tokens representing reporting geographies from tokens 
+            representing non-reporting registration towns.
+            
+    Consider the following raw election result strings:
+        * 'T12/R13 & T9/R8 WELS (ASHLAND)'
+        * 'SHERMAN (AND BENEDICTA & SILVER RIDGE TWP) '
+        * 'BERRY/CATHANCE/MARION TWPS (EAST MACHIAS)'
+        * 'BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP'
+        * 'MOUNT CHASE -- T5 R7 TWP'
+        * 'ISLAND FALLS -- T4-R3 TWP'
+        * 'DOVER-FOXCROFT'
+
+    These examples display huge variation in how formatting is used to convey information.
+    
+    **Parentheses** are used in three different ways in these examples:
+        * In `T12/R13 & T9/R8 WELS (ASHLAND)`, parentheses convey that Ashland
+            is a non-reporting registration town.
+        * In `EBEEMEE TWP (T5 R9 NWP)`, parentheses convey that T5 R9 NWP is 
+            an alias of EBEEMEE TWP.
+        * In `SHERMAN (AND BENEDICTA & SILVER RIDGE TWP)`, parentheses convey that
+            this reporting unit includes all of SHERMAN, BENEDICTA, and SILVER RIDGE,
+            and that all three voted in SHERMAN.
+    
+    **Ampersands, commas, and forward slashes** are all used interchangeably to delimit 
+    geographies within a string:
+        * `BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP` is delimited with commas (`,`).
+        * `BERRY/CATHANCE/MARION TWPS (EAST MACHIAS)` is delimited with forward slashes (`/`).
+        * `SHERMAN (AND BENEDICTA & SILVER RIDGE TWP) ` contains two different 
+            delimiters: the substring `AND` and the ampersand character (`&`).
+        
+    **Forward slashes** are sometimes used as delimiters, but in `T12/R13` and
+    `T9/R8 WELS` they are used to separate township and range designators. Each of 
+    `T12/R13` and `T9/R8 WELS` is a single township, correctly written as `T12 R13` 
+    and `T9 R8 WELS`.
+    
+    **Hyphens and parentheses** are used interchangeably to indicate 
+    a non-reporting registration town:
+        * In `MOUNT CHASE -- T5 R7 TWP`, MOUNT CHASE is the registration town and 
+            T5 R7 TWP is the reporting town. MOUNT CHASE is not included in the vote totals 
+            for this reporting unit. 
+        * In `BERRY/CATHANCE/MARION TWPS (EAST MACHIAS)`, EAST MACHIAS is the registration
+            town and BERRY TWP, CATHANCE TWP, and MARION TWP are all reporting towns.
+            EAST MACHIAS is not included in the vote totals for this reporting unit.
+            
+    However, both characters are also used in other ways (see above).
+        
+    **Single hyphens** occur in the canonical names of towns, such as 
+    DOVER-FOXCROFT, and are sometimes used non-canonically to separate township
+    and range designators, as in the case of `T4-R3 TWP` (correctly written as T4 R3).
+    
+    **Ampersands** also occur in the canonical names of some townships,
+    e.g. King & Bartlett Twp.
+    
+    Examples:
+        **Example 1**
+            >>> raw_string = 'T12/R13 & T9/R8 WELS (ASHLAND)'
+            
+            Variations present:
+                * Ampersand (`&`) is used as a token boundary
+                * parentheses (`()`) indicate a non-reporting registration town
+                * Forward slash (`/`), a character that sometimes serves as a token boundary,
+                is used non-canonically to separate the township and range designators in a 
+                township name
+            
+            >>> result = ResultString(raw_string)
+            >>> result.normalized_string
+            'T12 R13, T9 R8 WELS (ASHLAND)'
+            >>> result.reporting_town_names
+            ['T12 R13', 'T9 R8 WELS']
+            >>> result.registration_town_names
+            ['ASHLAND']
+ 
+        **Example 2**
+            >>> raw_string = 'SHERMAN (AND BENEDICTA & SILVER RIDGE TWP) '
+            
+            Variations present:
+                * Ampersand (`&`) and the substring `AND` are both used as token boundaries
+                * Parentheses (`()`) used to group part of the reporting unit
+                * Trailing whitespace
+                
+            >>> result = ResultString(raw_string)
+            >>> result.normalized_string
+            'SHERMAN, BENEDICTA, SILVER RIDGE TWP'
+            >>> result.reporting_town_names
+            ['SHERMAN', 'BENEDICTA', 'SILVER RIDGE TWP']
+            >>> result.registration_town_names
+            []
+            
+        Example 3:
+            >>> raw_string = 'BERRY/CATHANCE/MARION TWPS (EAST MACHIAS)'
+            
+            Variations present:
+                * Forward slash (`/`) used as token boundary
+                * Parentheses (`()`) used to indicate non-reporting registration town
+                
+            >>> result = ResultString(raw_string)
+            >>> result.normalized_string
+            'BERRY, CATHANCE, MARION TWPS (EAST MACHIAS)'
+            >>> result.reporting_town_names
+            ['BERRY', 'CATHANCE', 'MARION TWPS']
+            >>> result.registration_town_names
+            ['EAST MACHIAS']
+            
+            Note that the plural 'TWPS' is left unaltered. ResultString operations are 
+            not concerned with what real-world geography or geographies a token represents 
+            (e.g. whether MARION TWPS is a variation of MARION TWP or group of townships 
+            that vote at MARION).
+        
+        Example 4:
+            >>> raw_string = 'BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP'
+            
+            Variations present:
+                * Parentheses (`()`) used to indicate township alias, not registration
+                town
+
+            >>> result = ResultString(raw_string)
+            >>> result.normalized_string
+            'BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP'
+            >>> result.reporting_town_names
+            ['BARNARD TWP', 'EBEEMEE TWP (T5 R9 NWP)', 'T4 R9 NWP TWP']
+            >>> result.registration_town_names
+            []
+            
+        Example 5:
+            >>> raw_string = 'MOUNT CHASE -- T5 R7 TWP'
+            
+            Variations present:
+                * Double hyphen (`--`) used to indicate non-reporting registration
+                town
+        
+            >>> result = ResultString(raw_string)
+            >>> result.normalized_string
+            'MOUNT CHASE--T5 R7 TWP'
+            >>> result.reporting_town_names
+            ['T5 R7']
+            >>> result.registration_town_names
+            ['MOUNT CHASE']
+        
+        Example 6:
+            >>> raw_string = 'ISLAND FALLS -- T4-R3 TWP'
+            
+            Variations present:
+                * Double hyphen (`--`) used to indicate non-reporting registration
+                town
+                * Hyphen, (`-`), a character that sometimes serves as a token boundary,
+                is used non-canonically to separate the township and range designators 
+                in a township name
+
+            >>> result = ResultString(raw_string)
+            >>> result.normalized_string
+            'ISLAND FALLS--T4 R3 TWP'
+            >>> result.reporting_town_names
+            ['T4 R3']
+            >>> result.registration_town_names
+            ['ISLAND FALLS']
+            
+        Example 7:
+            >>> raw_string = 'DOVER-FOXCROFT'
+            
+            Variations present:
+                * Hyphen, (`-`), a character that sometimes indicates a registration town,
+                is used in the canonical name for a town
+        
+            >>> result = ResultString('DOVER-FOXCROFT')
+            >>> result.normalized_string
+            'DOVER-FOXCROFT'
+            >>> result.reporting_town_names
+            ['DOVER-FOXCROFT']
+            >>> result.registration_town_names
+            []
+    """
     raw_string: str
     
     @cached_property
@@ -410,6 +596,16 @@ class UnspecifiedGroup(ResultGeo):
 @dataclass
 class ReportingUnit:
     """ A collection of towns and unspecified groups parsed from a `ResultString`.
+        
+    This class performs normalization operations on individual fragments of a 
+    delimited string, coerces them into objects representing different geography
+    types, and attempts to match them to known Maine geographies. It provides several
+    options for representing the fully parsed unit as a string or dictionary.
+
+    Args:
+        result_string: A `ResultString` object
+        county: A `County` object
+        strict: True if exception should be raised when a match fails
     """
     result_string: ResultString
     county: County
@@ -554,18 +750,35 @@ class ReportingUnit:
     def registration_string(self) -> str:
         """
         A formatted string representation of registration towns in this unit.
+        
+        Examples:
+            >>> args = ('WEBSTER PLT -- PRENTISS TWP', 'PEN')
+            >>> ReportingUnit.from_strings(*args).registration_string
+            'Webster Plt'
+            
+            >>> args = ('WYMAN TWP (CARRABASSETT VALLEY & EUSTIS)', 'FRA')
+            >>> ReportingUnit.from_strings(*args).registration_string
+            'Carrabassett Valley, Eustis'
+            
+            >>> args = ('JACKMAN TWPS', 'SOM')
+            >>> ReportingUnit.from_strings(*args).registration_string
+            'Jackman'
+            
+            >>> args = ('MILLINOCKET/PISCATAQUIS TWPS', 'PEN')
+            >>> ReportingUnit.from_strings(*args).registration_string
+            'Millinocket'
         """
         return STANDARD_DELIMITER.join(self.registration_town_names)
                 
     @cached_property
-    def reporting_town_names(self):
+    def reporting_town_names(self) -> list[str]:
         """
         List of reporting town names. Canonical name if match was found, else raw name.
         """
         return [town.consensus_name for town in self.reporting_towns]
     
     @cached_property
-    def registration_town_names(self):
+    def registration_town_names(self) -> list[str]:
         """
         List of registration town names. Canonical name if match was found, else raw name.
         """
@@ -607,14 +820,26 @@ class ReportingUnit:
         return towns
     
     @cached_property
-    def specified_reporting_towns(self) -> List[ResultGeo]:
+    def specified_reporting_towns(self) -> List[Municipality]:
         """
         List of reporting units that are not unspecified groups.
         
         Examples:
+            >>> unit = ReportingUnit.from_strings('WYMAN TWP/SPRING LAKE TWP', 'FRA')
+            >>> [town.name for town in unit.specified_reporting_towns]
+            ['WYMAN TWP', 'SPRING LAKE TWP']
+            
+            >>> unit = ReportingUnit.from_strings('WYMAN TWP (CARRABASSETT VALLEY)', 'FRA')
+            >>> [town.name for town in unit.specified_reporting_towns]
+            ['WYMAN TWP']
+
             >>> unit = ReportingUnit.from_strings('MILLINOCKET/TWPS', 'PEN')
             >>> [town.name for town in unit.specified_reporting_towns]
             ['MILLINOCKET']
+            
+            >>> unit = ReportingUnit.from_strings('MILLINOCKET TWPS', 'PEN')
+            >>> [town.name for town in unit.specified_reporting_towns]
+            []
         """
         return [t for t in self.reporting_towns if type(t) != UnspecifiedGroup]
     
@@ -691,8 +916,8 @@ class ReportingUnit:
 
     @staticmethod
     def _format_reporting_towns(
-            reporting_towns: List[str], 
-            registration_towns: List[str], 
+            reporting_town_names: List[str], 
+            registration_town_names: List[str], 
             has_unspecified_group: bool) -> List[str]:
         """
         Apply consistent format to towns and unspecified groups.
@@ -717,11 +942,11 @@ class ReportingUnit:
         """
         reporting = [
             ReportingUnit._format_plural(town, has_unspecified_group)
-            for town in reporting_towns
+            for town in reporting_town_names
         ]
         
         if has_unspecified_group:
-            return ReportingUnit._name_unspecified_group(reporting, registration_towns)
+            return ReportingUnit._name_unspecified_group(reporting, registration_town_names)
         else:
             return reporting
 
@@ -747,15 +972,22 @@ class ReportingUnit:
     
     @staticmethod
     def _name_unspecified_group(
-            reporting_towns: List[str], 
-            registration_towns: List[str]) -> List[str]:
+            reporting_town_names: List[str], 
+            registration_town_names: List[str]) -> List[str]:
         """
         Label unspecified groups with their reporting town and a standard 'unspecified' flag.
         """
-        name_elements = [STANDARD_FLAG, *registration_towns, *reporting_towns]
-        unformatted_group_name = ' '.join(filter(None, name_elements))
-        group_name = ReportingUnit._format_unspecified_group(unformatted_group_name)
-        return [group_name if UNSPECIFIED_FLAG in town else town for town in reporting_towns]
+        name_elements = [
+            STANDARD_FLAG,
+            *registration_town_names,
+            *reporting_town_names
+        ]
+        unformatted = ' '.join(filter(None, name_elements))
+        group_name = ReportingUnit._format_unspecified_group(unformatted)
+        return [
+            group_name if UNSPECIFIED_FLAG in town else town
+            for town in reporting_town_names
+        ]
     
     @staticmethod
     def _classify_fragment(fragment_name: str) -> Type[ResultGeo]:
