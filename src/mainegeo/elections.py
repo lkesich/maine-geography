@@ -13,6 +13,197 @@ extracting reporting and registration towns, and standardizing the format of uns
 
 Most functions in this module can be run on a delimited result string containing multiple towns,
 or a list of multiple towns.
+
+Consider the following raw election result strings:
+    * 'T12/R13 & T9/R8 WELS (ASHLAND)'
+    * 'SHERMAN (AND BENEDICTA & SILVER RIDGE TWP) '
+    * 'BERRY/CATHANCE/MARION TWPS (EAST MACHIAS)'
+    * 'BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP'
+    * 'MOUNT CHASE -- T5 R7 TWP'
+    * 'ISLAND FALLS -- T4-R3 TWP'
+    * 'DOVER-FOXCROFT'
+
+These examples display huge variation in how formatting is used to convey information.
+
+
+Parentheses are used in three different ways in these examples:
+
+* In `T12/R13 & T9/R8 WELS (ASHLAND)`, parentheses convey that Ashland
+    is a non-reporting registration town.
+* In `EBEEMEE TWP (T5 R9 NWP)`, parentheses convey that T5 R9 NWP is 
+    an alias of EBEEMEE TWP.
+* In `SHERMAN (AND BENEDICTA & SILVER RIDGE TWP)`, parentheses convey that
+    this reporting unit includes all of SHERMAN, BENEDICTA, and SILVER RIDGE,
+    and that all three voted in SHERMAN.
+
+
+Ampersands, commas, and forward slashes are all used interchangeably to delimit 
+geographies within a string:
+
+* `BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP` is delimited with commas.
+* `BERRY/CATHANCE/MARION TWPS (EAST MACHIAS)` is delimited with forward slashes (`/`).
+* `SHERMAN (AND BENEDICTA & SILVER RIDGE TWP) ` contains two different 
+    delimiters--the substring `AND` and the ampersand character (`&`).
+    
+    
+Forward slashes are sometimes used as delimiters, but in `T12/R13` and
+`T9/R8 WELS` they are used to separate township and range designators. Each of 
+`T12/R13` and `T9/R8 WELS` is a single township, correctly written as `T12 R13` 
+and `T9 R8 WELS`.
+
+
+Hyphens and parentheses are used interchangeably to indicate 
+a non-reporting registration town:
+
+* In `MOUNT CHASE -- T5 R7 TWP`, MOUNT CHASE is the registration town and 
+    T5 R7 TWP is the reporting town. MOUNT CHASE is not included in the vote totals 
+    for this reporting unit. 
+* In `BERRY/CATHANCE/MARION TWPS (EAST MACHIAS)`, EAST MACHIAS is the registration
+    town and BERRY TWP, CATHANCE TWP, and MARION TWP are all reporting towns.
+    EAST MACHIAS is not included in the vote totals for this reporting unit.
+        
+However, both characters are also used in other ways (see above).
+    
+    
+Single hyphens occur in the canonical names of towns, such as 
+DOVER-FOXCROFT, and are sometimes used non-canonically to separate township
+and range designators, as in the case of `T4-R3 TWP` (correctly written as T4 R3).
+
+
+Ampersands also occur in the canonical names of some townships,
+e.g. King & Bartlett Twp.
+
+
+Examples:
+    **Example 1**
+    >>> raw_string = 'T12/R13 & T9/R8 WELS (ASHLAND)'
+    
+    Variations present:
+    
+    * Ampersand (`&`) is used as a token boundary
+    * parentheses (`()`) indicate a non-reporting registration town
+    * Forward slash (`/`), a character that sometimes serves as a token boundary,
+    is used non-canonically to separate the township and range designators in a 
+    township name
+    
+    >>> result = ResultString(raw_string)
+    >>> result.normalized_string
+    'T12 R13, T9 R8 WELS (ASHLAND)'
+    >>> result.reporting_town_names
+    ['T12 R13', 'T9 R8 WELS']
+    >>> result.registration_town_names
+    ['ASHLAND']
+
+
+    **Example 2**
+    >>> raw_string = 'SHERMAN (AND BENEDICTA & SILVER RIDGE TWP) '
+    
+    Variations present:
+    
+    * Ampersand (`&`) and the substring `AND` are both used as token boundaries
+    * Parentheses (`()`) used to group part of the reporting unit
+    * Trailing whitespace
+        
+    >>> result = ResultString(raw_string)
+    >>> result.normalized_string
+    'SHERMAN, BENEDICTA, SILVER RIDGE TWP'
+    >>> result.reporting_town_names
+    ['SHERMAN', 'BENEDICTA', 'SILVER RIDGE TWP']
+    >>> result.registration_town_names
+    []
+        
+
+    **Example 3**
+    >>> raw_string = 'BERRY/CATHANCE/MARION TWPS (EAST MACHIAS)'
+    
+    Variations present:
+    
+    * Forward slash (`/`) used as token boundary
+    * Parentheses (`()`) used to indicate non-reporting registration town
+        
+    >>> result = ResultString(raw_string)
+    >>> result.normalized_string
+    'BERRY, CATHANCE, MARION TWPS (EAST MACHIAS)'
+    >>> result.reporting_town_names
+    ['BERRY', 'CATHANCE', 'MARION TWPS']
+    >>> result.registration_town_names
+    ['EAST MACHIAS']
+    
+    Note that the plural 'TWPS' is left unaltered. ResultString operations are 
+    not concerned with what real-world geography or geographies a token represents 
+    (e.g. whether MARION TWPS is a variation of MARION TWP or group of townships 
+    that vote at MARION, whether MARION TWP is even a valid town name, etc).
+    
+    
+    **Example 4**
+    >>> raw_string = 'BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP'
+    
+    Variations present:
+    
+    * Parentheses (`()`) used to indicate township alias, not registration
+    town
+
+    >>> result = ResultString(raw_string)
+    >>> result.normalized_string
+    'BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP'
+    >>> result.reporting_town_names
+    ['BARNARD TWP', 'EBEEMEE TWP (T5 R9 NWP)', 'T4 R9 NWP TWP']
+    >>> result.registration_town_names
+    []
+        
+        
+    **Example 5**
+    >>> raw_string = 'MOUNT CHASE -- T5 R7 TWP'
+    
+    Variations present:
+    
+    * Double hyphen (`--`) used to indicate non-reporting registration
+    town
+
+    >>> result = ResultString(raw_string)
+    >>> result.normalized_string
+    'MOUNT CHASE--T5 R7 TWP'
+    >>> result.reporting_town_names
+    ['T5 R7']
+    >>> result.registration_town_names
+    ['MOUNT CHASE']
+    
+    
+    **Example 6**
+    >>> raw_string = 'ISLAND FALLS -- T4-R3 TWP'
+    
+    Variations present:
+    
+    * Double hyphen (`--`) used to indicate non-reporting registration
+    town
+    * Hyphen, (`-`), a character that sometimes serves as a token boundary,
+    is used non-canonically to separate the township and range designators 
+    in a township name
+
+    >>> result = ResultString(raw_string)
+    >>> result.normalized_string
+    'ISLAND FALLS--T4 R3 TWP'
+    >>> result.reporting_town_names
+    ['T4 R3']
+    >>> result.registration_town_names
+    ['ISLAND FALLS']
+        
+
+    **Example 7**
+    >>> raw_string = 'DOVER-FOXCROFT'
+    
+    Variations present:
+    
+    * Hyphen, (`-`), a character that sometimes indicates a registration town,
+    is used in the canonical name for a town
+
+    >>> result = ResultString('DOVER-FOXCROFT')
+    >>> result.normalized_string
+    'DOVER-FOXCROFT'
+    >>> result.reporting_town_names
+    ['DOVER-FOXCROFT']
+    >>> result.registration_town_names
+    []
 """
 
 __docformat__ = 'google'
@@ -68,8 +259,8 @@ class ResultString:
     A string containing one or more geographies from raw election results.
     
     This dataclass performs initial normalization and parsing operations on a raw 
-    election result string. It owns operations that are fully agnostic to what
-    the underlying geographies in the string represent.
+    election result string. It owns operations that are fully agnostic to which
+    geographies the tokens in the string represent.
     
     Args:
         raw_string: The raw string representation of the reporting unit
@@ -81,174 +272,6 @@ class ResultString:
             one representing a single geography.
         2. The separation of tokens representing reporting geographies from tokens 
             representing non-reporting registration towns.
-            
-    Consider the following raw election result strings:
-        * 'T12/R13 & T9/R8 WELS (ASHLAND)'
-        * 'SHERMAN (AND BENEDICTA & SILVER RIDGE TWP) '
-        * 'BERRY/CATHANCE/MARION TWPS (EAST MACHIAS)'
-        * 'BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP'
-        * 'MOUNT CHASE -- T5 R7 TWP'
-        * 'ISLAND FALLS -- T4-R3 TWP'
-        * 'DOVER-FOXCROFT'
-
-    These examples display huge variation in how formatting is used to convey information.
-    
-    **Parentheses** are used in three different ways in these examples:
-        * In `T12/R13 & T9/R8 WELS (ASHLAND)`, parentheses convey that Ashland
-            is a non-reporting registration town.
-        * In `EBEEMEE TWP (T5 R9 NWP)`, parentheses convey that T5 R9 NWP is 
-            an alias of EBEEMEE TWP.
-        * In `SHERMAN (AND BENEDICTA & SILVER RIDGE TWP)`, parentheses convey that
-            this reporting unit includes all of SHERMAN, BENEDICTA, and SILVER RIDGE,
-            and that all three voted in SHERMAN.
-    
-    **Ampersands, commas, and forward slashes** are all used interchangeably to delimit 
-    geographies within a string:
-        * `BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP` is delimited with commas (`,`).
-        * `BERRY/CATHANCE/MARION TWPS (EAST MACHIAS)` is delimited with forward slashes (`/`).
-        * `SHERMAN (AND BENEDICTA & SILVER RIDGE TWP) ` contains two different 
-            delimiters: the substring `AND` and the ampersand character (`&`).
-        
-    **Forward slashes** are sometimes used as delimiters, but in `T12/R13` and
-    `T9/R8 WELS` they are used to separate township and range designators. Each of 
-    `T12/R13` and `T9/R8 WELS` is a single township, correctly written as `T12 R13` 
-    and `T9 R8 WELS`.
-    
-    **Hyphens and parentheses** are used interchangeably to indicate 
-    a non-reporting registration town:
-        * In `MOUNT CHASE -- T5 R7 TWP`, MOUNT CHASE is the registration town and 
-            T5 R7 TWP is the reporting town. MOUNT CHASE is not included in the vote totals 
-            for this reporting unit. 
-        * In `BERRY/CATHANCE/MARION TWPS (EAST MACHIAS)`, EAST MACHIAS is the registration
-            town and BERRY TWP, CATHANCE TWP, and MARION TWP are all reporting towns.
-            EAST MACHIAS is not included in the vote totals for this reporting unit.
-            
-    However, both characters are also used in other ways (see above).
-        
-    **Single hyphens** occur in the canonical names of towns, such as 
-    DOVER-FOXCROFT, and are sometimes used non-canonically to separate township
-    and range designators, as in the case of `T4-R3 TWP` (correctly written as T4 R3).
-    
-    **Ampersands** also occur in the canonical names of some townships,
-    e.g. King & Bartlett Twp.
-    
-    Examples:
-        **Example 1**
-            >>> raw_string = 'T12/R13 & T9/R8 WELS (ASHLAND)'
-            
-            Variations present:
-                * Ampersand (`&`) is used as a token boundary
-                * parentheses (`()`) indicate a non-reporting registration town
-                * Forward slash (`/`), a character that sometimes serves as a token boundary,
-                is used non-canonically to separate the township and range designators in a 
-                township name
-            
-            >>> result = ResultString(raw_string)
-            >>> result.normalized_string
-            'T12 R13, T9 R8 WELS (ASHLAND)'
-            >>> result.reporting_town_names
-            ['T12 R13', 'T9 R8 WELS']
-            >>> result.registration_town_names
-            ['ASHLAND']
- 
-        **Example 2**
-            >>> raw_string = 'SHERMAN (AND BENEDICTA & SILVER RIDGE TWP) '
-            
-            Variations present:
-                * Ampersand (`&`) and the substring `AND` are both used as token boundaries
-                * Parentheses (`()`) used to group part of the reporting unit
-                * Trailing whitespace
-                
-            >>> result = ResultString(raw_string)
-            >>> result.normalized_string
-            'SHERMAN, BENEDICTA, SILVER RIDGE TWP'
-            >>> result.reporting_town_names
-            ['SHERMAN', 'BENEDICTA', 'SILVER RIDGE TWP']
-            >>> result.registration_town_names
-            []
-            
-        Example 3:
-            >>> raw_string = 'BERRY/CATHANCE/MARION TWPS (EAST MACHIAS)'
-            
-            Variations present:
-                * Forward slash (`/`) used as token boundary
-                * Parentheses (`()`) used to indicate non-reporting registration town
-                
-            >>> result = ResultString(raw_string)
-            >>> result.normalized_string
-            'BERRY, CATHANCE, MARION TWPS (EAST MACHIAS)'
-            >>> result.reporting_town_names
-            ['BERRY', 'CATHANCE', 'MARION TWPS']
-            >>> result.registration_town_names
-            ['EAST MACHIAS']
-            
-            Note that the plural 'TWPS' is left unaltered. ResultString operations are 
-            not concerned with what real-world geography or geographies a token represents 
-            (e.g. whether MARION TWPS is a variation of MARION TWP or group of townships 
-            that vote at MARION).
-        
-        Example 4:
-            >>> raw_string = 'BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP'
-            
-            Variations present:
-                * Parentheses (`()`) used to indicate township alias, not registration
-                town
-
-            >>> result = ResultString(raw_string)
-            >>> result.normalized_string
-            'BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP'
-            >>> result.reporting_town_names
-            ['BARNARD TWP', 'EBEEMEE TWP (T5 R9 NWP)', 'T4 R9 NWP TWP']
-            >>> result.registration_town_names
-            []
-            
-        Example 5:
-            >>> raw_string = 'MOUNT CHASE -- T5 R7 TWP'
-            
-            Variations present:
-                * Double hyphen (`--`) used to indicate non-reporting registration
-                town
-        
-            >>> result = ResultString(raw_string)
-            >>> result.normalized_string
-            'MOUNT CHASE--T5 R7 TWP'
-            >>> result.reporting_town_names
-            ['T5 R7']
-            >>> result.registration_town_names
-            ['MOUNT CHASE']
-        
-        Example 6:
-            >>> raw_string = 'ISLAND FALLS -- T4-R3 TWP'
-            
-            Variations present:
-                * Double hyphen (`--`) used to indicate non-reporting registration
-                town
-                * Hyphen, (`-`), a character that sometimes serves as a token boundary,
-                is used non-canonically to separate the township and range designators 
-                in a township name
-
-            >>> result = ResultString(raw_string)
-            >>> result.normalized_string
-            'ISLAND FALLS--T4 R3 TWP'
-            >>> result.reporting_town_names
-            ['T4 R3']
-            >>> result.registration_town_names
-            ['ISLAND FALLS']
-            
-        Example 7:
-            >>> raw_string = 'DOVER-FOXCROFT'
-            
-            Variations present:
-                * Hyphen, (`-`), a character that sometimes indicates a registration town,
-                is used in the canonical name for a town
-        
-            >>> result = ResultString('DOVER-FOXCROFT')
-            >>> result.normalized_string
-            'DOVER-FOXCROFT'
-            >>> result.reporting_town_names
-            ['DOVER-FOXCROFT']
-            >>> result.registration_town_names
-            []
     """
     raw_string: str
     
@@ -963,7 +986,7 @@ class ReportingUnit:
         else:
             return PLURAL_PATTERN.sub(SINGULAR, town)
 
-    @staticmethod    
+    @staticmethod
     def _format_unspecified_group(group_name: str) -> str:
         """
         Apply special format to unspecified groups that include a county.
