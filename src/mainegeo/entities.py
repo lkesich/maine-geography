@@ -13,7 +13,7 @@ class TownType(Enum):
     UNORGANIZED = "Unorganized Township"
     ISLAND = "Island Group"
 
-@dataclass
+@dataclass(frozen=True)
 class Cousub:
     """
     An object representing a U.S. Census Bureau county subdivision (`COUSUB`_).
@@ -31,7 +31,7 @@ class Cousub:
     name: str = None
     basename: str = None
     geoclass: str = None
-
+    
 @dataclass
 class County:
     """
@@ -61,3 +61,6 @@ class County:
             self.fips = fips or lookup.code_to_fips.get(code) or lookup.name_to_fips.get(name)
             self.code = code or lookup.fips_to_code.get(fips) or lookup.name_to_code.get(name)
             self.name = name or lookup.fips_to_name.get(fips) or lookup.code_to_name.get(code)
+            
+    def __hash__(self):
+        return hash(self.fips)

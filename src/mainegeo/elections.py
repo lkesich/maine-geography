@@ -147,7 +147,7 @@ Examples:
     >>> result.normalized_string
     'BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP'
     >>> result.reporting_town_names
-    ['BARNARD TWP', 'EBEEMEE TWP (T5 R9 NWP)', 'T4 R9 NWP TWP']
+    ['BARNARD TWP', 'EBEEMEE TWP T5 R9 NWP', 'T4 R9 NWP']
     >>> result.registration_town_names
     []
         
@@ -486,7 +486,7 @@ class ResultString:
         cleanup = ORPHAN_PARENTHESIS_PATTERN.sub(r'\g<result>', delimit)
         return cleanup
 
-@dataclass
+@dataclass(frozen=True)
 class ResultGeo:
     name: str
     county: County
@@ -500,7 +500,7 @@ class ResultGeo:
             strict = strict
         )
 
-@dataclass
+@dataclass(frozen=True)
 class Municipality(ResultGeo):
     @cached_property
     def matched_town(self):
@@ -548,11 +548,11 @@ class Municipality(ResultGeo):
             'is_matched': self.is_matched
         }
 
-@dataclass
+@dataclass(frozen=True)
 class NamedTownship(Municipality):
     pass
     
-@dataclass
+@dataclass(frozen=True)
 class UnnamedTownship(Municipality):
     @property
     def has_alias(self):
@@ -566,7 +566,7 @@ class UnnamedTownship(Municipality):
     def code(self):
         return clean_code(self.name)
 
-@dataclass
+@dataclass(frozen=True)
 class UnspecifiedGroup(ResultGeo):
     @cached_property
     def _format_match(self) -> re.Match:
@@ -680,6 +680,14 @@ class ReportingUnit:
             >>> len(result.unspecified_groups)
             1
             
+            >>> result = ReportingUnit.from_strings('MILLINOCKET/PIS TWPS/PEN TWPS', 'PEN')
+            >>> result.reporting_town_names
+            ['Millinocket', 'Unspecified Piscataquis County Twps', 'Unspecified Penobscot County Twps']
+            >>> result.registration_town_names
+            ['Millinocket']
+            >>> len(result.unspecified_groups)
+            2
+            
             >>> result = ReportingUnit.from_strings('MEDWAY TOWNSHIPS', 'PEN')
             >>> result.formatted_string
             'Unspecified Twps [Medway]'
@@ -766,6 +774,10 @@ class ReportingUnit:
             >>> args = ('MILLINOCKET/PISCATAQUIS TWPS', 'PEN')
             >>> ReportingUnit.from_strings(*args).reporting_string
             'Millinocket, Unspecified Piscataquis County Twps'
+            
+            >>> args = ('MILLINOCKET/PEN TWPS/PIS TWPS', 'PEN')
+            >>> ReportingUnit.from_strings(*args).reporting_string
+            'Millinocket, Unspecified Penobscot County Twps, Unspecified Piscataquis County Twps'
         """
         return STANDARD_DELIMITER.join(self.reporting_town_names)
     
@@ -790,6 +802,10 @@ class ReportingUnit:
             >>> args = ('MILLINOCKET/PISCATAQUIS TWPS', 'PEN')
             >>> ReportingUnit.from_strings(*args).registration_string
             'Millinocket'
+            
+            >>> args = ('MILLINOCKET/PIS TWPS/PEN TWPS', 'PEN')
+            >>> ReportingUnit.from_strings(*args).registration_string
+            'Millinocket'
         """
         return STANDARD_DELIMITER.join(self.registration_town_names)
                 
@@ -812,15 +828,15 @@ class ReportingUnit:
         """
         List of registration towns as `NamedTownship` objects.
         """
-        towns = []
+        towns = set()
         for name in self.result_string.registration_town_names:
             regtown = NamedTownship(name, self.county, strict = self.strict)
-            towns.append(regtown)
+            towns.add(regtown)
         
         for group in self.unspecified_groups:
-            towns.append(group.group_registration_town)
+            towns.add(group.group_registration_town)
         
-        return towns
+        return list(towns)
 
     @cached_property
     def reporting_towns(self) -> List[ResultGeo]:
@@ -917,7 +933,7 @@ class ReportingUnit:
             return False
         elif len(reporting) in (1, 2) and UNSPECIFIED_FLAG in reporting:
             return True
-        elif len(reporting) == 1 and UNSPECIFIED_FLAG in reporting[0]:
+        elif all(UNSPECIFIED_FLAG in town for town in reporting):
             return True
         elif MULTI_COUNTY_PATTERN.match(group_name):
             return True
@@ -992,9 +1008,31 @@ class ReportingUnit:
         Apply special format to unspecified groups that include a county.
         """
         return MULTI_COUNTY_PATTERN.sub(MULTI_COUNTY_FORMAT, group_name)
-    
+        
     @staticmethod
     def _name_unspecified_group(
+            reporting_town_names: List[str], 
+            registration_town_names: List[str]) -> List[str]:
+        """
+        Label unspecified groups with their reporting town and a standard 'unspecified' flag.
+        """
+        is_specified_reporting = lambda token: UNSPECIFIED_FLAG not in token
+        reporting_hosts = filter(is_specified_reporting, reporting_town_names)
+        hosts = registration_town_names + list(reporting_hosts)
+        
+        formatted_tokens = []
+        for town in reporting_town_names:
+            if UNSPECIFIED_FLAG in town:                
+                unformatted = ' '.join(filter(None, [STANDARD_FLAG, *hosts, town]))
+                group_name = ReportingUnit._format_unspecified_group(unformatted)
+                formatted_tokens.append(group_name)
+            else:
+                formatted_tokens.append(town)
+        
+        return formatted_tokens
+        
+    @staticmethod
+    def _name_unspecified_group2(
             reporting_town_names: List[str], 
             registration_town_names: List[str]) -> List[str]:
         """
@@ -1007,6 +1045,7 @@ class ReportingUnit:
         ]
         unformatted = ' '.join(filter(None, name_elements))
         group_name = ReportingUnit._format_unspecified_group(unformatted)
+        
         return [
             group_name if UNSPECIFIED_FLAG in town else town
             for town in reporting_town_names
