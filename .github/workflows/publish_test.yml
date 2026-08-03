@@ -14,7 +14,6 @@ jobs:
       
     environment:
       name: testpypi
-      url: https://test.pypi.org/legacy
     
     steps:
       - name: Check out repo
