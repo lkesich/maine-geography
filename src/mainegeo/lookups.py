@@ -13,7 +13,7 @@ from functools import cache, cached_property
 from typing import ClassVar
 from pathlib import Path
 
-from utils.core import invert_list_of_dicts
+from mainegeo._vendor import invert_list_of_dicts
 
 from mainegeo.paths import (
     OVERRIDES_YAML,

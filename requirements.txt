@@ -5,4 +5,3 @@ pdoc
 ipykernel
 pyyaml
 ruamel.yaml
-utils @ git+https://github.com/lkesich/utilities.git

@@ -26,8 +26,13 @@ __all__ = [
 ]
 
 from re import IGNORECASE
-from utils.strings import replace_all, squish, match_case, normalize_whitespace
-from utils.core import chain_operations
+from mainegeo._vendor import (
+    replace_all,
+    squish,
+    match_case,
+    normalize_whitespace,
+    chain_operations
+)
 from mainegeo.entities import TownType
 from mainegeo.patterns import (
     UNNAMED_PATTERN, 

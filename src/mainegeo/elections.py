@@ -219,9 +219,7 @@ from functools import cached_property
 from typing import List, Type
 from itertools import filterfalse
 
-from utils.strings import replace_all, normalize_whitespace
-from utils.core import chain_operations
-
+from mainegeo._vendor import replace_all, normalize_whitespace, chain_operations
 from mainegeo.matching import get_town_database
 from mainegeo.entities import County, Cousub
 from mainegeo.townships import (
