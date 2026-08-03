@@ -14,7 +14,7 @@ jobs:
       
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/mainegeo
+      url: https://test.pypi.org/legacy
     
     steps:
       - name: Check out repo
