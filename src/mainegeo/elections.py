@@ -1030,26 +1030,6 @@ class ReportingUnit:
                 formatted_tokens.append(town)
         
         return formatted_tokens
-        
-    @staticmethod
-    def _name_unspecified_group2(
-            reporting_town_names: List[str], 
-            registration_town_names: List[str]) -> List[str]:
-        """
-        Label unspecified groups with their reporting town and a standard 'unspecified' flag.
-        """
-        name_elements = [
-            STANDARD_FLAG,
-            *registration_town_names,
-            *reporting_town_names
-        ]
-        unformatted = ' '.join(filter(None, name_elements))
-        group_name = ReportingUnit._format_unspecified_group(unformatted)
-        
-        return [
-            group_name if UNSPECIFIED_FLAG in town else town
-            for town in reporting_town_names
-        ]
     
     @staticmethod
     def _classify_fragment(fragment_name: str) -> Type[ResultGeo]:

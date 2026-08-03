@@ -34,6 +34,9 @@ ambiguous_groups:
     group names. The intent in these cases is clear.
 - pattern: ^PISCATAQUIS TWPS$
   replacement: MILLINOCKET PISCATAQUIS TWPS
-  notes: |-
+  notes: |
     During at least one cycle, SoS staff did not pluralize the Millinocket 
     group names. The intent in these cases is clear.
+- pattern: MILLINOCKET/TWPS
+  replacement: MILLINOCKET/PIS TWPS/PEN TWPS
+  notes: Both groups are included unless otherwise specified
