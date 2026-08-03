@@ -1,4 +1,5 @@
 build
+twine
 mypy
 pdoc
 ipykernel
