@@ -886,10 +886,10 @@ class ReportingUnit:
         List of reporting units that are unspecified groups.
         
         Examples:
-            >>> unit = ReportingUnit.from_strings('MILLINOCKET/TWPS', 'PEN')
+            >>> unit = ReportingUnit.from_strings('MILLINOCKET/PEN TWPS', 'PEN')
             >>> groups = unit.unspecified_groups
             >>> [group.name for group in groups]
-            ['UNSPECIFIED MILLINOCKET TWPS']
+            ['UNSPECIFIED MILLINOCKET TWPS [PEN]']
             >>> [group.canonical_name for group in groups]
             ['Unspecified Penobscot County Twps']
             >>> [group.group_registration_town.canonical_name for group in groups]
