@@ -36,6 +36,6 @@ jobs:
       - name: Build source and wheel distributions
         run: python -m build
 
-      - name: Publish distributions to TestPyPi
+      - name: Publish distributions to PyPi
         uses: pypa/gh-action-pypi-publish@release/v1
         

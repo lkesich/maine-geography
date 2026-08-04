@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from functools import cached_property, cache
 from typing import List, Dict, Optional, ClassVar
 from pathlib import Path
-import yaml
+from ruamel.yaml import YAML
 from mainegeo.paths import TOWNSHIPS_JSON, TOWNSHIPS_YAML
 from mainegeo.entities import (County, Cousub, TownType)
 from mainegeo.townships import (
@@ -25,6 +25,8 @@ from mainegeo.townships import (
     toggle_suffix,
     extract_alias
 )
+
+yaml = YAML()
 
 class MatchError(Exception):
     def __init__(self, message):
@@ -152,7 +154,7 @@ class TownDatabase:
         file_path = file_path or cls.YAML_PATH
          
         with open(file_path, 'r') as f:
-            data = yaml.safe_load(f)
+            data = yaml.load(f)
             towns = []
             
             for yml in data['towns']:
@@ -208,7 +210,7 @@ class TownDatabase:
         file_path.parent.mkdir(parents = True, exist_ok = True)
         
         with open(file_path, 'w') as f:
-            yaml.dump(serializable_data, f, sort_keys=False)
+            yaml.dump(serializable_data, f)
 
     def _process_data(self):
         if self.data is not None:

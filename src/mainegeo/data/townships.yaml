@@ -130,7 +130,7 @@ towns:
   - T3 R3 NBKP
   - TOWNSHIP OF ALDER BROOK
 - name: Alder Stream Twp
-  geocode: 07801
+  geocode: '07801'
   town_type: Unorganized Township
   gnis_id: '2748767'
   county:
@@ -243,7 +243,7 @@ towns:
   - ALTON TWP
   - TOWN OF ALTON
 - name: Amherst
-  geocode: 09010
+  geocode: '09010'
   town_type: Town
   gnis_id: '582323'
   county:
@@ -554,7 +554,7 @@ towns:
   - AUGUSTA TWP
   - CITY OF AUGUSTA
 - name: Aurora
-  geocode: 09020
+  geocode: '09020'
   town_type: Town
   gnis_id: '582335'
   county:
@@ -704,7 +704,7 @@ towns:
   - KENDUSKEAG PLT
   - SUNBURY TOWN
 - name: Bar Harbor
-  geocode: 09030
+  geocode: '09030'
   town_type: Town
   gnis_id: '582341'
   county:
@@ -813,7 +813,7 @@ towns:
   - BEALS TWP
   - TOWN OF BEALS
 - name: Beattie Twp
-  geocode: 07802
+  geocode: '07802'
   town_type: Unorganized Township
   gnis_id: '2748756'
   county:
@@ -1115,7 +1115,7 @@ towns:
   - T10 R17 WELS
   - TOWNSHIP OF BIG TEN
 - name: Big Twenty Twp
-  geocode: 03801
+  geocode: '03801'
   town_type: Unorganized Township
   gnis_id: '1987139'
   county:
@@ -1262,7 +1262,7 @@ towns:
   - TOWNSHIP OF BLANCHARD
   - UNORGANIZED TERRITORY OF BLANCHARD
 - name: Blue Hill
-  geocode: 09040
+  geocode: '09040'
   town_type: Town
   gnis_id: '582357'
   county:
@@ -1633,7 +1633,7 @@ towns:
   - BRISTOL TWP
   - TOWN OF BRISTOL
 - name: Brooklin
-  geocode: 09050
+  geocode: '09050'
   town_type: Town
   gnis_id: '582370'
   county:
@@ -1669,7 +1669,7 @@ towns:
   - BROOKS TWP
   - TOWN OF BROOKS
 - name: Brooksville
-  geocode: 09060
+  geocode: '09060'
   town_type: Town
   gnis_id: '582372'
   county:
@@ -1776,7 +1776,7 @@ towns:
   - BUCKFIELD TWP
   - TOWN OF BUCKFIELD
 - name: Bucksport
-  geocode: 09070
+  geocode: '09070'
   town_type: Town
   gnis_id: '582377'
   county:
@@ -2018,7 +2018,7 @@ towns:
   - HELL GATE
   - TOWN OF CARATUNK
 - name: Caribou
-  geocode: 03080
+  geocode: '03080'
   town_type: City
   gnis_id: '582389'
   county:
@@ -2054,7 +2054,7 @@ towns:
   - CARMEL TWP
   - TOWN OF CARMEL
 - name: Carrabassett Valley
-  geocode: 07018
+  geocode: '07018'
   town_type: Town
   gnis_id: '582391'
   county:
@@ -2144,7 +2144,7 @@ towns:
   - CARTHAGE TWP
   - TOWN OF CARTHAGE
 - name: Cary Twp
-  geocode: 03090
+  geocode: '03090'
   town_type: Unorganized Township
   gnis_id: '582394'
   county:
@@ -2181,7 +2181,7 @@ towns:
   - CASCO TWP
   - TOWN OF CASCO
 - name: Castine
-  geocode: 09080
+  geocode: '09080'
   town_type: Town
   gnis_id: '582396'
   county:
@@ -2298,7 +2298,7 @@ towns:
   - CENTERVILLE TWP
   - TOWN OF CENTERVILLE
 - name: Chain of Ponds Twp
-  geocode: 07803
+  geocode: '07803'
   town_type: Unorganized Township
   gnis_id: '2748764'
   county:
@@ -2522,7 +2522,7 @@ towns:
   - JONES' PLANTATION
   - TOWN OF CHINA
 - name: Clayton Lake Twp
-  geocode: 03841
+  geocode: '03841'
   town_type: Unorganized Township
   gnis_id: '1987169'
   county:
@@ -2577,7 +2577,7 @@ towns:
   - CLINTON TWP
   - TOWN OF CLINTON
 - name: Coburn Gore
-  geocode: 07804
+  geocode: '07804'
   town_type: Unorganized Township
   gnis_id: '2748762'
   county:
@@ -2697,7 +2697,7 @@ towns:
   - CONCORD TWP
   - TOWNSHIP OF CONCORD
 - name: Connor Twp
-  geocode: 03802
+  geocode: '03802'
   town_type: Unorganized Township
   gnis_id: '582416'
   county:
@@ -2841,7 +2841,7 @@ towns:
   - COVE POINT TWP
   - TOWNSHIP OF COVE POINT
 - name: Cox Patent
-  geocode: 03803
+  geocode: '03803'
   town_type: Unorganized Township
   gnis_id: '1987689'
   county:
@@ -2856,7 +2856,7 @@ towns:
   aliases:
   - COX PATENT
 - name: Cranberry Isles
-  geocode: 09090
+  geocode: '09090'
   town_type: Town
   gnis_id: '582423'
   county:
@@ -2912,7 +2912,7 @@ towns:
   - TOWNSHIP OF CRIEHAVEN
   - UNORGANIZED TERRITORY OF CRIEHAVEN
 - name: Cross Lake Twp
-  geocode: 03899
+  geocode: '03899'
   town_type: Unorganized Township
   gnis_id: '1987227'
   county:
@@ -3078,7 +3078,7 @@ towns:
   - DANFORTH TWP
   - TOWN OF DANFORTH
 - name: Davis Twp
-  geocode: 07806
+  geocode: '07806'
   town_type: Unorganized Township
   gnis_id: '2748805'
   county:
@@ -3192,7 +3192,7 @@ towns:
   - DEBLOIS TWP
   - TOWN OF DEBLOIS
 - name: Dedham
-  geocode: 09100
+  geocode: '09100'
   town_type: Town
   gnis_id: '582436'
   county:
@@ -3210,7 +3210,7 @@ towns:
   - DEDHAM TWP
   - TOWN OF DEDHAM
 - name: Deer Isle
-  geocode: 09110
+  geocode: '09110'
   town_type: Town
   gnis_id: '582437'
   county:
@@ -3452,7 +3452,7 @@ towns:
   - PLANTATION OF DREW
   - PLANTATION OF DREW (HISTORICAL)
 - name: Dudley Twp
-  geocode: 03804
+  geocode: '03804'
   town_type: Unorganized Township
   gnis_id: '1987140'
   county:
@@ -3659,7 +3659,7 @@ towns:
   - T2 R4 BKP EKR
   - TOWNSHIP OF EAST MOXIE
 - name: Eastbrook
-  geocode: 09120
+  geocode: '09120'
   town_type: Town
   gnis_id: '582452'
   county:
@@ -3677,7 +3677,7 @@ towns:
   - EASTBROOK TWP
   - TOWN OF EASTBROOK
 - name: Easton
-  geocode: 03180
+  geocode: '03180'
   town_type: Town
   gnis_id: '582459'
   county:
@@ -3844,7 +3844,7 @@ towns:
   - PLANTATION OF ELLIOTTSVILLE
   - TOWNSHIP OF ELLIOTSVILLE
 - name: Ellsworth
-  geocode: 09130
+  geocode: '09130'
   town_type: City
   gnis_id: '582465'
   county:
@@ -4082,7 +4082,7 @@ towns:
   - T4 R4 BKP WKR
   - TOWNSHIP OF FLAGSTAFF
 - name: Fletchers Landing Twp
-  geocode: 09804
+  geocode: '09804'
   town_type: Unorganized Township
   gnis_id: '2748538'
   county:
@@ -4144,7 +4144,7 @@ towns:
   - T10 R3 NBPP
   - TOWNSHIP OF FOREST
 - name: Forkstown Twp
-  geocode: 03805
+  geocode: '03805'
   town_type: Unorganized Township
   gnis_id: '1987690'
   county:
@@ -4185,7 +4185,7 @@ towns:
   - T6 R2 NBKP
   - TOWNSHIP OF FORSYTH
 - name: Fort Fairfield
-  geocode: 03190
+  geocode: '03190'
   town_type: Town
   gnis_id: '582476'
   county:
@@ -4259,7 +4259,7 @@ towns:
   - FRANKFORT TWP
   - TOWN OF FRANKFORT
 - name: Franklin
-  geocode: 09140
+  geocode: '09140'
   town_type: Town
   gnis_id: '582479'
   county:
@@ -4296,7 +4296,7 @@ towns:
   - FREEDOM TWP
   - TOWN OF FREEDOM
 - name: Freeman Twp
-  geocode: 07808
+  geocode: '07808'
   town_type: Unorganized Township
   gnis_id: '2748817'
   county:
@@ -4313,7 +4313,7 @@ towns:
   - FREEMAN TOWNSHIP
   - FREEMAN TWP
 - name: Freeport
-  geocode: 05080
+  geocode: '05080'
   town_type: Town
   gnis_id: '582481'
   county:
@@ -4331,7 +4331,7 @@ towns:
   - FREEPORT TWP
   - TOWN OF FREEPORT
 - name: Frenchboro
-  geocode: 09190
+  geocode: '09190'
   town_type: Town
   gnis_id: '582482'
   county:
@@ -4403,7 +4403,7 @@ towns:
   - FRIENDSHIP TWP
   - TOWN OF FRIENDSHIP
 - name: Frye Island
-  geocode: 05085
+  geocode: '05085'
   town_type: Town
   gnis_id: '2378261'
   county:
@@ -4563,7 +4563,7 @@ towns:
   - GLENWOOD PLT
   - PLANTATION OF GLENWOOD
 - name: Gorham
-  geocode: 05090
+  geocode: '05090'
   town_type: Town
   gnis_id: '582493'
   county:
@@ -4583,7 +4583,7 @@ towns:
   - NARRAGANSETT NUMBER SEVEN
   - TOWN OF GORHAM
 - name: Gorham Gore
-  geocode: 07809
+  geocode: '07809'
   town_type: Unorganized Township
   gnis_id: '2748748'
   county:
@@ -4601,7 +4601,7 @@ towns:
   - T1 R9
   - T1 R9 WBKP
 - name: Gouldsboro
-  geocode: 09150
+  geocode: '09150'
   town_type: Town
   gnis_id: '582494'
   county:
@@ -4713,7 +4713,7 @@ towns:
   - GRAY TWP
   - TOWN OF GRAY
 - name: Great Pond
-  geocode: 09160
+  geocode: '09160'
   town_type: Town
   gnis_id: '582498'
   county:
@@ -4971,7 +4971,7 @@ towns:
   - HAMPDEN TWP
   - TOWN OF HAMPDEN
 - name: Hancock
-  geocode: 09170
+  geocode: '09170'
   town_type: Town
   gnis_id: '582509'
   county:
@@ -4989,7 +4989,7 @@ towns:
   - HANCOCK TWP
   - TOWN OF HANCOCK
 - name: Hancock County Island
-  geocode: 09000
+  geocode: '09000'
   town_type: Island Group
   gnis_id: '0'
   county:
@@ -5233,7 +5233,7 @@ towns:
   - HERMON TWP
   - TOWN OF HERMON
 - name: Hersey
-  geocode: 03280
+  geocode: '03280'
   town_type: Town
   gnis_id: '1729675'
   county:
@@ -5355,7 +5355,7 @@ towns:
   - T4 R6 BKP WKR
   - TOWNSHIP OF HOBBSTOWN
 - name: Hodgdon
-  geocode: 03290
+  geocode: '03290'
   town_type: Town
   gnis_id: '582521'
   county:
@@ -5537,7 +5537,7 @@ towns:
   - T1 R6 BKP EKR
   - TOWNSHIP OF INDIAN STREAM
 - name: Industry
-  geocode: 07080
+  geocode: '07080'
   town_type: Town
   gnis_id: '582528'
   county:
@@ -5645,7 +5645,7 @@ towns:
   - JACKSON TWP
   - TOWN OF JACKSON
 - name: Jay
-  geocode: 07090
+  geocode: '07090'
   town_type: Town
   gnis_id: '582534'
   county:
@@ -5681,7 +5681,7 @@ towns:
   - JEFFERSON TWP
   - TOWN OF JEFFERSON
 - name: Jim Pond Twp
-  geocode: 07811
+  geocode: '07811'
   town_type: Unorganized Township
   gnis_id: '2748766'
   county:
@@ -5831,7 +5831,7 @@ towns:
   - KENNEBUNKPORT TWP
   - TOWN OF KENNEBUNKPORT
 - name: Kibby Twp
-  geocode: 07812
+  geocode: '07812'
   town_type: Unorganized Township
   gnis_id: '2748763'
   county:
@@ -6097,7 +6097,7 @@ towns:
   - T1 R3 TS
   - TOWNSHIP OF LAMBERT LAKE
 - name: Lamoine
-  geocode: 09180
+  geocode: '09180'
   town_type: Town
   gnis_id: '582549'
   county:
@@ -6116,7 +6116,7 @@ towns:
   - LAMOINE TWP
   - TOWN OF LAMOINE
 - name: Lang Twp
-  geocode: 07813
+  geocode: '07813'
   town_type: Unorganized Township
   gnis_id: '2748800'
   county:
@@ -6521,7 +6521,7 @@ towns:
   - LIVERMORE
   - TOWN OF LIVERMORE
 - name: Livermore Falls
-  geocode: 01080
+  geocode: '01080'
   town_type: Town
   gnis_id: '582567'
   county:
@@ -6663,7 +6663,7 @@ towns:
   - LOWELL TWP
   - TOWN OF LOWELL
 - name: Lowelltown Twp
-  geocode: 07814
+  geocode: '07814'
   town_type: Unorganized Township
   gnis_id: '2748751'
   county:
@@ -6861,7 +6861,7 @@ towns:
   - MADAWASKA TWP
   - TOWN OF MADAWASKA
 - name: Madawaska Lake Twp
-  geocode: 03889
+  geocode: '03889'
   town_type: Unorganized Township
   gnis_id: '1987217'
   county:
@@ -6955,7 +6955,7 @@ towns:
   - MANCHESTER TWP
   - TOWN OF MANCHESTER
 - name: Mapleton
-  geocode: 03380
+  geocode: '03380'
   town_type: Town
   gnis_id: '582579'
   county:
@@ -6973,7 +6973,7 @@ towns:
   - MAPLETON TWP
   - TOWN OF MAPLETON
 - name: Mariaville
-  geocode: 09200
+  geocode: '09200'
   town_type: Town
   gnis_id: '582580'
   county:
@@ -7008,7 +7008,7 @@ towns:
   - MARION TWP
   - TOWNSHIP OF MARION
 - name: Mars Hill
-  geocode: 03390
+  geocode: '03390'
   town_type: Town
   gnis_id: '582582'
   county:
@@ -7080,7 +7080,7 @@ towns:
   - MASON TWP
   - TOWNSHIP OF MASON
 - name: Massachusetts Gore
-  geocode: 07815
+  geocode: '07815'
   town_type: Unorganized Township
   gnis_id: '2748765'
   county:
@@ -7189,7 +7189,7 @@ towns:
   - MAYFIELD TWP
   - TOWNSHIP OF MAYFIELD
 - name: Mechanic Falls
-  geocode: 01090
+  geocode: '01090'
   town_type: Town
   gnis_id: '582587'
   county:
@@ -7297,7 +7297,7 @@ towns:
   - MERRILL TWP
   - TOWN OF MERRILL
 - name: Merrill Strip Twp
-  geocode: 07816
+  geocode: '07816'
   town_type: Unorganized Township
   gnis_id: '2748759'
   county:
@@ -7480,7 +7480,7 @@ towns:
   - T2 R7 BKP WKR
   - TOWNSHIP OF MISERY
 - name: Molunkus Twp
-  geocode: 03806
+  geocode: '03806'
   town_type: Unorganized Township
   gnis_id: '2748749'
   county:
@@ -7702,7 +7702,7 @@ towns:
   - MOSCOW TWP
   - TOWN OF MOSCOW
 - name: Mount Abram Twp
-  geocode: 07817
+  geocode: '07817'
   town_type: Unorganized Township
   gnis_id: '2748813'
   county:
@@ -7741,7 +7741,7 @@ towns:
   - MOUNT CHASE TWP
   - TOWN OF MOUNT CHASE
 - name: Mount Desert
-  geocode: 09210
+  geocode: '09210'
   town_type: Town
   gnis_id: '582611'
   county:
@@ -8223,7 +8223,7 @@ towns:
   - NORTH YARMOUTH TWP
   - TOWN OF NORTH YARMOUTH
 - name: North Yarmouth Academy Grant Twp
-  geocode: 03807
+  geocode: '03807'
   town_type: Unorganized Township
   gnis_id: '581546'
   county:
@@ -8321,7 +8321,7 @@ towns:
   - NORWAY TWP
   - TOWN OF NORWAY
 - name: Oakfield
-  geocode: 03480
+  geocode: '03480'
   town_type: Town
   gnis_id: '582644'
   county:
@@ -8407,7 +8407,7 @@ towns:
   - CITY OF OLD TOWN
   - OLD TOWN
 - name: Oqiton Twp
-  geocode: 09802
+  geocode: '09802'
   town_type: Unorganized Township
   gnis_id: '1987280'
   county:
@@ -8427,7 +8427,7 @@ towns:
   - T4 ND
   - TOWNSHIP OF OQITON
 - name: Orient
-  geocode: 03490
+  geocode: '03490'
   town_type: Town
   gnis_id: '582649'
   county:
@@ -8445,7 +8445,7 @@ towns:
   - ORIENT TWP
   - TOWN OF ORIENT
 - name: Orland
-  geocode: 09220
+  geocode: '09220'
   town_type: Town
   gnis_id: '582650'
   county:
@@ -8517,7 +8517,7 @@ towns:
   - ORRINGTON TWP
   - TOWN OF ORRINGTON
 - name: Osborn
-  geocode: 09230
+  geocode: '09230'
   town_type: Town
   gnis_id: '582653'
   county:
@@ -8537,7 +8537,7 @@ towns:
   - OSBORN TWP
   - TOWN OF OSBORN
 - name: Otis
-  geocode: 09240
+  geocode: '09240'
   town_type: Town
   gnis_id: '582654'
   county:
@@ -8899,7 +8899,7 @@ towns:
   - PEMBROKE TWP
   - TOWN OF PEMBROKE
 - name: Penobscot
-  geocode: 09250
+  geocode: '09250'
   town_type: Town
   gnis_id: '582668'
   county:
@@ -8957,7 +8957,7 @@ towns:
   - PERHAM TWP
   - TOWN OF PERHAM
 - name: Perkins Twp
-  geocode: 07818
+  geocode: '07818'
   town_type: Unorganized Township
   gnis_id: '2748518'
   county:
@@ -9292,7 +9292,7 @@ towns:
   - PORTLAND TOWNSHIP
   - PORTLAND TWP
 - name: Pownal
-  geocode: 05180
+  geocode: '05180'
   town_type: Town
   gnis_id: '582684'
   county:
@@ -9507,7 +9507,7 @@ towns:
   - RANGELEY
   - RANGELEY PLT
 - name: Raymond
-  geocode: 05190
+  geocode: '05190'
   town_type: Town
   gnis_id: '582692'
   county:
@@ -9543,7 +9543,7 @@ towns:
   - READFIELD TWP
   - TOWN OF READFIELD
 - name: Redington Twp
-  geocode: 07819
+  geocode: '07819'
   town_type: Unorganized Township
   gnis_id: '2748810'
   county:
@@ -9910,7 +9910,7 @@ towns:
   - ST. ALBANS
   - TOWN OF SAINT ALBANS
 - name: Saint Croix Twp
-  geocode: 03808
+  geocode: '03808'
   town_type: Unorganized Township
   gnis_id: '1987141'
   county:
@@ -10033,7 +10033,7 @@ towns:
   - T5 ND BPP
   - TOWNSHIP OF SAKOM
 - name: Salem Twp
-  geocode: 07820
+  geocode: '07820'
   town_type: Unorganized Township
   gnis_id: '2748816'
   county:
@@ -10199,7 +10199,7 @@ towns:
   - SCARBOROUGH TWP
   - TOWN OF SCARBOROUGH
 - name: Scopan Twp
-  geocode: 03810
+  geocode: '03810'
   town_type: Unorganized Township
   gnis_id: '2648717'
   county:
@@ -10328,7 +10328,7 @@ towns:
   - SEBOOMOOK TWP
   - TOWNSHIP OF SEBOOMOOK
 - name: Sedgwick
-  geocode: 09260
+  geocode: '09260'
   town_type: Town
   gnis_id: '582721'
   county:
@@ -10346,7 +10346,7 @@ towns:
   - SEDGWICK TWP
   - TOWN OF SEDGWICK
 - name: Seven Ponds Twp
-  geocode: 07821
+  geocode: '07821'
   town_type: Unorganized Township
   gnis_id: '2748776'
   county:
@@ -10403,7 +10403,7 @@ towns:
   - TA R12 WELS
   - TOWNSHIP OF SHAWTOWN
 - name: Sherman
-  geocode: 03580
+  geocode: '03580'
   town_type: Town
   gnis_id: '582723'
   county:
@@ -10457,7 +10457,7 @@ towns:
   - SIDNEY TWP
   - TOWN OF SIDNEY
 - name: Silver Ridge Twp
-  geocode: 03809
+  geocode: '03809'
   town_type: Unorganized Township
   gnis_id: '1987142'
   county:
@@ -10475,7 +10475,7 @@ towns:
   - SILVER RIDGE TWP
   - TOWNSHIP OF SILVER RIDGE
 - name: Sinclair Twp
-  geocode: 03898
+  geocode: '03898'
   town_type: Unorganized Township
   gnis_id: '1987226'
   county:
@@ -10495,7 +10495,7 @@ towns:
   - T17 R4
   - T17 R4 WELS
 - name: Skinner Twp
-  geocode: 07822
+  geocode: '07822'
   town_type: Unorganized Township
   gnis_id: '2748758'
   county:
@@ -10548,7 +10548,7 @@ towns:
   - SMITHFIELD TWP
   - TOWN OF SMITHFIELD
 - name: Smyrna
-  geocode: 03590
+  geocode: '03590'
   town_type: Town
   gnis_id: '582727'
   county:
@@ -10666,7 +10666,7 @@ towns:
   - T8 R12 WELS
   - TOWNSHIP OF SOPER MOUNTAIN
 - name: Sorrento
-  geocode: 09270
+  geocode: '09270'
   town_type: Town
   gnis_id: '582730'
   county:
@@ -10772,7 +10772,7 @@ towns:
   - SOUTHPORT TWP
   - TOWN OF SOUTHPORT
 - name: Southwest Harbor
-  geocode: 09280
+  geocode: '09280'
   town_type: Town
   gnis_id: '582740'
   county:
@@ -10919,7 +10919,7 @@ towns:
   - STETSON TWP
   - TOWN OF STETSON
 - name: Stetsontown Twp
-  geocode: 07823
+  geocode: '07823'
   town_type: Unorganized Township
   gnis_id: '2748796'
   county:
@@ -11010,7 +11010,7 @@ towns:
   - STONEHAM TWP
   - TOWN OF STONEHAM
 - name: Stonington
-  geocode: 09290
+  geocode: '09290'
   town_type: Town
   gnis_id: '582751'
   county:
@@ -11046,7 +11046,7 @@ towns:
   - STOW TWP
   - TOWN OF STOW
 - name: Strong
-  geocode: 07180
+  geocode: '07180'
   town_type: Town
   gnis_id: '582753'
   county:
@@ -11064,7 +11064,7 @@ towns:
   - STRONG TWP
   - TOWN OF STRONG
 - name: Sullivan
-  geocode: 09300
+  geocode: '09300'
   town_type: Town
   gnis_id: '582754'
   county:
@@ -11121,7 +11121,7 @@ towns:
   - SUMNER
   - TOWN OF SUMNER
 - name: Surry
-  geocode: 09310
+  geocode: '09310'
   town_type: Town
   gnis_id: '582756'
   county:
@@ -11139,7 +11139,7 @@ towns:
   - SURRY TWP
   - TOWN OF SURRY
 - name: Swans Island
-  geocode: 09320
+  geocode: '09320'
   town_type: Town
   gnis_id: '582757'
   county:
@@ -11259,7 +11259,7 @@ towns:
   - T1 R13
   - T1 R13 WELS
 - name: T1 R5 WELS
-  geocode: 03816
+  geocode: '03816'
   town_type: Unorganized Township
   gnis_id: '1987144'
   county:
@@ -11441,7 +11441,7 @@ towns:
   - T10 R16
   - T10 R16 WELS
 - name: T10 R3 WELS
-  geocode: 03829
+  geocode: '03829'
   town_type: Unorganized Township
   gnis_id: '1987157'
   county:
@@ -11459,7 +11459,7 @@ towns:
   - T10 R3
   - T10 R3 WELS
 - name: T10 R6 WELS
-  geocode: 03830
+  geocode: '03830'
   town_type: Unorganized Township
   gnis_id: '1987158'
   county:
@@ -11477,7 +11477,7 @@ towns:
   - T10 R6
   - T10 R6 WELS
 - name: T10 R7 WELS
-  geocode: 03831
+  geocode: '03831'
   town_type: Unorganized Township
   gnis_id: '1987159'
   county:
@@ -11495,7 +11495,7 @@ towns:
   - T10 R7
   - T10 R7 WELS
 - name: T10 R8 WELS
-  geocode: 03832
+  geocode: '03832'
   town_type: Unorganized Township
   gnis_id: '1987160'
   county:
@@ -11531,7 +11531,7 @@ towns:
   - T10 R9
   - T10 R9 WELS
 - name: T10 SD BPP
-  geocode: 09806
+  geocode: '09806'
   town_type: Unorganized Township
   gnis_id: '2748519'
   county:
@@ -11550,7 +11550,7 @@ towns:
   - T10 SD
   - T10 SD BPP
 - name: T11 R10 WELS
-  geocode: 03837
+  geocode: '03837'
   town_type: Unorganized Township
   gnis_id: '1987165'
   county:
@@ -11567,7 +11567,7 @@ towns:
   - T11 R10
   - T11 R10 WELS
 - name: T11 R11 WELS
-  geocode: 03838
+  geocode: '03838'
   town_type: Unorganized Township
   gnis_id: '1987166'
   county:
@@ -11583,7 +11583,7 @@ towns:
   - T11 R11
   - T11 R11 WELS
 - name: T11 R12 WELS
-  geocode: 03839
+  geocode: '03839'
   town_type: Unorganized Township
   gnis_id: '1987167'
   county:
@@ -11599,7 +11599,7 @@ towns:
   - T11 R12
   - T11 R12 WELS
 - name: T11 R13 WELS
-  geocode: 03840
+  geocode: '03840'
   town_type: Unorganized Township
   gnis_id: '1987168'
   county:
@@ -11615,7 +11615,7 @@ towns:
   - T11 R13
   - T11 R13 WELS
 - name: T11 R15 WELS
-  geocode: 03842
+  geocode: '03842'
   town_type: Unorganized Township
   gnis_id: '1987170'
   county:
@@ -11631,7 +11631,7 @@ towns:
   - T11 R15
   - T11 R15 WELS
 - name: T11 R16 WELS
-  geocode: 03843
+  geocode: '03843'
   town_type: Unorganized Township
   gnis_id: '1987171'
   county:
@@ -11647,7 +11647,7 @@ towns:
   - T11 R16
   - T11 R16 WELS
 - name: T11 R17 WELS
-  geocode: 03844
+  geocode: '03844'
   town_type: Unorganized Township
   gnis_id: '1987172'
   county:
@@ -11681,7 +11681,7 @@ towns:
   - T11 R3
   - T11 R3 NBPP
 - name: T11 R4 WELS
-  geocode: 03833
+  geocode: '03833'
   town_type: Unorganized Township
   gnis_id: '1987161'
   county:
@@ -11700,7 +11700,7 @@ towns:
   - T11 R4
   - T11 R4 WELS
 - name: T11 R7 WELS
-  geocode: 03834
+  geocode: '03834'
   town_type: Unorganized Township
   gnis_id: '1987162'
   county:
@@ -11718,7 +11718,7 @@ towns:
   - T11 R7
   - T11 R7 WELS
 - name: T11 R8 WELS
-  geocode: 03835
+  geocode: '03835'
   town_type: Unorganized Township
   gnis_id: '1987163'
   county:
@@ -11736,7 +11736,7 @@ towns:
   - T11 R8
   - T11 R8 WELS
 - name: T11 R9 WELS
-  geocode: 03836
+  geocode: '03836'
   town_type: Unorganized Township
   gnis_id: '1987164'
   county:
@@ -11754,7 +11754,7 @@ towns:
   - T11 R9
   - T11 R9 WELS
 - name: T12 R10 WELS
-  geocode: 03848
+  geocode: '03848'
   town_type: Unorganized Township
   gnis_id: '1987176'
   county:
@@ -11770,7 +11770,7 @@ towns:
   - T12 R10
   - T12 R10 WELS
 - name: T12 R11 WELS
-  geocode: 03849
+  geocode: '03849'
   town_type: Unorganized Township
   gnis_id: '1987177'
   county:
@@ -11786,7 +11786,7 @@ towns:
   - T12 R11
   - T12 R11 WELS
 - name: T12 R12 WELS
-  geocode: 03850
+  geocode: '03850'
   town_type: Unorganized Township
   gnis_id: '1987178'
   county:
@@ -11802,7 +11802,7 @@ towns:
   - T12 R12
   - T12 R12 WELS
 - name: T12 R13 WELS
-  geocode: 03851
+  geocode: '03851'
   town_type: Unorganized Township
   gnis_id: '1987179'
   county:
@@ -11818,7 +11818,7 @@ towns:
   - T12 R13
   - T12 R13 WELS
 - name: T12 R14 WELS
-  geocode: 03852
+  geocode: '03852'
   town_type: Unorganized Township
   gnis_id: '1987180'
   county:
@@ -11834,7 +11834,7 @@ towns:
   - T12 R14
   - T12 R14 WELS
 - name: T12 R15 WELS
-  geocode: 03853
+  geocode: '03853'
   town_type: Unorganized Township
   gnis_id: '1987181'
   county:
@@ -11850,7 +11850,7 @@ towns:
   - T12 R15
   - T12 R15 WELS
 - name: T12 R16 WELS
-  geocode: 03854
+  geocode: '03854'
   town_type: Unorganized Township
   gnis_id: '1987182'
   county:
@@ -11866,7 +11866,7 @@ towns:
   - T12 R16
   - T12 R16 WELS
 - name: T12 R17 WELS
-  geocode: 03855
+  geocode: '03855'
   town_type: Unorganized Township
   gnis_id: '1987183'
   county:
@@ -11882,7 +11882,7 @@ towns:
   - T12 R17
   - T12 R17 WELS
 - name: T12 R7 WELS
-  geocode: 03845
+  geocode: '03845'
   town_type: Unorganized Township
   gnis_id: '1987173'
   county:
@@ -11900,7 +11900,7 @@ towns:
   - T12 R7
   - T12 R7 WELS
 - name: T12 R8 WELS
-  geocode: 03846
+  geocode: '03846'
   town_type: Unorganized Township
   gnis_id: '1987174'
   county:
@@ -11918,7 +11918,7 @@ towns:
   - T12 R8
   - T12 R8 WELS
 - name: T12 R9 WELS
-  geocode: 03847
+  geocode: '03847'
   town_type: Unorganized Township
   gnis_id: '1987175'
   county:
@@ -11936,7 +11936,7 @@ towns:
   - T12 R9
   - T12 R9 WELS
 - name: T13 R10 WELS
-  geocode: 03860
+  geocode: '03860'
   town_type: Unorganized Township
   gnis_id: '1987188'
   county:
@@ -11952,7 +11952,7 @@ towns:
   - T13 R10
   - T13 R10 WELS
 - name: T13 R11 WELS
-  geocode: 03861
+  geocode: '03861'
   town_type: Unorganized Township
   gnis_id: '1987189'
   county:
@@ -11968,7 +11968,7 @@ towns:
   - T13 R11
   - T13 R11 WELS
 - name: T13 R12 WELS
-  geocode: 03862
+  geocode: '03862'
   town_type: Unorganized Township
   gnis_id: '1987190'
   county:
@@ -11984,7 +11984,7 @@ towns:
   - T13 R12
   - T13 R12 WELS
 - name: T13 R13 WELS
-  geocode: 03863
+  geocode: '03863'
   town_type: Unorganized Township
   gnis_id: '1987191'
   county:
@@ -12000,7 +12000,7 @@ towns:
   - T13 R13
   - T13 R13 WELS
 - name: T13 R14 WELS
-  geocode: 03864
+  geocode: '03864'
   town_type: Unorganized Township
   gnis_id: '1987192'
   county:
@@ -12016,7 +12016,7 @@ towns:
   - T13 R14
   - T13 R14 WELS
 - name: T13 R15 WELS
-  geocode: 03865
+  geocode: '03865'
   town_type: Unorganized Township
   gnis_id: '1987193'
   county:
@@ -12032,7 +12032,7 @@ towns:
   - T13 R15
   - T13 R15 WELS
 - name: T13 R16 WELS
-  geocode: 03866
+  geocode: '03866'
   town_type: Unorganized Township
   gnis_id: '1987194'
   county:
@@ -12048,7 +12048,7 @@ towns:
   - T13 R16
   - T13 R16 WELS
 - name: T13 R5 WELS
-  geocode: 03856
+  geocode: '03856'
   town_type: Unorganized Township
   gnis_id: '1987184'
   county:
@@ -12066,7 +12066,7 @@ towns:
   - T13 R5
   - T13 R5 WELS
 - name: T13 R7 WELS
-  geocode: 03857
+  geocode: '03857'
   town_type: Unorganized Township
   gnis_id: '1987185'
   county:
@@ -12084,7 +12084,7 @@ towns:
   - T13 R7
   - T13 R7 WELS
 - name: T13 R8 WELS
-  geocode: 03858
+  geocode: '03858'
   town_type: Unorganized Township
   gnis_id: '1987186'
   county:
@@ -12102,7 +12102,7 @@ towns:
   - T13 R8
   - T13 R8 WELS
 - name: T13 R9 WELS
-  geocode: 03859
+  geocode: '03859'
   town_type: Unorganized Township
   gnis_id: '1987187'
   county:
@@ -12120,7 +12120,7 @@ towns:
   - T13 R9
   - T13 R9 WELS
 - name: T14 R10 WELS
-  geocode: 03872
+  geocode: '03872'
   town_type: Unorganized Township
   gnis_id: '1987200'
   county:
@@ -12136,7 +12136,7 @@ towns:
   - T14 R10
   - T14 R10 WELS
 - name: T14 R11 WELS
-  geocode: 03873
+  geocode: '03873'
   town_type: Unorganized Township
   gnis_id: '1987201'
   county:
@@ -12152,7 +12152,7 @@ towns:
   - T14 R11
   - T14 R11 WELS
 - name: T14 R12 WELS
-  geocode: 03874
+  geocode: '03874'
   town_type: Unorganized Township
   gnis_id: '1987202'
   county:
@@ -12168,7 +12168,7 @@ towns:
   - T14 R12
   - T14 R12 WELS
 - name: T14 R13 WELS
-  geocode: 03875
+  geocode: '03875'
   town_type: Unorganized Township
   gnis_id: '1987203'
   county:
@@ -12184,7 +12184,7 @@ towns:
   - T14 R13
   - T14 R13 WELS
 - name: T14 R14 WELS
-  geocode: 03876
+  geocode: '03876'
   town_type: Unorganized Township
   gnis_id: '1987204'
   county:
@@ -12200,7 +12200,7 @@ towns:
   - T14 R14
   - T14 R14 WELS
 - name: T14 R15 WELS
-  geocode: 03877
+  geocode: '03877'
   town_type: Unorganized Township
   gnis_id: '1987205'
   county:
@@ -12216,7 +12216,7 @@ towns:
   - T14 R15
   - T14 R15 WELS
 - name: T14 R16 WELS
-  geocode: 03878
+  geocode: '03878'
   town_type: Unorganized Township
   gnis_id: '1987206'
   county:
@@ -12232,7 +12232,7 @@ towns:
   - T14 R16
   - T14 R16 WELS
 - name: T14 R5 WELS
-  geocode: 03867
+  geocode: '03867'
   town_type: Unorganized Township
   gnis_id: '1987195'
   county:
@@ -12250,7 +12250,7 @@ towns:
   - T14 R5
   - T14 R5 WELS
 - name: T14 R6 WELS
-  geocode: 03868
+  geocode: '03868'
   town_type: Unorganized Township
   gnis_id: '1987196'
   county:
@@ -12268,7 +12268,7 @@ towns:
   - T14 R6
   - T14 R6 WELS
 - name: T14 R7 WELS
-  geocode: 03869
+  geocode: '03869'
   town_type: Unorganized Township
   gnis_id: '1987197'
   county:
@@ -12286,7 +12286,7 @@ towns:
   - T14 R7
   - T14 R7 WELS
 - name: T14 R8 WELS
-  geocode: 03870
+  geocode: '03870'
   town_type: Unorganized Township
   gnis_id: '1987198'
   county:
@@ -12304,7 +12304,7 @@ towns:
   - T14 R8
   - T14 R8 WELS
 - name: T14 R9 WELS
-  geocode: 03871
+  geocode: '03871'
   town_type: Unorganized Township
   gnis_id: '1987199'
   county:
@@ -12322,7 +12322,7 @@ towns:
   - T14 R9
   - T14 R9 WELS
 - name: T15 R10 WELS
-  geocode: 03883
+  geocode: '03883'
   town_type: Unorganized Township
   gnis_id: '1987211'
   county:
@@ -12338,7 +12338,7 @@ towns:
   - T15 R10
   - T15 R10 WELS
 - name: T15 R11 WELS
-  geocode: 03884
+  geocode: '03884'
   town_type: Unorganized Township
   gnis_id: '1987212'
   county:
@@ -12354,7 +12354,7 @@ towns:
   - T15 R11
   - T15 R11 WELS
 - name: T15 R12 WELS
-  geocode: 03885
+  geocode: '03885'
   town_type: Unorganized Township
   gnis_id: '1987213'
   county:
@@ -12370,7 +12370,7 @@ towns:
   - T15 R12
   - T15 R12 WELS
 - name: T15 R13 WELS
-  geocode: 03886
+  geocode: '03886'
   town_type: Unorganized Township
   gnis_id: '1987214'
   county:
@@ -12386,7 +12386,7 @@ towns:
   - T15 R13
   - T15 R13 WELS
 - name: T15 R14 WELS
-  geocode: 03887
+  geocode: '03887'
   town_type: Unorganized Township
   gnis_id: '1987215'
   county:
@@ -12402,7 +12402,7 @@ towns:
   - T15 R14
   - T15 R14 WELS
 - name: T15 R15 WELS
-  geocode: 03888
+  geocode: '03888'
   town_type: Unorganized Township
   gnis_id: '1987216'
   county:
@@ -12418,7 +12418,7 @@ towns:
   - T15 R15
   - T15 R15 WELS
 - name: T15 R5 WELS
-  geocode: 03879
+  geocode: '03879'
   town_type: Unorganized Township
   gnis_id: '1987207'
   county:
@@ -12436,7 +12436,7 @@ towns:
   - T15 R5
   - T15 R5 WELS
 - name: T15 R6 WELS
-  geocode: 03880
+  geocode: '03880'
   town_type: Unorganized Township
   gnis_id: '1987208'
   county:
@@ -12454,7 +12454,7 @@ towns:
   - T15 R6
   - T15 R6 WELS
 - name: T15 R8 WELS
-  geocode: 03881
+  geocode: '03881'
   town_type: Unorganized Township
   gnis_id: '1987209'
   county:
@@ -12472,7 +12472,7 @@ towns:
   - T15 R8
   - T15 R8 WELS
 - name: T15 R9 WELS
-  geocode: 03882
+  geocode: '03882'
   town_type: Unorganized Township
   gnis_id: '1987210'
   county:
@@ -12490,7 +12490,7 @@ towns:
   - T15 R9
   - T15 R9 WELS
 - name: T16 MD BPP
-  geocode: 09807
+  geocode: '09807'
   town_type: Unorganized Township
   gnis_id: '2748517'
   county:
@@ -12509,7 +12509,7 @@ towns:
   - T16 MD
   - T16 MD BPP
 - name: T16 R12 WELS
-  geocode: 03894
+  geocode: '03894'
   town_type: Unorganized Township
   gnis_id: '1987222'
   county:
@@ -12525,7 +12525,7 @@ towns:
   - T16 R12
   - T16 R12 WELS
 - name: T16 R13 WELS
-  geocode: 03895
+  geocode: '03895'
   town_type: Unorganized Township
   gnis_id: '1987223'
   county:
@@ -12541,7 +12541,7 @@ towns:
   - T16 R13
   - T16 R13 WELS
 - name: T16 R14 WELS
-  geocode: 03896
+  geocode: '03896'
   town_type: Unorganized Township
   gnis_id: '1987224'
   county:
@@ -12557,7 +12557,7 @@ towns:
   - T16 R14
   - T16 R14 WELS
 - name: T16 R5 WELS
-  geocode: 03890
+  geocode: '03890'
   town_type: Unorganized Township
   gnis_id: '1987218'
   county:
@@ -12577,7 +12577,7 @@ towns:
   - T16 R5
   - T16 R5 WELS
 - name: T16 R6 WELS
-  geocode: 03891
+  geocode: '03891'
   town_type: Unorganized Township
   gnis_id: '1987219'
   county:
@@ -12595,7 +12595,7 @@ towns:
   - T16 R6
   - T16 R6 WELS
 - name: T16 R8 WELS
-  geocode: 03892
+  geocode: '03892'
   town_type: Unorganized Township
   gnis_id: '1987220'
   county:
@@ -12613,7 +12613,7 @@ towns:
   - T16 R8
   - T16 R8 WELS
 - name: T16 R9 WELS
-  geocode: 03893
+  geocode: '03893'
   town_type: Unorganized Township
   gnis_id: '1987221'
   county:
@@ -12631,7 +12631,7 @@ towns:
   - T16 R9
   - T16 R9 WELS
 - name: T17 R12 WELS
-  geocode: 03900
+  geocode: '03900'
   town_type: Unorganized Township
   gnis_id: '1987228'
   county:
@@ -12647,7 +12647,7 @@ towns:
   - T17 R12
   - T17 R12 WELS
 - name: T17 R13 WELS
-  geocode: 03901
+  geocode: '03901'
   town_type: Unorganized Township
   gnis_id: '1987229'
   county:
@@ -12663,7 +12663,7 @@ towns:
   - T17 R13
   - T17 R13 WELS
 - name: T17 R14 WELS
-  geocode: 03902
+  geocode: '03902'
   town_type: Unorganized Township
   gnis_id: '1987230'
   county:
@@ -12695,7 +12695,7 @@ towns:
   - T18 MD
   - T18 MD BPP
 - name: T18 R10 WELS
-  geocode: 03903
+  geocode: '03903'
   town_type: Unorganized Township
   gnis_id: '1987231'
   county:
@@ -12711,7 +12711,7 @@ towns:
   - T18 R10
   - T18 R10 WELS
 - name: T18 R11 WELS
-  geocode: 03904
+  geocode: '03904'
   town_type: Unorganized Township
   gnis_id: '1987232'
   county:
@@ -12727,7 +12727,7 @@ towns:
   - T18 R11
   - T18 R11 WELS
 - name: T18 R12 WELS
-  geocode: 03905
+  geocode: '03905'
   town_type: Unorganized Township
   gnis_id: '1987233'
   county:
@@ -12743,7 +12743,7 @@ towns:
   - T18 R12
   - T18 R12 WELS
 - name: T18 R13 WELS
-  geocode: 03906
+  geocode: '03906'
   town_type: Unorganized Township
   gnis_id: '1987234'
   county:
@@ -12791,7 +12791,7 @@ towns:
   - T19 MD
   - T19 MD BPP
 - name: T19 R11 WELS
-  geocode: 03907
+  geocode: '03907'
   town_type: Unorganized Township
   gnis_id: '1987235'
   county:
@@ -12807,7 +12807,7 @@ towns:
   - T19 R11
   - T19 R11 WELS
 - name: T19 R12 WELS
-  geocode: 03908
+  geocode: '03908'
   town_type: Unorganized Township
   gnis_id: '1987236'
   county:
@@ -12871,7 +12871,7 @@ towns:
   - T2 R13
   - T2 R13 WELS
 - name: T2 R4 WELS
-  geocode: 03817
+  geocode: '03817'
   town_type: Unorganized Township
   gnis_id: '1987145'
   county:
@@ -12955,7 +12955,7 @@ towns:
   - T2 R9
   - T2 R9 WELS
 - name: T22 MD BPP
-  geocode: 09808
+  geocode: '09808'
   town_type: Unorganized Township
   gnis_id: '2748516'
   county:
@@ -13025,7 +13025,7 @@ towns:
   - T26 ED
   - T26 ED BPP
 - name: T28 MD BPP
-  geocode: 09809
+  geocode: '09809'
   town_type: Unorganized Township
   gnis_id: '2748818'
   county:
@@ -13064,7 +13064,7 @@ towns:
   - T3 INDIAN PURCHASE TOWNSHIP
   - T3 INDIAN PURCHASE TWP
 - name: T3 ND BPP
-  geocode: 09801
+  geocode: '09801'
   town_type: Unorganized Township
   gnis_id: '2748799'
   county:
@@ -13167,7 +13167,7 @@ towns:
   - T3 R13
   - T3 R13 WELS
 - name: T3 R3 WELS
-  geocode: 03818
+  geocode: '03818'
   town_type: Unorganized Township
   gnis_id: '1987146'
   county:
@@ -13207,7 +13207,7 @@ towns:
   - T3 R4 BKP
   - T3 R4 BKP WKR
 - name: T3 R4 WELS
-  geocode: 03819
+  geocode: '03819'
   town_type: Unorganized Township
   gnis_id: '1987147'
   county:
@@ -13297,7 +13297,7 @@ towns:
   - T30 MD
   - T30 MD BPP
 - name: T32 MD BPP
-  geocode: 09810
+  geocode: '09810'
   town_type: Unorganized Township
   gnis_id: '2748814'
   county:
@@ -13316,7 +13316,7 @@ towns:
   - T32 MD
   - T32 MD BPP
 - name: T34 MD BPP
-  geocode: 09811
+  geocode: '09811'
   town_type: Unorganized Township
   gnis_id: '2748812'
   county:
@@ -13333,7 +13333,7 @@ towns:
   - T34 MD
   - T34 MD BPP
 - name: T35 MD BPP
-  geocode: 09812
+  geocode: '09812'
   town_type: Unorganized Township
   gnis_id: '2748811'
   county:
@@ -13384,7 +13384,7 @@ towns:
   - T37 MD
   - T37 MD BPP
 - name: T39 MD BPP
-  geocode: 09813
+  geocode: '09813'
   town_type: Unorganized Township
   gnis_id: '2748809'
   county:
@@ -13537,7 +13537,7 @@ towns:
   - T4 R17
   - T4 R17 WELS
 - name: T4 R3 WELS
-  geocode: 03820
+  geocode: '03820'
   town_type: Unorganized Township
   gnis_id: '1987148'
   county:
@@ -13638,7 +13638,7 @@ towns:
   aliases:
   - T4 R9 WELS
 - name: T40 MD BPP
-  geocode: 09814
+  geocode: '09814'
   town_type: Unorganized Township
   gnis_id: '2748808'
   county:
@@ -13655,7 +13655,7 @@ towns:
   - T40 MD
   - T40 MD BPP
 - name: T41 MD BPP
-  geocode: 09815
+  geocode: '09815'
   town_type: Unorganized Township
   gnis_id: '2748798'
   county:
@@ -14338,7 +14338,7 @@ towns:
   - T7 R19
   - T7 R19 WELS
 - name: T7 R5 WELS
-  geocode: 03821
+  geocode: '03821'
   town_type: Unorganized Township
   gnis_id: '1987149'
   county:
@@ -14442,7 +14442,7 @@ towns:
   - T07 R09 WELS
   - T7 R9 WELS
 - name: T7 SD BPP
-  geocode: 09803
+  geocode: '09803'
   town_type: Unorganized Township
   gnis_id: '2748539'
   county:
@@ -14623,7 +14623,7 @@ towns:
   - T8 R3
   - T8 R3 NBPP
 - name: T8 R3 WELS
-  geocode: 03822
+  geocode: '03822'
   town_type: Unorganized Township
   gnis_id: '1987150'
   county:
@@ -14659,7 +14659,7 @@ towns:
   - T8 R4
   - T8 R4 NBPP
 - name: T8 R5 WELS
-  geocode: 03823
+  geocode: '03823'
   town_type: Unorganized Township
   gnis_id: '1987151'
   county:
@@ -14911,7 +14911,7 @@ towns:
   - T9 R18
   - T9 R18 WELS
 - name: T9 R3 WELS
-  geocode: 03824
+  geocode: '03824'
   town_type: Unorganized Township
   gnis_id: '1987152'
   county:
@@ -14929,7 +14929,7 @@ towns:
   - T9 R3
   - T9 R3 WELS
 - name: T9 R4 WELS
-  geocode: 03825
+  geocode: '03825'
   town_type: Unorganized Township
   gnis_id: '1987153'
   county:
@@ -14947,7 +14947,7 @@ towns:
   - T9 R4
   - T9 R4 WELS
 - name: T9 R5 WELS
-  geocode: 03826
+  geocode: '03826'
   town_type: Unorganized Township
   gnis_id: '1987154'
   county:
@@ -14965,7 +14965,7 @@ towns:
   - T9 R5
   - T9 R5 WELS
 - name: T9 R7 WELS
-  geocode: 03827
+  geocode: '03827'
   town_type: Unorganized Township
   gnis_id: '1987155'
   county:
@@ -14983,7 +14983,7 @@ towns:
   - T9 R7
   - T9 R7 WELS
 - name: T9 R8 WELS
-  geocode: 03828
+  geocode: '03828'
   town_type: Unorganized Township
   gnis_id: '1987156'
   county:
@@ -15019,7 +15019,7 @@ towns:
   - T9 R9
   - T9 R9 WELS
 - name: T9 SD BPP
-  geocode: 09805
+  geocode: '09805'
   town_type: Unorganized Township
   gnis_id: '2748537'
   county:
@@ -15070,7 +15070,7 @@ towns:
   - TA R11
   - TA R11 WELS
 - name: TA R2 WELS
-  geocode: 03813
+  geocode: '03813'
   town_type: Unorganized Township
   gnis_id: '1987237'
   county:
@@ -15138,7 +15138,7 @@ towns:
   - TB R11
   - TB R11 WELS
 - name: TC R2 WELS
-  geocode: 03814
+  geocode: '03814'
   town_type: Unorganized Township
   gnis_id: '1987692'
   county:
@@ -15156,7 +15156,7 @@ towns:
   - TC R2
   - TC R2 WELS
 - name: TD R2 WELS
-  geocode: 03815
+  geocode: '03815'
   town_type: Unorganized Township
   gnis_id: '1987693'
   county:
@@ -15230,7 +15230,7 @@ towns:
   - TAUNTON AND RAYNHAM ACADEMY GRANT
   - TAUNTON AND RAYNHAM ACADEMY GRANT TWP
 - name: Temple
-  geocode: 07190
+  geocode: '07190'
   town_type: Town
   gnis_id: '582761'
   county:
@@ -15323,7 +15323,7 @@ towns:
   - THORNDIKE TWP
   - TOWNSHIP OF THORNDIKE
 - name: Tim Pond Twp
-  geocode: 07825
+  geocode: '07825'
   town_type: Unorganized Township
   gnis_id: '2748777'
   county:
@@ -15398,7 +15398,7 @@ towns:
   - TOPSHAM TWP
   - TOWN OF TOPSHAM
 - name: Township 6 North of Weld
-  geocode: 07826
+  geocode: '07826'
   town_type: Unorganized Township
   gnis_id: '2748498'
   county:
@@ -15431,7 +15431,7 @@ towns:
   aliases:
   - TOWNSHIP C
 - name: Township D
-  geocode: 07805
+  geocode: '07805'
   town_type: Unorganized Township
   gnis_id: '2748497'
   county:
@@ -15446,7 +15446,7 @@ towns:
   aliases:
   - TOWNSHIP D
 - name: Township E
-  geocode: 07807
+  geocode: '07807'
   town_type: Unorganized Township
   gnis_id: '2748496'
   county:
@@ -15461,7 +15461,7 @@ towns:
   aliases:
   - TOWNSHIP E
 - name: Tremont
-  geocode: 09330
+  geocode: '09330'
   town_type: Town
   gnis_id: '582767'
   county:
@@ -15479,7 +15479,7 @@ towns:
   - TREMONT TOWNSHIP
   - TREMONT TWP
 - name: Trenton
-  geocode: 09340
+  geocode: '09340'
   town_type: Town
   gnis_id: '582768'
   county:
@@ -15667,7 +15667,7 @@ towns:
   - UPPER ENCHANTED TOWNSHIP
   - UPPER ENCHANTED TWP
 - name: Upper Molunkus Twp
-  geocode: 03811
+  geocode: '03811'
   town_type: Unorganized Township
   gnis_id: '1987238'
   county:
@@ -15723,7 +15723,7 @@ towns:
   - VAN BUREN TOWNSHIP
   - VAN BUREN TWP
 - name: Van Buren Cove Twp
-  geocode: 03897
+  geocode: '03897'
   town_type: Unorganized Township
   gnis_id: '1987225'
   county:
@@ -15812,7 +15812,7 @@ towns:
   - VEAZIE GORE
   - VEAZIE GORE TWP
 - name: Verona Island
-  geocode: 09350
+  geocode: '09350'
   town_type: Town
   gnis_id: '582780'
   county:
@@ -15977,7 +15977,7 @@ towns:
   - WALLAGRASS
   - WALLAGRASS PLT
 - name: Waltham
-  geocode: 09360
+  geocode: '09360'
   town_type: Town
   gnis_id: '582789'
   county:
@@ -16066,7 +16066,7 @@ towns:
   - WASHINGTON COUNTY ISLAND
   - WASHINGTON COUNTY ISLAND TWP
 - name: Washington Twp
-  geocode: 07827
+  geocode: '07827'
   town_type: Unorganized Township
   gnis_id: '2748536'
   county:
@@ -16157,7 +16157,7 @@ towns:
   - WAYNE TOWNSHIP
   - WAYNE TWP
 - name: Webbertown Twp
-  geocode: 03812
+  geocode: '03812'
   town_type: Unorganized Township
   gnis_id: '1987239'
   county:
@@ -16641,7 +16641,7 @@ towns:
   - WINSLOW TOWNSHIP
   - WINSLOW TWP
 - name: Winter Harbor
-  geocode: 09370
+  geocode: '09370'
   town_type: Town
   gnis_id: '582821'
   county:
@@ -16677,7 +16677,7 @@ towns:
   - WINTERPORT TOWNSHIP
   - WINTERPORT TWP
 - name: Winterville Plt
-  geocode: 03680
+  geocode: '03680'
   town_type: Plantation
   gnis_id: '582823'
   county:
@@ -16734,7 +16734,7 @@ towns:
   - WISCASSET TOWNSHIP
   - WISCASSET TWP
 - name: Woodland
-  geocode: 03690
+  geocode: '03690'
   town_type: Town
   gnis_id: '582826'
   county:
@@ -16806,7 +16806,7 @@ towns:
   - WOOLWICH TOWNSHIP
   - WOOLWICH TWP
 - name: Wyman Twp
-  geocode: 07828
+  geocode: '07828'
   town_type: Unorganized Township
   gnis_id: '582830'
   county:
