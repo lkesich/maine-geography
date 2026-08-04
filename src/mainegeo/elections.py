@@ -8,33 +8,33 @@ The Maine SoS uses reporting units that provide the following challenges for par
     4. Delimiters, indicators of reporting vs. registration, and indicators of township aliases
        are not standard over time.
 
-This module provides functions for parsing Maine election result strings into consistent objects, 
+This module provides methods for parsing Maine election result strings into consistent objects, 
 extracting reporting and registration towns, and standardizing the format of unspecified town groups.
 
-Most functions in this module can be run on a delimited result string containing multiple towns,
-or a list of multiple towns.
+The entry point methods of this module can all be run on a delimited result string containing 
+multiple towns.
 
 Consider the following raw election result strings:
-    * 'T12/R13 & T9/R8 WELS (ASHLAND)'
-    * 'SHERMAN (AND BENEDICTA & SILVER RIDGE TWP) '
-    * 'BERRY/CATHANCE/MARION TWPS (EAST MACHIAS)'
-    * 'BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP'
-    * 'MOUNT CHASE -- T5 R7 TWP'
-    * 'ISLAND FALLS -- T4-R3 TWP'
-    * 'DOVER-FOXCROFT'
+    * `T12/R13 & T9/R8 WELS (ASHLAND)`
+    * `SHERMAN (AND BENEDICTA & SILVER RIDGE TWP) `
+    * `BERRY/CATHANCE/MARION TWPS (EAST MACHIAS)`
+    * `BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP`
+    * `MOUNT CHASE -- T5 R7 TWP`
+    * `ISLAND FALLS -- T4-R3 TWP`
+    * `DOVER-FOXCROFT`
 
 These examples display huge variation in how formatting is used to convey information.
 
 
 Parentheses are used in three different ways in these examples:
 
-* In `T12/R13 & T9/R8 WELS (ASHLAND)`, parentheses convey that Ashland
+* In `T12/R13 & T9/R8 WELS (ASHLAND)`, parentheses convey that `Ashland`
     is a non-reporting registration town.
-* In `EBEEMEE TWP (T5 R9 NWP)`, parentheses convey that T5 R9 NWP is 
-    an alias of EBEEMEE TWP.
+* In `EBEEMEE TWP (T5 R9 NWP)`, parentheses convey that `T5 R9 NWP` is 
+    an alias of `EBEEMEE TWP`.
 * In `SHERMAN (AND BENEDICTA & SILVER RIDGE TWP)`, parentheses convey that
-    this reporting unit includes all of SHERMAN, BENEDICTA, and SILVER RIDGE,
-    and that all three voted in SHERMAN.
+    this reporting unit includes all of `SHERMAN`, `BENEDICTA`, and `SILVER RIDGE`,
+    and that all three voted in `SHERMAN`.
 
 
 Ampersands, commas, and forward slashes are all used interchangeably to delimit 
@@ -43,7 +43,7 @@ geographies within a string:
 * `BARNARD TWP, EBEEMEE TWP (T5 R9 NWP), T4 R9 NWP TWP` is delimited with commas.
 * `BERRY/CATHANCE/MARION TWPS (EAST MACHIAS)` is delimited with forward slashes (`/`).
 * `SHERMAN (AND BENEDICTA & SILVER RIDGE TWP) ` contains two different 
-    delimiters--the substring `AND` and the ampersand character (`&`).
+    delimiters--the ampersand character (`&`) and the substring `AND`.
     
     
 Forward slashes are sometimes used as delimiters, but in `T12/R13` and
@@ -55,23 +55,23 @@ and `T9 R8 WELS`.
 Hyphens and parentheses are used interchangeably to indicate 
 a non-reporting registration town:
 
-* In `MOUNT CHASE -- T5 R7 TWP`, MOUNT CHASE is the registration town and 
-    T5 R7 TWP is the reporting town. MOUNT CHASE is not included in the vote totals 
+* In `MOUNT CHASE -- T5 R7 TWP`, `MOUNT CHASE` is the registration town and 
+    `T5 R7 TWP` is the reporting town. `MOUNT CHASE` is not included in the vote totals 
     for this reporting unit. 
-* In `BERRY/CATHANCE/MARION TWPS (EAST MACHIAS)`, EAST MACHIAS is the registration
-    town and BERRY TWP, CATHANCE TWP, and MARION TWP are all reporting towns.
-    EAST MACHIAS is not included in the vote totals for this reporting unit.
+* In `BERRY/CATHANCE/MARION TWPS (EAST MACHIAS)`, `EAST MACHIAS` is the registration
+    town and `BERRY TWP`, `CATHANCE TWP`, and `MARION TWP` are all reporting towns.
+    `EAST MACHIAS` is not included in the vote totals for this reporting unit.
         
 However, both characters are also used in other ways (see above).
     
     
 Single hyphens occur in the canonical names of towns, such as 
-DOVER-FOXCROFT, and are sometimes used non-canonically to separate township
-and range designators, as in the case of `T4-R3 TWP` (correctly written as T4 R3).
+`DOVER-FOXCROFT`, and are sometimes used non-canonically to separate township
+and range designators, as in the case of `T4-R3 TWP` (correctly written as `T4 R3`).
 
 
 Ampersands also occur in the canonical names of some townships,
-e.g. King & Bartlett Twp.
+e.g. `King & Bartlett Twp`.
 
 
 Examples:
@@ -260,16 +260,16 @@ class ResultString:
     election result string. It owns operations that are fully agnostic to which
     geographies the tokens in the string represent.
     
+    These operations normalize variations in meaningful formatting (including 
+    whitespace, delimiters, and other punctuation) so that two types of parsing can occur:
+
+    1. The splitting of result strings into a list of tokens, each
+        one representing a single geography.
+    2. The separation of tokens representing reporting geographies from tokens 
+        representing non-reporting registration towns.
+    
     Args:
         raw_string: The raw string representation of the reporting unit
-    
-    `ResultString` operations normalize variations in meaningful formatting (including 
-    whitespace, delimiters, and other punctuation) so that two types of parsing can occur:
-    
-        1. The splitting of result strings into a list of tokens, each
-            one representing a single geography.
-        2. The separation of tokens representing reporting geographies from tokens 
-            representing non-reporting registration towns.
     """
     raw_string: str
     
@@ -571,8 +571,8 @@ class UnspecifiedGroup(ResultGeo):
         return FORMATTED_GROUP_PATTERN.match(self.name)
     
     @property
-    def is_matched(self):
-        return self._format_match and self.group_registration_town.is_matched
+    def is_matched(self) -> bool:
+        return all((self._format_match, self.group_registration_town.is_matched))
 
     @property
     def group_county(self) -> County:
@@ -616,7 +616,7 @@ class UnspecifiedGroup(ResultGeo):
 
 @dataclass
 class ReportingUnit:
-    """ A collection of towns and unspecified groups parsed from a `ResultString`.
+    """A collection of towns and unspecified groups parsed from a `ResultString`.
         
     This class performs normalization operations on individual fragments of a 
     delimited string, coerces them into objects representing different geography
@@ -834,7 +834,7 @@ class ReportingUnit:
         for group in self.unspecified_groups:
             towns.add(group.group_registration_town)
         
-        return list(towns)
+        return sorted(towns, key=lambda town: town.consensus_name)
 
     @cached_property
     def reporting_towns(self) -> List[ResultGeo]:
@@ -938,6 +938,15 @@ class ReportingUnit:
         else:
             return False
         
+    @cached_property
+    def is_matched(self) -> bool:
+        """True if every named geography in this unit matched a known town."""
+        if not self.result_string.exists:
+            return False
+        else:
+            tokens = [*self.reporting_towns, *self.registration_towns]
+            return bool(tokens) and all(t.is_matched for t in tokens)
+        
     def to_dict(self) -> dict[str]:
         return {
             'raw_str':          self.raw_string,
@@ -948,7 +957,9 @@ class ReportingUnit:
                 'specified':        [town.to_dict() for town in self.specified_reporting_towns],
                 'unspecified':      [group.to_dict() for group in self.unspecified_groups]
                                 },
-            'registration':     [town.to_dict() for town in self.registration_towns]
+            'registration':     [town.to_dict() for town in self.registration_towns],
+            'county':           asdict(self.county),
+            'is_matched':       self.is_matched
         }
 
     @staticmethod
