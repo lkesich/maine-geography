@@ -214,6 +214,7 @@ __all__ = [
 ]
 
 import re
+import json
 from dataclasses import dataclass, asdict
 from functools import cached_property
 from typing import List, Type
@@ -961,6 +962,9 @@ class ReportingUnit:
             'county':           asdict(self.county),
             'is_matched':       self.is_matched
         }
+        
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
 
     @staticmethod
     def _format_reporting_towns(
