@@ -812,6 +812,19 @@ class ReportingUnit:
     def reporting_town_names(self) -> list[str]:
         """
         List of reporting town names. Canonical name if match was found, else raw name.
+        
+        Examples:
+            >>> args = ('WEBSTER PLT -- PRENTISS TWP', 'PEN')
+            >>> ReportingUnit.from_strings(*args).reporting_town_names
+            ['Prentiss Twp T7 R3 NBPP']
+            
+            >>> args = ('WYMAN TWP (CARRABASSETT VALLEY & EUSTIS)', 'FRA')
+            >>> ReportingUnit.from_strings(*args).reporting_town_names
+            ['Wyman Twp']
+            
+            >>> args = ('WYMAN TWP, WYMAN TWP', 'FRA')
+            >>> ReportingUnit.from_strings(*args).reporting_town_names
+            ['Wyman Twp']
         """
         return [town.consensus_name for town in self.reporting_towns]
     
@@ -855,7 +868,7 @@ class ReportingUnit:
                 reporting_town = ResultClass(name, self.county, strict = self.strict)
                 towns.append(reporting_town)
         
-        return towns
+        return list(dict.fromkeys(towns))
     
     @cached_property
     def specified_reporting_towns(self) -> List[Municipality]:
