@@ -696,6 +696,16 @@ class ReportingUnit:
             ['Medway']
             >>> len(result.unspecified_groups)
             1
+            
+            >>> result = ReportingUnit.from_strings('MILLINOCKET -- MILLINOCKET PEN TWPS', 'PEN')
+            >>> result.formatted_string
+            'Unspecified Penobscot County Twps [Millinocket]'
+            >>> result.reporting_town_names
+            ['Unspecified Penobscot County Twps']
+            >>> result.registration_town_names
+            ['Millinocket']
+            >>> len(result.unspecified_groups)
+            1
             """
         unit = cls(
             result_string = ResultString(result_str),
@@ -1004,6 +1014,9 @@ class ReportingUnit:
             
             >>> ReportingUnit._format_reporting_towns(['PENOBSCOT TWPS'], ['MILLINOCKET'], True)
             ['UNSPECIFIED MILLINOCKET TWPS [PEN]']
+            
+            >>> ReportingUnit._format_reporting_towns(['BENEDICTA TWP', 'TWPS'], [], True)
+            ['BENEDICTA TWP', 'UNSPECIFIED BENEDICTA TWP TWPS']
         """
         reporting = [
             ReportingUnit._format_plural(town, has_unspecified_group)
@@ -1024,7 +1037,12 @@ class ReportingUnit:
         reliably indicates whether it is an unspecified group.
         """  
         if has_unspecified_group:
-            return SINGULAR_PATTERN.sub(PLURAL, town)
+            if town.upper().startswith(SINGULAR):
+                return SINGULAR_PATTERN.sub(PLURAL, town)
+            else:
+                # Pluralization errors here are idiosyncratic and rare
+                # Need to be handled by overrides
+                return town
         else:
             return PLURAL_PATTERN.sub(SINGULAR, town)
 
@@ -1048,8 +1066,9 @@ class ReportingUnit:
         
         formatted_tokens = []
         for town in reporting_town_names:
-            if UNSPECIFIED_FLAG in town:                
-                unformatted = ' '.join(filter(None, [STANDARD_FLAG, *hosts, town]))
+            if UNSPECIFIED_FLAG in town:
+                distinct_hosts = [h for h in hosts if h not in town]
+                unformatted = ' '.join(filter(None, [STANDARD_FLAG, *distinct_hosts, town]))
                 group_name = ReportingUnit._format_unspecified_group(unformatted)
                 formatted_tokens.append(group_name)
             else:

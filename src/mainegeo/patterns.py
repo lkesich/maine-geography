@@ -236,8 +236,8 @@ def generate_valid_punctuation(char: str, template: str) -> str:
     return '|'.join(valid_contexts)
 
 # Templates
-AMPERSANDS_TEMPLATE: str = '(?:(?<=\g<leading>)&(?=\g<trailing>))'
-HYPHENS_TEMPLATE: str = '\g<leading>-(?=\g<trailing>)'
+AMPERSANDS_TEMPLATE: str = r"(?:(?<=\g<leading>)&(?=\g<trailing>))"
+HYPHENS_TEMPLATE: str = r"\g<leading>-(?=\g<trailing>)"
 
 # Building blocks
 GNIS_NAME = f"(?P<geotype>{'|'.join(GNIS_GEOTYPES)}) of (?P<town>.+)"
@@ -310,11 +310,12 @@ STANDARD_FLAG: str = 'UNSPECIFIED'
 Chosen to avoid overlap with words that may occur naturally in election 
 result strings."""
 
-MULTI_COUNTY_REGISTRATION_TOWNS: list[str] = ['MILLINOCKET']
+MULTI_COUNTY_REGISTRATION_TOWNS: list[str] = ['MILLINOCKET', 'GREENVILLE']
 """ Towns that host unspecified township groups from multiple counties.
 
-As of 2025, the only town that is typically reported this way is Millinocket,
-e.g. Millinocket Penobscot Twps and Millinocket Piscataquis Twps."""
+As of 2026, the only town that is regularly reported this way is Millinocket,
+e.g. Millinocket Penobscot Twps and Millinocket Piscataquis Twps. Some towns 
+are reported this way occasionally."""
 
 # Building blocks
 PLURAL = UNSPECIFIED_FLAG

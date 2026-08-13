@@ -13,6 +13,16 @@ known_typos:
   replacement: FRANKLIN/T9 SD/T10 SD
 - original: PLEASANT POINT VOTING DISTRICT RICT
   replacement: PLEASANT POINT VOTING DISTRICT
+- original: Indian MUNICIPALITYship
+  replacement: Indian Township
+- original: Madalloway
+  replacement: Magalloway
+- original: Ornville
+  replacement: Orneville
+- original: Milton Ttwp
+  replacement: Milton Twp
+- original: VOT\w* DIST\w*
+  replacement: VOTING DISTRICT
 
 ambiguous_groups:
 - pattern: PEN(?:OBSCOT)? TWP$
