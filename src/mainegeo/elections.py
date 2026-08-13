@@ -436,7 +436,7 @@ class ResultString:
         Args:
             result_str: Delimited result string with one or more towns or townships
         """
-        return replace_all(KNOWN_TYPOS, result_str)
+        return replace_all(KNOWN_TYPOS, result_str, re.I)
 
     @staticmethod
     def _rename_ambiguous_groups(result_str: str) -> str:
@@ -946,6 +946,10 @@ class ReportingUnit:
             >>> unit = ReportingUnit.from_strings('LEXINGTON & SPRING LAKE TWPS', 'SOM')
             >>> unit.has_unspecified_group
             False
+            
+            >>> unit = ReportingUnit.from_strings('LEXINGTON & SPRING LAKE TWPS', 'SOM')
+            >>> unit.has_unspecified_group
+            False
         """
         reporting = self.result_string.reporting_town_names
         registration = self.result_string.registration_town_names
@@ -956,6 +960,8 @@ class ReportingUnit:
         elif len(reporting) in (1, 2) and UNSPECIFIED_FLAG in reporting:
             return True
         elif all(UNSPECIFIED_FLAG in town for town in reporting):
+            return True
+        elif len(reporting) in (1, 2) and SINGULAR in reporting:
             return True
         elif MULTI_COUNTY_PATTERN.match(group_name):
             return True
