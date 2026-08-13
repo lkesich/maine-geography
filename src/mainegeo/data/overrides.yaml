@@ -17,11 +17,11 @@ known_typos:
   replacement: Indian Township
 - original: Madalloway Twp
   replacement: Magalloway Twp
-- original: Ornville
-  replacement: Orneville
+- original: /Ornville Twp
+  replacement: /Orneville Twp
 - original: Milton Ttwp
   replacement: Milton Twp
-- original: VOT\w* DIST\w*
+- original: VOT[^\s]{,3} DIST[^\s]{,4}
   replacement: VOTING DISTRICT
 
 ambiguous_groups:
