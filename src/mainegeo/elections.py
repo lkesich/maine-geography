@@ -988,15 +988,10 @@ class ReportingUnit:
     def to_dict(self) -> dict[str]:
         return {
             'formatted_str':    self.formatted_string,
-            'reporting':        {
-                'specified':        [town.to_dict() for town in self.specified_reporting_towns],
-                'unspecified':      [group.to_dict() for group in self.unspecified_groups]
-                                },
+            'raw_str':          self.raw_string,
+            'reporting':        [town.to_dict() for town in self.reporting_towns],
             'registration':     [town.to_dict() for town in self.registration_towns],
             'county':           asdict(self.county),
-            'raw_str':          self.raw_string,
-            'reporting_str':    self.reporting_string,
-            'registration_str': self.registration_string,
             'is_matched':       self.is_matched
         }
         
