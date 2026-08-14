@@ -515,6 +515,10 @@ class Municipality(ResultGeo):
         return self.matched_town is not None
     
     @property
+    def is_resolved(self) -> bool:
+        return self.is_matched
+    
+    @property
     def canonical_name(self):
         if self.matched_town:
             return self.matched_town.name
@@ -539,11 +543,11 @@ class Municipality(ResultGeo):
     def to_dict(self) -> dict[str]:
         return {
             'name':             self.consensus_name,
-            'canonical_name':   self.canonical_name,
-            'raw_name':         self.name,
             'county':           asdict(self.matched_county),
             'cousub':           asdict(self.matched_cousub),
             'geocode':          self.matched_geocode,
+            'resultgeotype':    self.__class__.__name__,
+            'is_resolved':      self.is_resolved,
             'is_matched':       self.is_matched
         }
 
@@ -570,6 +574,10 @@ class UnspecifiedGroup(ResultGeo):
     @cached_property
     def _format_match(self) -> re.Match:
         return FORMATTED_GROUP_PATTERN.match(self.name)
+    
+    @property
+    def is_resolved(self) -> bool:
+        return False
     
     @property
     def is_matched(self) -> bool:
@@ -608,10 +616,10 @@ class UnspecifiedGroup(ResultGeo):
     def to_dict(self):
         return {
             'name':                     self.consensus_name,
-            'canonical_name':           self.canonical_name,
-            'raw_name':                 self.name,
             'county':                   asdict(self.group_county),
             'group_registration_town':  self.group_registration_town.to_dict(),
+            'resultgeotype':            self.__class__.__name__,
+            'is_resolved':              self.is_resolved,
             'is_matched':               self.is_matched
         }
 
@@ -979,16 +987,16 @@ class ReportingUnit:
         
     def to_dict(self) -> dict[str]:
         return {
-            'raw_str':          self.raw_string,
             'formatted_str':    self.formatted_string,
-            'reporting_str':    self.reporting_string,
-            'registration_str': self.registration_string,
             'reporting':        {
                 'specified':        [town.to_dict() for town in self.specified_reporting_towns],
                 'unspecified':      [group.to_dict() for group in self.unspecified_groups]
                                 },
             'registration':     [town.to_dict() for town in self.registration_towns],
             'county':           asdict(self.county),
+            'raw_str':          self.raw_string,
+            'reporting_str':    self.reporting_string,
+            'registration_str': self.registration_string,
             'is_matched':       self.is_matched
         }
         
