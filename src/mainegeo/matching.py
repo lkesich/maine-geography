@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from functools import cached_property, cache
 from typing import List, Dict, Optional, ClassVar
 from pathlib import Path
+import json
 from ruamel.yaml import YAML
 from mainegeo.paths import TOWNSHIPS_JSON, TOWNSHIPS_YAML
 from mainegeo.entities import (County, Cousub, TownType)
@@ -72,6 +73,29 @@ class TownReference:
         self.aliases = list(set(aliases))
         self.aliases.sort()
         
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'geocode': self.geocode,
+            'town_type': self.town_type.value,
+            'gnis_id': self.gnis_id,
+            'county': {
+                'fips': self.county.fips,
+                'name': self.county.name,
+                'code': self.county.code
+            },
+            'cousub' : {
+                'geocode': self.cousub.geocode,
+                'name': self.cousub.name,
+                'basename': self.cousub.basename,
+                'geoclass': self.cousub.geoclass
+            },
+            'aliases': self.aliases
+        }
+        
+    def to_json(self):
+        return json.dumps(self.to_dict())
+        
     @staticmethod
     def json_object_hook(json_record, processed = False):
         return TownReference(
@@ -101,7 +125,8 @@ class TownReference:
                 json_record['gnis_variants'],
                 json_record['historical_names'],
                 json_record['misspellings'],
-                json_record['islands']
+                json_record['islands'],
+                json_record['villages']
             ],
             processed = processed
         )
@@ -186,24 +211,7 @@ class TownDatabase:
         
         serializable_data = {
             'towns': [
-                {
-                    'name': town.name,
-                    'geocode': town.geocode,
-                    'town_type': town.town_type.value,
-                    'gnis_id': town.gnis_id,
-                    'county': {
-                        'fips': town.county.fips,
-                        'name': town.county.name,
-                        'code': town.county.code
-                    },
-                    'cousub' : {
-                        'geocode': town.cousub.geocode,
-                        'name': town.cousub.name,
-                        'basename': town.cousub.basename,
-                        'geoclass': town.cousub.geoclass
-                    },
-                    'aliases': town.aliases
-                } for town in self.data
+                town.to_dict() for town in self.data
             ]
         }
 

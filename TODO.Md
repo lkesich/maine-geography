@@ -1,0 +1,6 @@
+- [ ] Change source for town data, avoid constructing in dbt and passing back
+- [ ] Remove overrides (or switch to accepting an external YAML file?)
+    - [ ] Remove ruamel dependency
+- [ ] Island resolution issue (e.g. Louds Island)
+- [ ] Create json representation of TownReference
+- [ ] Frenchtown (Kokadjo) match failure - whether/how to generalize

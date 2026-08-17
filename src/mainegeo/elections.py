@@ -607,6 +607,7 @@ class UnspecifiedGroup(ResultGeo):
             county = ' '
             
         formatted = f'{STANDARD_FLAG}{county}{UNSPECIFIED_FLAG}'
+        formatted = f'{STANDARD_FLAG} {UNSPECIFIED_FLAG}'
         return formatted.title()
     
     @property
